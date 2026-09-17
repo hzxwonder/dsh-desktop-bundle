@@ -1,0 +1,7 @@
+# The desktop workbench is a Desktop-only Host row. `desktopProfiles` supplies
+# the active profile and the restart-safe switch that the Web deployment gets
+# from its own local service supervisor; the workbench composition itself stays
+# in dsh-plugin-workbench.
+- insert:
+    - id: dsh-desktop-workbench
+      name: dsh-desktop-workbench

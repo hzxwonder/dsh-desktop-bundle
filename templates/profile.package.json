@@ -1,0 +1,12 @@
+{
+  "name": "dsh-profile-{{PROFILE_NAME}}",
+  "private": true,
+  "description": "DSH Desktop profile composed by dsh-desktop-bundle",
+  "dependencies": {{DEPENDENCIES}},
+  "dsh": {
+    "profile": {
+      "bundles": {{BUNDLES}},
+      "patchReload": "live"
+    }
+  }
+}

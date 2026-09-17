@@ -1,0 +1,92 @@
+{
+  "$comment": "Pinned composition for the vendored DSH Desktop environment. Versions are the releases vendored into vendor/ and the runtime packages the pinned DSH Desktop build ships. Regenerate with scripts/vendor.mjs after syncing plugin sources.",
+  "desktop": {
+    "repository": "https://github.com/hzxwonder/dsh-desktop.git",
+    "ref": "master",
+    "commit": "b34aca9252667a2d4e5a7e842801a9e139df3db3",
+    "appVersion": "2.0.10",
+    "runtimeVersion": "0.1.5-rc.2",
+    "dshEngine": ">=24.0.0"
+  },
+  "profile": {
+    "bundles": [
+      "@deepseek-ai/dsh-base",
+      "@deepseek-ai/dsh-web-app",
+      "dsh-plugin-suite",
+      "dsh-plugin-workflow",
+      "dsh-plugin-sessions"
+    ],
+    "runtimeDependencies": {
+      "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2"
+    },
+    "name": "desktop"
+  },
+  "plugins": [
+    {
+      "name": "dsh-plugin-suite",
+      "version": "0.1.0",
+      "commit": "de99ac6e1097e9d8f9d355c10c80f816ba4adfbc",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-suite.git"
+    },
+    {
+      "name": "dsh-plugin-browser",
+      "version": "0.5.0",
+      "commit": "1969a30ca05a68f7e10d83808b442b68b0ce0a96",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "name": "dsh-plugin-project-memory",
+      "version": "0.2.2",
+      "commit": "9c4794d84fd8f07d7f290be5cc402df5a8150c86",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "name": "dsh-plugin-ssh",
+      "version": "0.1.0",
+      "commit": "12a88c0b377a5181e3e1c331eff6fa88c39ea5d9",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "name": "dsh-plugin-terminal",
+      "version": "0.5.0",
+      "commit": "5cdb931ee075dd1fbe9a1923c5f6b6f7a13ae6a1",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal.git"
+    },
+    {
+      "name": "dsh-plugin-sidebar",
+      "version": "0.2.0",
+      "commit": "ae1a6b51410f4ec34c78075a4e5106f0d4fa9ef1",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-sidebar.git"
+    },
+    {
+      "name": "dsh-plugin-workbench",
+      "version": "0.1.0",
+      "commit": "3b00dc7f12297940226939b072bc8b3412d9feb3",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "name": "dsh-plugin-workflow",
+      "version": "0.2.0",
+      "commit": "fe7aa90ab5670419296e13558140d6d742354932",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-workflow.git"
+    },
+    {
+      "name": "dsh-plugin-sessions",
+      "version": "0.1.1",
+      "commit": "df7ca0f616963919019a6a316627d636718c8e02",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-sessions.git"
+    },
+    {
+      "name": "dsh-desktop-suite",
+      "version": "0.1.0",
+      "commit": "22ee1a8905d0119f542601735d10cf274d90a1f0",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-desktop-suite.git"
+    },
+    {
+      "name": "dsh-desktop-workbench",
+      "version": "0.1.0",
+      "commit": "3d3cd33f69d5d109a334d724e5d61a12b39011c1",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-desktop-workbench.git"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "name": "dsh-desktop-workbench",
+  "version": "0.1.0",
+  "description": "DSH Desktop plugin: profile and composition control for the workbench deployment, replacing the Web-side local service supervisor",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./profiles": "./lib/profiles.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "NOTICE",
+    "docs"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "LGPL-3.0-only",
+  "repository": "github:hzxwonder-dsh-plugins/dsh-desktop-workbench",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.5-rc.2"
+  },
+  "peerDependencies": {
+    "dsh-plugin-desktop": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-plugin-desktop": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "js-yaml": "4.2.0"
+  }
+}

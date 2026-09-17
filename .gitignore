@@ -1,0 +1,11 @@
+# Build and runtime scratch space
+.build/
+.scratch/
+dist/
+.cache/
+
+# Installed plugin dependencies stay out of the bundle
+vendor/*/node_modules/
+
+# macOS
+.DS_Store

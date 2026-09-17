@@ -1,0 +1,4 @@
+Copyright (C) 2026 dsh-plugins contributors.
+
+This package composes maintained DSH plugin repositories and official DeepSeek
+Harness packages. Each dependency retains its own license and notice.

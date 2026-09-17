@@ -1,0 +1,51 @@
+{
+  "name": "dsh-plugin-sidebar",
+  "version": "0.2.0",
+  "description": "Workspace-aware file trees and previews for DeepSeek Harness Web",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./workspace": "./workspace.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "workspace.js",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "NOTICE",
+    "docs"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "LGPL-3.0-only",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-sidebar-files"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "dsh-plugin-ssh": "0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-plugin-ssh": {
+      "optional": true
+    }
+  }
+}

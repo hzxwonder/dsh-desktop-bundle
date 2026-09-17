@@ -1,0 +1,14 @@
+{
+  "name": "dsh-plugin-workbench",
+  "version": "0.1.0",
+  "description": "Native scheduling and durable history search composition for DeepSeek Harness Web",
+  "type": "module",
+  "files": ["cordis.patch.yml", "README.md", "README.en.md", "LICENSE", "NOTICE", "docs", "bin"],
+  "scripts": {"test": "node --test test/*.test.js"},
+  "engines": {"node": ">=22.19.0"},
+  "license": "LGPL-3.0-only",
+  "repository": "github:hzxwonder-dsh-plugins/dsh-plugin-workbench",
+  "dsh": {"bundle": {"patch": "./cordis.patch.yml"}},
+  "dependencies": {"@deepseek-ai/dsh-schedule": "0.1.5-rc.2", "@deepseek-ai/dsh-time-context": "0.1.5-rc.2"},
+  "devDependencies": {"js-yaml": "4.2.0"}
+}

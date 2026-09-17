@@ -1,0 +1,59 @@
+{
+  "name": "dsh-plugin-terminal",
+  "version": "0.5.0",
+  "description": "Interactive local and SSH terminals for DeepSeek Harness: a bottom dock opened from the Session header, plus agent-facing PTY tools",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./remote": "./remote.js",
+    "./workspace": "./workspace.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "remote.js",
+    "workspace.js",
+    "assets",
+    "terminal-entry.js",
+    "build.mjs",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "NOTICE",
+    "docs"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "npm run build",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "LGPL-3.0-only",
+  "repository": "github:hzxwonder-dsh-plugins/dsh-plugin-terminal",
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-layout", "@deepseek-ai/dsh-client-ui-conversation"]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-tools": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-terminal": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-terminal-bash": "0.1.5-rc.2",
+    "@xterm/addon-fit": "0.10.0",
+    "@xterm/xterm": "5.5.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.10"
+  }
+}

@@ -1,0 +1,7 @@
+# The Desktop suite is a Desktop-only Host row. `desktopProfiles` fixes the one
+# profile this generation may touch and `desktopPnpm` owns every package
+# operation inside it, so the Web suite CLI and this row never edit one profile
+# at the same time.
+- insert:
+    - id: dsh-desktop-suite
+      name: dsh-desktop-suite

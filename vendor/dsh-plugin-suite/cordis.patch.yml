@@ -1,0 +1,45 @@
+# One explicit composition layer for the maintained plugin family. Canonical
+# ids mirror the individual bundles, so a profile overlay can configure a
+# member in exactly one place and a later direct bundle cleanly replaces it.
+- insert:
+    # Light entries mount before the browser plugin: launching Chrome is slow and
+    # sequential mounting would otherwise delay every later command registration
+    # (for example /ssh) past the client's first command-directory fetch.
+    - id: dsh-plugin-project-memory
+      name: dsh-plugin-project-memory
+    - id: dsh-plugin-ssh
+      name: dsh-plugin-ssh
+    - id: dsh-plugin-browser
+      name: dsh-plugin-browser
+    - id: pty
+      name: '@deepseek-ai/dsh-terminal'
+    - id: terminal-bash
+      name: '@deepseek-ai/dsh-terminal-bash'
+      disabled: !!js process.platform === 'win32'
+      config:
+        timeoutMs: 300000
+    - id: terminal-pwsh
+      name: '@deepseek-ai/dsh-terminal-bash'
+      disabled: !!js process.platform !== 'win32'
+      config:
+        shellDialect: pwsh
+        timeoutMs: 300000
+    - id: tool-terminal
+      name: '@deepseek-ai/dsh-tool-terminal'
+      config:
+        enableRunInBackground: true
+        maxResultBytes: 262144
+    - id: dsh-plugin-terminal
+      name: dsh-plugin-terminal
+    - id: dsh-plugin-sidebar
+      name: dsh-plugin-sidebar
+    - id: time-context
+      name: '@deepseek-ai/dsh-time-context'
+    - id: schedule
+      name: '@deepseek-ai/dsh-schedule'
+- id: ui-schedule
+  disabled: false
+- id: session-query-sqlite
+  config:
+    path: !!js dshHomePath('workbench-session-search.sqlite')
+    openAt: first-search

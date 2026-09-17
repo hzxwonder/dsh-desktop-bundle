@@ -1,0 +1,35 @@
+{
+  "name": "dsh-plugin-ssh",
+  "version": "0.1.0",
+  "description": "OpenSSH commands and revision-checked remote files for DeepSeek Harness",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": ["index.js", "auth.js", "askpass.mjs", "web.js", "remote.py", "client.js", "cordis.patch.yml", "README.md", "README.en.md", "LICENSE", "NOTICE", "docs"],
+  "scripts": {"test": "node --test test/*.test.js"},
+  "engines": {"node": ">=22.19.0"},
+  "license": "LGPL-3.0-only",
+  "repository": "github:hzxwonder-dsh-plugins/dsh-plugin-ssh",
+  "dsh": {
+    "bundle": {"patch": "./cordis.patch.yml"},
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-settings-general",
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-ui-commands",
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.5-rc.2",
+    "@deepseek-ai/schemastery": "3.18.2"
+  }
+}

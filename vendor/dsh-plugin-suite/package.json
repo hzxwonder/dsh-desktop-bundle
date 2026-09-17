@@ -1,0 +1,53 @@
+{
+  "name": "dsh-plugin-suite",
+  "version": "0.1.0",
+  "description": "One-click DeepSeek Harness bundle for browser, SSH, memory, terminal, and workbench plugins",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "dsh-plugin-suite": "./bin/manage.mjs"
+  },
+  "files": [
+    "index.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "LICENSE",
+    "NOTICE",
+    "bin",
+    "docs"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "suite": "node bin/manage.mjs",
+    "update": "node bin/manage.mjs update"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "license": "LGPL-3.0-only",
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "dsh-plugin-browser": "0.1.0",
+    "dsh-plugin-project-memory": "0.2.0",
+    "dsh-plugin-ssh": "0.1.0",
+    "dsh-plugin-terminal": "0.1.0",
+    "dsh-plugin-sidebar": "0.1.0",
+    "dsh-plugin-workbench": "0.1.0"
+  },
+  "peerDependenciesMeta": {
+    "dsh-plugin-browser": {"optional": true},
+    "dsh-plugin-project-memory": {"optional": true},
+    "dsh-plugin-ssh": {"optional": true},
+    "dsh-plugin-terminal": {"optional": true},
+    "dsh-plugin-sidebar": {"optional": true},
+    "dsh-plugin-workbench": {"optional": true}
+  },
+  "devDependencies": {
+    "js-yaml": "4.2.0"
+  }
+}

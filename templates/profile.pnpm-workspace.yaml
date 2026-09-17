@@ -1,0 +1,8 @@
+packages:
+  - .
+
+# Hoisted matches the layout the pinned Desktop build resolves against: every
+# vendored plugin and its dependencies land in one profile-level node_modules,
+# and the shell's module resolver treats that directory as the profile boundary.
+nodeLinker: hoisted
+autoInstallPeers: false

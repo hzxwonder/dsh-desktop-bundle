@@ -1,0 +1,5 @@
+Copyright (C) 2026 dsh-plugins contributors.
+
+This package runs package operations for maintained DSH plugin repositories
+inside a DSH Desktop profile. Each dependency retains its own license and
+notice.

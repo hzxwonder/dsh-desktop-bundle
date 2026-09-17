@@ -1,0 +1,19 @@
+{
+  "name": "dsh-plugin-sessions",
+  "version": "0.1.1",
+  "description": "Cross-session references and a workspace-free chat mode for DeepSeek Harness",
+  "type": "module",
+  "main": "index.js",
+  "exports": {".": "./index.js", "./client": "./client.js", "./package.json": "./package.json"},
+  "files": ["index.js", "reference.js", "client.js", "cordis.patch.yml", "scripts/adapt-workspace.mjs", "README.md", "LICENSE", "docs"],
+  "scripts": {"test": "node --test test/*.test.js"},
+  "engines": {"node": ">=24.0.0"},
+  "license": "MIT",
+  "dsh": {
+    "bundle": {"patch": "./cordis.patch.yml"},
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-workspace", "@deepseek-ai/dsh-client-ui-conversation", "@deepseek-ai/dsh-client-ui-session"]
+    }
+  }
+}
