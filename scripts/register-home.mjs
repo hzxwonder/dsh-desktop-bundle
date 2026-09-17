@@ -17,12 +17,13 @@ import { fileURLToPath } from 'node:url'
 const HERE = dirname(fileURLToPath(import.meta.url))
 
 function parseArgs(argv) {
-  const options = { home: undefined, profile: 'desktop', app: undefined, dryRun: false }
+  const options = { home: undefined, profile: 'desktop', app: undefined, port: undefined, dryRun: false }
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index]
     if (argument === '--home') options.home = resolve(argv[++index])
     else if (argument === '--profile') options.profile = argv[++index]
     else if (argument === '--app') options.app = resolve(argv[++index])
+    else if (argument === '--port') options.port = Number(argv[++index])
     else if (argument === '--user-data') options.userData = resolve(argv[++index])
     else if (argument === '--dry-run') options.dryRun = true
     else throw new Error(`unknown argument: ${argument}`)
@@ -52,6 +53,7 @@ function main() {
     '--app', options.app,
     '--user-data', userData,
   ]
+  if (options.port !== undefined) args.push('--port', String(options.port))
   if (options.dryRun) args.push('--dry-run')
   const output = execFileSync('/usr/bin/python3', args, { encoding: 'utf8' })
   process.stdout.write(output)

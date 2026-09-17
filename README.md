@@ -92,13 +92,14 @@ node scripts/verify.mjs --home ~/.dsh-desktop --app "/Applications/DSH Desktop.a
 要在真实壳里确认插件注册，用运行校验：
 
 ```bash
-# 需要先退出正在运行的 DSH Desktop：单实例锁按 userData 生效，第二个实例会立刻退出
-node scripts/verify-runtime.mjs --home ~/.dsh-desktop --app "/Applications/DSH Desktop.app"
+# 需要先退出正在运行的 DSH Desktop：单实例锁按应用生效，第二个实例会立刻退出
+node scripts/verify-runtime.mjs --app "/Applications/DSH Desktop.app"
 ```
 
-它用独立的 HOME 与 userData 启动应用（不动使用者的 home），通过 DevTools 协议
-检查渲染进程是否请求了组合后的插件包、每个带客户端面的插件是否注册、
-控制台与网络有没有失败。
+启动器打开的 home 由它在 Electron userData 里的定位文档决定，环境变量改不了，
+所以脚本先读出该 home 再启动应用，通过 DevTools 协议核对：渲染进程请求的客户端插件包
+是否包含本仓库 vendor 的全部客户端插件、控制台与网络有没有失败。
+输出里的 `launcher` 一行就是这次实际检查的 home；`--home` 只用于声明期望值。
 
 ## 维护
 

@@ -98,15 +98,18 @@ Chrome instead.
 To confirm plugin registration inside the real shell, run the runtime check:
 
 ```bash
-# Quit a running DSH Desktop first: the single-instance lock is per userData
-# directory, so a second instance exits immediately.
-node scripts/verify-runtime.mjs --home ~/.dsh-desktop --app "/Applications/DSH Desktop.app"
+# Quit a running DSH Desktop first: the single-instance lock is per application,
+# so a second instance exits immediately.
+node scripts/verify-runtime.mjs --app "/Applications/DSH Desktop.app"
 ```
 
-It starts the application with a private HOME and userData directory (leaving the
-user's home untouched) and asks the renderer over the DevTools protocol whether it
-requested the composed plugin bundle, whether every plugin with a client surface
-registered, and whether the console or network reported a failure.
+The home the launcher opens is named by its own locator document in Electron's
+userData directory and cannot be redirected from the environment, so the script
+reads that home first and then checks through the DevTools protocol whether the
+client plugin bundle the renderer requested contains every client plugin this
+repository vendors, and whether the console or network reported a failure. The
+`launcher` line of the output names the home actually inspected; `--home` only
+declares the expected value.
 
 ## Maintenance
 

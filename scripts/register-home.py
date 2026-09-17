@@ -21,6 +21,8 @@ def parse_args():
     parser.add_argument('--profile-dir', required=True)
     parser.add_argument('--app', required=True)
     parser.add_argument('--user-data', required=True)
+    parser.add_argument('--port', type=int, default=None,
+                        help='local Web port written into a new settings document')
     parser.add_argument('--dry-run', action='store_true')
     return parser.parse_args()
 
@@ -97,7 +99,7 @@ def main():
     if os.path.exists(settings_path):
         print('kept         ', settings_path)
     else:
-        port = PORT + int(hashlib.sha256(home.encode()).hexdigest()[:4], 16) % 1000
+        port = args.port or PORT + int(hashlib.sha256(home.encode()).hexdigest()[:4], 16) % 1000
         content = (
             '# Shared DSH settings. Written once by dsh-desktop-bundle/setup.sh;\n'
             '# the Desktop app owns this document afterwards.\n'
