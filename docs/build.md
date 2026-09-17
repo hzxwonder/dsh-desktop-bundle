@@ -58,6 +58,15 @@ electron-builder 与 node-gyp 的默认位置在 `~/Library`、`~/.cache` 与 `~
 Intel 目标尚未验证；需要 Intel 版时先跑一次 universal 并检查
 `@electron/universal` 的合并日志。
 
+## 当前产物的验证边界
+
+已发布的第一版 dmg 用 `--source <已有 fork 检出> --skip-build` 打包，
+验证覆盖：打包目录结构、ad-hoc 签名（含镜像内复核）、`hdiutil` 产出、
+安装脚本在普通 APFS 路径上的复制与验签、以及在组合后的 home 上跑通
+`scripts/verify.mjs` 与 `pnpm install`。**未覆盖**：从零 clone 的
+`yarn install --immutable` 与 `prepare:electron-native` 全量构建，
+以及 `--arch universal`。首次走完整构建路径时请留意这两项。
+
 ## 版本与渠道
 
 `manifest.json` 的 `desktop` 段记录 fork 仓库、`ref`、上游应用版本与 DSH 运行时版本。

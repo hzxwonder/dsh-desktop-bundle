@@ -93,3 +93,7 @@ tail -20 ~/Library/Application\ Support/DSH\ Desktop/logs/host/dsh-$(date +%F).l
 - 插件依赖从 npm registry 拉取，离线环境需要先准备 registry 或缓存。
 - 端口由 home 路径派生；同一台机器上两个 home 端口不同，
   因此同一份界面状态不会在两个 home 间串用。
+- 目标目录不要放在由文件提供者托管的卷（`~/Documents`、`~/Desktop`、iCloud Drive）：
+  复制进去的包会带上 `com.apple.FinderInfo` 与 `com.apple.fileprovider.*`，
+  `codesign` 会拒绝这类属性。装到 `/Applications` 或 `/tmp` 之类普通 APFS 路径时正常，
+  安装脚本会清属性并复核签名。修 home 目录的脚本不受影响（那里只放配置与插件）。

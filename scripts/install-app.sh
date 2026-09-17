@@ -63,7 +63,19 @@ fi
 # ditto keeps signatures, extended attributes and resource forks that a plain cp
 # would flatten; --noqtn drops the quarantine flag the download added.
 ditto --rsrc --extattr --noqtn "${SOURCE_APP}" "${TARGET}"
-codesign --verify --strict "${TARGET}" || echo "install-app: signature check failed; macOS will require an explicit allow" >&2
+
+# Strip extended attributes before verifying. A destination inside a
+# file-provider volume (anything under ~/Documents or ~/Desktop) makes the copy
+# carry com.apple.FinderInfo and com.apple.fileprovider.* attributes, and
+# codesign rejects the whole bundle for that detritus. The signature itself is
+# untouched by stripping attributes.
+xattr -cr "${TARGET}"
+if ! codesign --verify --strict "${TARGET}" 2>/dev/null; then
+  echo "install-app: signature is not intact after copying; re-signing ad-hoc" >&2
+  codesign --force --deep --sign - "${TARGET}"
+  codesign --verify --strict "${TARGET}"
+fi
+echo "verified  ad-hoc signature of $(basename "${TARGET}")"
 
 if [ "${PRINT_PATH}" = 1 ]; then
   printf '%s\n' "${TARGET}"
