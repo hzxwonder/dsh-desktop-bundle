@@ -1,6 +1,6 @@
 # DSH Desktop 打包版验收报告
 
-生成时间：2026-09-18 13:49　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
+生成时间：2026-09-18 14:00　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
 
 ## 一、结论
 
@@ -35,115 +35,115 @@
 
 ### A　启动与会话生命周期（11/11 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| A-01 | P0 | 冷启动进入主界面且输入框可用 | 通过 | 31ms |
-| A-02 | P1 | 首次运行的欢迎浮层可关闭且不阻塞输入 | 通过 | 2ms |
-| A-03 | P0 | 新建会话进入可输入状态 | 通过 | 2757ms |
-| A-04 | P0 | 发出消息后收到回复且会话被记录 | 通过 | 21157ms |
-| A-05 | P1 | 连续创建 3 个会话各自独立 | 通过 | 61788ms |
-| A-06 | P1 | 快速连点新建会话不产生重复会话 | 通过 | 5852ms |
-| A-07 | P1 | 会话之间切换内容不串 | 通过 | 5172ms |
-| A-08 | P1 | 刷新渲染进程后会话记录保持 | 通过 | 13048ms |
-| A-09 | P2 | 工作区菜单可打开并给出工作区入口 | 通过 | 1693ms |
-| A-10 | P2 | 输入超长草稿不卡死 | 通过 | 8364ms |
-| A-11 | P1 | 首轮对话全程无失败请求与控制台错误 | 通过 | 20619ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| A-01 | P0 | 冷启动进入主界面且输入框可用 | 通过 | 31ms | [图](evidence/A-01-boot.png) |
+| A-02 | P1 | 首次运行的欢迎浮层可关闭且不阻塞输入 | 通过 | 2ms | — |
+| A-03 | P0 | 新建会话进入可输入状态 | 通过 | 2757ms | [图](evidence/A-03-new-conversation.png) |
+| A-04 | P0 | 发出消息后收到回复且会话被记录 | 通过 | 21157ms | [图](evidence/A-04-first-reply.png) |
+| A-05 | P1 | 连续创建 3 个会话各自独立 | 通过 | 61788ms | [图](evidence/A-05-three-conversations.png) |
+| A-06 | P1 | 快速连点新建会话不产生重复会话 | 通过 | 5852ms | [图](evidence/A-06-rapid-new-conversation.png) |
+| A-07 | P1 | 会话之间切换内容不串 | 通过 | 5172ms | [图](evidence/A-07-switched.png) |
+| A-08 | P1 | 刷新渲染进程后会话记录保持 | 通过 | 13048ms | [图](evidence/A-08-after-reload.png) |
+| A-09 | P2 | 工作区菜单可打开并给出工作区入口 | 通过 | 1693ms | [图](evidence/A-09-workspace-menu.png) |
+| A-10 | P2 | 输入超长草稿不卡死 | 通过 | 8364ms | [图](evidence/A-10-long-input.png) |
+| A-11 | P1 | 首轮对话全程无失败请求与控制台错误 | 通过 | 20619ms | [图](evidence/A-11-network-clean.png) |
 
 ### B　关闭、后台化、重开与进程行为（7/10 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| B-01 | P0 | 关闭窗口后应用按设计驻留后台 | 通过 | 26958ms |
-| B-02 | P0 | 再次启动应用后窗口与会话列表恢复 | 失败 | no renderer target on port 9470 to attach to |
-| B-03 | P1 | 重开后窗口几何保持 | 失败 | Runtime.evaluate timed out |
-| B-04 | P1 | 点击 Dock 图标后窗口能够回来 | 失败 | the Dock icon did not bring the window back (TypeError: Object has been destroyed \|     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) \|     at EventEmitter.activate (file:///Applicatio) |
-| B-05 | P1 | 收到退出请求后进程干净退出 | 通过 | 8092ms |
-| B-06 | P1 | 重启后会话记录与几何恢复 | 通过 | 12643ms |
-| B-07 | P1 | 窗口尺寸变更后重启仍保持 | 通过 | 14554ms |
-| B-08 | P1 | 后台冻结后恢复内容与输入都正常 | 通过 | 7096ms |
-| B-09 | P1 | 应用已运行时再次启动不产生第二实例 | 通过 | 4556ms |
-| B-10 | P2 | 强制结束后重启数据仍可读 | 通过 | 15923ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| B-01 | P0 | 关闭窗口后应用按设计驻留后台 | 通过 | 26958ms | — |
+| B-02 | P0 | 再次启动应用后窗口与会话列表恢复 | 失败 | no renderer target on port 9470 to attach to | — |
+| B-03 | P1 | 重开后窗口几何保持 | 失败 | Runtime.evaluate timed out | — |
+| B-04 | P1 | 点击 Dock 图标后窗口能够回来 | 失败 | the Dock icon did not bring the window back (TypeError: Object has been destroyed \|     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) \|     at EventEmitter.activate (file:///Applicatio) | — |
+| B-05 | P1 | 收到退出请求后进程干净退出 | 通过 | 8092ms | — |
+| B-06 | P1 | 重启后会话记录与几何恢复 | 通过 | 12643ms | [图](evidence/B-06-after-restart.png) |
+| B-07 | P1 | 窗口尺寸变更后重启仍保持 | 通过 | 14554ms | [1](evidence/B-07-resized-before-restart.png) [2](evidence/B-07-resized-after-restart.png) |
+| B-08 | P1 | 后台冻结后恢复内容与输入都正常 | 通过 | 7096ms | [图](evidence/B-08-after-background-return.png) |
+| B-09 | P1 | 应用已运行时再次启动不产生第二实例 | 通过 | 4556ms | [图](evidence/B-09-second-instance.png) |
+| B-10 | P2 | 强制结束后重启数据仍可读 | 通过 | 15923ms | [图](evidence/B-10-after-forced-kill.png) |
 
 ### D　主题与外观（6/6 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| D-01 | P1 | 启动主题与系统外观一致 | 通过 | 554ms |
-| D-02 | P1 | 系统外观变化时界面即时跟随 | 通过 | 6487ms |
-| D-03 | P1 | 浅色主题下不存在残留的深色大色块 | 通过 | 6586ms |
-| D-04 | P1 | 深色主题下不存在残留的浅色大色块 | 通过 | 1888ms |
-| D-05 | P2 | 快速反复切换主题 10 次后界面正常 | 通过 | 12551ms |
-| D-06 | P1 | 切换主题不丢失当前会话内容 | 通过 | 26285ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| D-01 | P1 | 启动主题与系统外观一致 | 通过 | 554ms | [图](evidence/D-01-boot-dark.png) |
+| D-02 | P1 | 系统外观变化时界面即时跟随 | 通过 | 6487ms | [图](evidence/D-02-switched-light.png) |
+| D-03 | P1 | 浅色主题下不存在残留的深色大色块 | 通过 | 6586ms | [图](evidence/D-03-light-surfaces.png) |
+| D-04 | P1 | 深色主题下不存在残留的浅色大色块 | 通过 | 1888ms | [图](evidence/D-04-dark-surfaces.png) |
+| D-05 | P2 | 快速反复切换主题 10 次后界面正常 | 通过 | 12551ms | [图](evidence/D-05-after-theme-cycles.png) |
+| D-06 | P1 | 切换主题不丢失当前会话内容 | 通过 | 26285ms | [图](evidence/D-06-conversation-after-theme.png) |
 
 ### L　布局与样式校验（14/15 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| L-01 | P1 | 基准窗口无横向溢出与意外滚动条 | 通过 | 77ms |
-| L-02 | P1 | 基准布局几何符合设计意图 | 通过 | 5ms |
-| L-03 | P1 | 交互元素之间无遮挡重叠 | 通过 | 46ms |
-| L-04 | P2 | 文本不被裁切或溢出容器 | 通过 | 1ms |
-| L-05 | P1 | 浅色主题正文对比度达到 4.5:1 | 失败 | lowest text contrast in light theme is 3.71:1 ([{"role":"text","text":"工作区","color":"rgb(129, 133, 140)","background":"rgb(255, 255, 255)","fontSize":14,"large":false,"ratio":3.71},{"role":"text","text":"工作区内修改","color":"rgb(97, 102, 107)","background":"rgb(255, 255, 255)","fontSize":13,"large":fals |
-| L-06 | P1 | 深色主题正文对比度达到 4.5:1 | 通过 | 5138ms |
-| L-07 | P1 | 主题切换即时生效且可回退 | 通过 | 10357ms |
-| L-08 | P1 | 窗口放大到 1600×1000 布局自适应 | 通过 | 2149ms |
-| L-09 | P1 | 窗口缩小到 900×600 关键控件仍可用 | 通过 | 2060ms |
-| L-10 | P2 | 极小窗口 640×480 不破坏布局 | 通过 | 2052ms |
-| L-11 | P2 | 恢复基准尺寸后布局回到原状 | 通过 | 2561ms |
-| L-12 | P2 | 侧边栏收起与展开后几何稳定 | 通过 | 3347ms |
-| L-13 | P2 | 侧边栏收起为图标栏时布局正常 | 通过 | 3280ms |
-| L-14 | P1 | 终端面板打开后输入框仍完整可见 | 通过 | 2ms |
-| L-15 | P2 | 多次开合侧边栏后几何无累积偏移 | 通过 | 8153ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| L-01 | P1 | 基准窗口无横向溢出与意外滚动条 | 通过 | 77ms | [图](evidence/L-01-baseline.png) |
+| L-02 | P1 | 基准布局几何符合设计意图 | 通过 | 5ms | — |
+| L-03 | P1 | 交互元素之间无遮挡重叠 | 通过 | 46ms | [图](evidence/L-03-overlap-check.png) |
+| L-04 | P2 | 文本不被裁切或溢出容器 | 通过 | 1ms | — |
+| L-05 | P1 | 浅色主题正文对比度达到 4.5:1 | 失败 | lowest text contrast in light theme is 3.71:1 ([{"role":"text","text":"工作区","color":"rgb(129, 133, 140)","background":"rgb(255, 255, 255)","fontSize":14,"large":false,"ratio":3.71},{"role":"text","text":"工作区内修改","color":"rgb(97, 102, 107)","background":"rgb(255, 255, 255)","fontSize":13,"large":fals | [1](evidence/L-05-light-theme.png) [2](evidence/L-05-failure.png) |
+| L-06 | P1 | 深色主题正文对比度达到 4.5:1 | 通过 | 5138ms | [图](evidence/L-06-dark-theme.png) |
+| L-07 | P1 | 主题切换即时生效且可回退 | 通过 | 10357ms | — |
+| L-08 | P1 | 窗口放大到 1600×1000 布局自适应 | 通过 | 2149ms | [图](evidence/L-08-window-1600x1000.png) |
+| L-09 | P1 | 窗口缩小到 900×600 关键控件仍可用 | 通过 | 2060ms | [图](evidence/L-09-window-900x600.png) |
+| L-10 | P2 | 极小窗口 640×480 不破坏布局 | 通过 | 2052ms | [图](evidence/L-10-window-640x480.png) |
+| L-11 | P2 | 恢复基准尺寸后布局回到原状 | 通过 | 2561ms | [图](evidence/L-11-window-restored.png) |
+| L-12 | P2 | 侧边栏收起与展开后几何稳定 | 通过 | 3347ms | [1](evidence/L-12-sidebar-collapsed.png) [2](evidence/L-12-sidebar-expanded.png) |
+| L-13 | P2 | 侧边栏收起为图标栏时布局正常 | 通过 | 3280ms | [图](evidence/L-13-sidebar-rail.png) |
+| L-14 | P1 | 终端面板打开后输入框仍完整可见 | 通过 | 2ms | — |
+| L-15 | P2 | 多次开合侧边栏后几何无累积偏移 | 通过 | 8153ms | [图](evidence/L-15-after-sidebar-cycles.png) |
 
 ### F　功能链路（13/13 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| F-01 | P1 | 工作区列表与新建会话入口可用 | 通过 | 30ms |
-| F-02 | P1 | 工作区切换菜单可打开并列出工作区 | 通过 | 2494ms |
-| F-03 | P1 | 搜索会话入口可与输入框交互 | 通过 | 2368ms |
-| F-04 | P1 | 插件市场面板可打开 | 通过 | 2464ms |
-| F-05 | P1 | 设置面板可打开 | 通过 | 2461ms |
-| F-06 | P1 | 视图选项菜单可打开 | 通过 | 2471ms |
-| F-07 | P1 | 模型选择器列出已配置模型 | 通过 | 2380ms |
-| F-08 | P1 | 访问模式菜单可打开并列出模式 | 通过 | 2362ms |
-| F-09 | P2 | 指令入口可打开 | 通过 | 2362ms |
-| F-10 | P2 | 斜杠指令在输入框中给出候选 | 通过 | 2657ms |
-| F-11 | P1 | 右侧边栏与终端面板可开合 | 通过 | 4394ms |
-| F-12 | P1 | 附件入口可用 | 通过 | 2361ms |
-| F-13 | P2 | 连续打开并关闭各入口后应用仍可用 | 通过 | 10774ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| F-01 | P1 | 工作区列表与新建会话入口可用 | 通过 | 30ms | [图](evidence/F-01-sidebar-surface.png) |
+| F-02 | P1 | 工作区切换菜单可打开并列出工作区 | 通过 | 2494ms | [图](evidence/F-02-workspace-selector.png) |
+| F-03 | P1 | 搜索会话入口可与输入框交互 | 通过 | 2368ms | [图](evidence/F-03-search-open.png) |
+| F-04 | P1 | 插件市场面板可打开 | 通过 | 2464ms | [图](evidence/F-04-plugin-market.png) |
+| F-05 | P1 | 设置面板可打开 | 通过 | 2461ms | [图](evidence/F-05-settings.png) |
+| F-06 | P1 | 视图选项菜单可打开 | 通过 | 2471ms | [图](evidence/F-06-view-options.png) |
+| F-07 | P1 | 模型选择器列出已配置模型 | 通过 | 2380ms | [图](evidence/F-07-model-picker.png) |
+| F-08 | P1 | 访问模式菜单可打开并列出模式 | 通过 | 2362ms | [图](evidence/F-08-access-mode.png) |
+| F-09 | P2 | 指令入口可打开 | 通过 | 2362ms | [图](evidence/F-09-commands.png) |
+| F-10 | P2 | 斜杠指令在输入框中给出候选 | 通过 | 2657ms | [图](evidence/F-10-slash-command.png) |
+| F-11 | P1 | 右侧边栏与终端面板可开合 | 通过 | 4394ms | [1](evidence/F-11-terminal-open.png) [2](evidence/F-11-terminal-closed.png) |
+| F-12 | P1 | 附件入口可用 | 通过 | 2361ms | [图](evidence/F-12-attachment-menu.png) |
+| F-13 | P2 | 连续打开并关闭各入口后应用仍可用 | 通过 | 10774ms | [图](evidence/F-13-after-panel-cycles.png) |
 
 ### R　鲁棒性与异常输入（13/14 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| R-01 | P0 | 空输入回车不产生空会话 | 失败 | empty submissions created 1 conversation(s) |
-| R-02 | P1 | 粘贴超长文本不崩溃且可继续操作 | 通过 | 4867ms |
-| R-03 | P1 | 表情、CJK 与控制字符混合输入正确回显 | 通过 | 3180ms |
-| R-04 | P1 | 发送过程中重复回车不产生重复消息 | 通过 | 22872ms |
-| R-05 | P0 | 模型服务不可用时错误可见且界面可继续使用 | 通过 | 24258ms |
-| R-06 | P1 | 模型服务恢复后可以继续发送 | 通过 | 20772ms |
-| R-07 | P1 | 回答生成中关闭窗口后重启无损坏 | 通过 | 19000ms |
-| R-08 | P1 | 连续刷新 5 次无错误且状态保持一致 | 通过 | 25563ms |
-| R-09 | P2 | 快速切换会话 20 次不崩溃 | 通过 | 49793ms |
-| R-10 | P1 | 控件快速连点 20 次不产生异常状态 | 通过 | 9587ms |
-| R-11 | P1 | 空数据目录启动进入可引导状态 | 通过 | 18385ms |
-| R-12 | P1 | 全新 Profile 首次启动的桌面设置向导可跳过 | 通过 | 31269ms |
-| R-13 | P1 | 配置损坏时进入恢复模式而不是空白页 | 通过 | 23093ms |
-| R-14 | P2 | 长时间空转后仍能响应输入 | 通过 | 48117ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| R-01 | P0 | 空输入回车不产生空会话 | 失败 | empty submissions created 1 conversation(s) | [1](evidence/R-01-empty-enter.png) [2](evidence/R-01-failure.png) |
+| R-02 | P1 | 粘贴超长文本不崩溃且可继续操作 | 通过 | 4867ms | [图](evidence/R-02-huge-paste.png) |
+| R-03 | P1 | 表情、CJK 与控制字符混合输入正确回显 | 通过 | 3180ms | [图](evidence/R-03-unicode-input.png) |
+| R-04 | P1 | 发送过程中重复回车不产生重复消息 | 通过 | 22872ms | [图](evidence/R-04-duplicate-guard.png) |
+| R-05 | P0 | 模型服务不可用时错误可见且界面可继续使用 | 通过 | 24258ms | [图](evidence/R-05-provider-offline.png) |
+| R-06 | P1 | 模型服务恢复后可以继续发送 | 通过 | 20772ms | [图](evidence/R-06-provider-recovered.png) |
+| R-07 | P1 | 回答生成中关闭窗口后重启无损坏 | 通过 | 19000ms | [图](evidence/R-07-after-mid-answer-kill.png) |
+| R-08 | P1 | 连续刷新 5 次无错误且状态保持一致 | 通过 | 25563ms | [图](evidence/R-08-after-five-reloads.png) |
+| R-09 | P2 | 快速切换会话 20 次不崩溃 | 通过 | 49793ms | [图](evidence/R-09-after-rapid-switching.png) |
+| R-10 | P1 | 控件快速连点 20 次不产生异常状态 | 通过 | 9587ms | [图](evidence/R-10-after-rapid-control-clicks.png) |
+| R-11 | P1 | 空数据目录启动进入可引导状态 | 通过 | 18385ms | [图](evidence/R-11-empty-home-boot.png) |
+| R-12 | P1 | 全新 Profile 首次启动的桌面设置向导可跳过 | 通过 | 31269ms | [图](evidence/R-12-fresh-profile.png) |
+| R-13 | P1 | 配置损坏时进入恢复模式而不是空白页 | 通过 | 23093ms | [图](evidence/R-13-broken-settings-boot.png) |
+| R-14 | P2 | 长时间空转后仍能响应输入 | 通过 | 48117ms | [图](evidence/R-14-after-idle.png) |
 
 ### P　仓库隐私与脱敏（5/8 通过）
 
-| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |
-| --- | --- | --- | --- | --- |
-| P-01 | P0 | 工作区文件不含个人路径与用户名 | 失败 | personal data in tracked files: [{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":171,"rule":"person-name"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":195,"rule":"person-name"}, |
-| P-02 | P0 | 全部提交历史不含个人路径与用户名 | 失败 | personal data in history: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line": |
-| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 372ms |
-| P-04 | P1 | 不含真实密钥、私有端点或私有项目名 | 失败 | secret-like data found: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":21 |
-| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 797ms |
-| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 254ms |
-| P-07 | P1 | 验收证据本身不泄露个人数据 | 通过 | 4ms |
-| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 43ms |
+| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
+| --- | --- | --- | --- | --- | --- |
+| P-01 | P0 | 工作区文件不含个人路径与用户名 | 失败 | personal data in tracked files: [{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":171,"rule":"person-name"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":195,"rule":"person-name"}, | — |
+| P-02 | P0 | 全部提交历史不含个人路径与用户名 | 失败 | personal data in history: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line": | — |
+| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 372ms | — |
+| P-04 | P1 | 不含真实密钥、私有端点或私有项目名 | 失败 | secret-like data found: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":21 | — |
+| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 797ms | — |
+| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 254ms | — |
+| P-07 | P1 | 验收证据本身不泄露个人数据 | 通过 | 4ms | — |
+| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 43ms | — |
 
 ## 四、界面证据
 
@@ -243,8 +243,20 @@
 
 ### 观察项（未判为失败，但值得关注）
 
-- 重复回车曾出现过一次重复发送：R-04 在 00:23 那轮记录到同一条消息被发送 2 次，11:11 重跑未复现（运行 22.9s、仅 1 条）。属于竞态型现象，建议在发送按钮上加去抖或提交锁后再复测。
+- 重复回车曾出现过一次重复发送：R-04 在 00:23 那轮记录到同一条消息被发送 2 次，11:11 重跑未复现（运行 22.9s、仅 1 条）。属于竞态型现象，建议在发送按钮上加去抖或提交锁后再复测；下图是那次现场，当前 R-04 判定为通过。
+
+![R-04-failure.png](evidence/R-04-failure.png)
+
+*R-04-failure.png*
 - 侧边栏收起后，展开入口是图标栏里的“打开侧边栏”按钮（无文字标签），自动发现性较弱；本轮已按该标签完成收起/展开与多次开合验证（L-12、L-13、L-15 通过）。
+
+![rail-collapsed.png](evidence/rail-collapsed.png)
+
+*rail-collapsed.png*
+
+![rail-hover.png](evidence/rail-hover.png)
+
+*rail-hover.png*
 - 空数据目录或全新 Profile 启动时没有工作区，界面停留在“选择一个工作区开始”，输入框不出现（R-11、R-12 按此预期判定通过）；首次使用者需要先添加工作区才能开始对话。
 
 ## 六、未覆盖与受限项

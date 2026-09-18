@@ -91,10 +91,13 @@ const FINDINGS = [
 
 /** Behaviour that did not fail this round but deserves a follow-up. */
 const OBSERVATIONS = [
-  '重复回车曾出现过一次重复发送：R-04 在 00:23 那轮记录到同一条消息被发送 2 次，'
-    + '11:11 重跑未复现（运行 22.9s、仅 1 条）。属于竞态型现象，建议在发送按钮上加去抖或提交锁后再复测。',
-  '侧边栏收起后，展开入口是图标栏里的“打开侧边栏”按钮（无文字标签），自动发现性较弱；'
+  { text: '重复回车曾出现过一次重复发送：R-04 在 00:23 那轮记录到同一条消息被发送 2 次，'
+    + '11:11 重跑未复现（运行 22.9s、仅 1 条）。属于竞态型现象，建议在发送按钮上加去抖或提交锁后再复测；'
+    + '下图是那次现场，当前 R-04 判定为通过。',
+  shots: ['R-04-failure'] },
+  { text: '侧边栏收起后，展开入口是图标栏里的“打开侧边栏”按钮（无文字标签），自动发现性较弱；'
     + '本轮已按该标签完成收起/展开与多次开合验证（L-12、L-13、L-15 通过）。',
+  shots: ['rail-collapsed', 'rail-hover'] },
   '空数据目录或全新 Profile 启动时没有工作区，界面停留在“选择一个工作区开始”，'
     + '输入框不出现（R-11、R-12 按此预期判定通过）；首次使用者需要先添加工作区才能开始对话。',
 ]
@@ -153,12 +156,19 @@ function statusLabel(status) {
 }
 
 function table(entries) {
-  const lines = ['| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 |', '| --- | --- | --- | --- | --- |']
+  const lines = ['| 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |', '| --- | --- | --- | --- | --- | --- |']
   for (const entry of entries) {
     const detail = entry.status === 'pass'
       ? (entry.detail ?? '')
       : (entry.detail ?? '').replace(/\|/g, '\\|').slice(0, 300)
-    lines.push(`| ${entry.id} | ${entry.priority} | ${entry.title} | ${statusLabel(entry.status)} | ${detail} |`)
+    // Every picture a case took stays reachable from the report, not only the failures.
+    const shots = (entry.evidence ?? [])
+      .filter(item => typeof item === 'string' && item.endsWith('.png'))
+      .map(item => item.replace('qa/evidence/', ''))
+    const links = shots.length === 0
+      ? '—'
+      : shots.map((file, index) => `[${shots.length === 1 ? '图' : index + 1}](evidence/${file})`).join(' ')
+    lines.push(`| ${entry.id} | ${entry.priority} | ${entry.title} | ${statusLabel(entry.status)} | ${detail} | ${links} |`)
   }
   return lines.join('\n')
 }
@@ -293,7 +303,15 @@ function main() {
   if (OBSERVATIONS.length > 0) {
     out.push('### 观察项（未判为失败，但值得关注）')
     out.push('')
-    for (const item of OBSERVATIONS) out.push(`- ${item}`)
+    for (const item of OBSERVATIONS) {
+      const observation = typeof item === 'string' ? { text: item } : item
+      out.push(`- ${observation.text}`)
+      for (const shot of observation.shots ?? []) {
+        if (!available.has(`${shot}.png`)) continue
+        out.push('')
+        out.push(imageBlock(shot, `${shot}.png`))
+      }
+    }
     out.push('')
   }
 
