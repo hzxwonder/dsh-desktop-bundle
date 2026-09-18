@@ -1,13 +1,16 @@
+import { setTimeout as delay } from "node:timers/promises";
 import { createRequire } from "node:module";
 const require = createRequire(
   new URL("../../../runtime/package.json", import.meta.url),
 );
+const { defineTool } = await import(require.resolve("@deepseek-ai/dsh-tools"));
 const { LlmAdapter } = await import(require.resolve("@deepseek-ai/dsh-llm"));
 export const name = "workflow-verification-fixture";
 export const inject = ["llm", "connection", "agents", "directoryPicker", "attachments", "workspaceRegistry", "tools"];
 export function apply(ctx, config) {
   const calls = [];
   const handles = [];
+  ctx.tools.register(defineTool({ name: 'verify_material', description: '核对合成材料', parameters: { topic: { type: 'string', required: true } }, output: { schema: { type: 'object', additionalProperties: false, properties: { text: { type: 'string', required: true } } }, render: (_args, value) => [{ type: 'text', text: value.text }] }, isConcurrencySafe: () => true, execute: async () => ({ text: '材料核对完成：来源、方法和复现条件齐备。' }) }));
   class FixtureAdapter extends LlmAdapter {
     async listModels(provider) {
       return [
@@ -36,6 +39,16 @@ export function apply(ctx, config) {
         effort: options.reasoningEffort,
         tools: options.tools?.map((t) => t.name) ?? [],
       });
+      const last = options.messages.at(-1);
+      if (options.tools?.some(t => t.name === 'verify_material') && !options.messages.some(m => m.content.some(b => b.type === 'tool-result'))) {
+        const id = crypto.randomUUID(), args = JSON.stringify({ topic: '可复现实验' });
+        yield { type: 'block-start', index: 0, blockType: 'tool-call' };
+        yield { type: 'tool-call-delta', index: 0, id, name: 'verify_material', argumentsDelta: args };
+        yield { type: 'block-end', index: 0, block: { type: 'tool-call', id, name: 'verify_material', arguments: args } };
+        yield { type: 'finish', reason: { kind: 'tool-calls' } }; return;
+      }
+      const slow = options.messages.some(m => m.content.some(b => b.type === 'text' && b.text.includes('DELAYED_WORKFLOW_FIXTURE')));
+      await delay(slow ? 2500 : 250, undefined, { signal: options.signal });
       const text =
         "# Workflow verification\n\nSynthetic local execution completed. Evidence: supplied test material.";
       yield { type: "block-start", index: 0, blockType: "text" };

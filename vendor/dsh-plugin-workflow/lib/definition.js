@@ -48,6 +48,17 @@ export const schema = {
           id: { type: "string", pattern: "^[a-zA-Z0-9_-]{1,80}$" },
           name: { type: "string", minLength: 1, maxLength: 160 },
           kind: { enum: kinds },
+          subagents: { type: "array", maxItems: 8, items: {
+            type: "object", additionalProperties: false, required: ["id", "name", "prompt"],
+            properties: {
+              id: { type: "string", pattern: "^[a-zA-Z0-9_-]{1,80}$" },
+              name: { type: "string", minLength: 1, maxLength: 160 },
+              prompt: { type: "string", minLength: 1, maxLength: 100000 },
+              executor: { type: "string", minLength: 1 }, provider: route, model: route, effort: route,
+              tools: { type: "array", items: { type: "string" }, uniqueItems: true },
+              skills: { type: "array", items: { type: "string" }, uniqueItems: true },
+            },
+          } },
           executor: { type: "string", minLength: 1 },
           provider: route,
           model: route,
@@ -171,6 +182,14 @@ export function validateDefinition(def) {
   for (const node of def.nodes) {
     if (graph.hasNode(node.id)) fail("DUPLICATE_NODE", node.id);
     graph.setNode(node.id);
+    if (node.subagents?.length && node.kind !== "agent") fail("TEAM_REQUIRES_AGENT", node.id);
+    if (new Set(node.subagents?.map(m => m.id)).size !== (node.subagents?.length ?? 0)) fail("DUPLICATE_SUBAGENT", node.id);
+    if (!node.name.trim()) fail('NAME_REQUIRED', node.id);
+    for (const member of node.subagents ?? []) {
+      if (!member.name.trim() || !member.prompt.trim()) fail('PROMPT_REQUIRED', `${node.id}.${member.id}`);
+      for (const field of ['provider', 'model', 'effort'])
+        if (member[field]?.mode === 'explicit' && !member[field].id?.trim()) fail('ROUTE_ID_REQUIRED', `${node.id}.${member.id}.${field}`);
+    }
     for (const field of ["provider", "model", "effort"])
       if (node[field]?.mode === "explicit" && !node[field].id)
         fail("ROUTE_ID_REQUIRED", `${node.id}.${field}`);

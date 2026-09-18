@@ -50,6 +50,7 @@ import { Handle, Position, MarkerType } from "@xyflow/react";
 import flowCss from "@xyflow/react/dist/style.css";
 import css from "./style.css";
 import { canConnect, connectReference, pasteNodes, removeGraphItems } from "../lib/graph-edit.js";
+import { RunTimeline } from "./run-timeline.jsx";
 import { StepPrompt } from "./step-prompt.jsx";
 
 export const name = "dsh-plugin-workflow";
@@ -85,6 +86,7 @@ const statuses = {
   needs_attention: "需要处理",
   skipped: "已跳过",
   pending: "待执行",
+  stale: "输出已过期",
 };
 const glyphs = {
   workflow: GitBranch,
@@ -138,6 +140,19 @@ function Field({ label, children }) {
       {React.Children.map(children, child => React.isValidElement(child) && ['input','textarea','select'].includes(child.type) ? React.cloneElement(child, {'aria-label':child.props['aria-label'] ?? label}) : child)}
     </div>
   );
+}
+function TeamEditor({ members, update }) {
+  const patch = (index, changes) => update(members.map((member, i) => i === index ? { ...member, ...changes } : member));
+  return <section className="wf-team-editor" aria-label="并行子代理配置"><h3>并行子代理</h3><p className="wf-muted">先并行执行各成员，再由本步骤汇总结果。每个成员保留独立会话。</p>
+    {members.map((member, index) => <details key={member.id} open><summary>{member.name || `子代理 ${index + 1}`}</summary>
+      <Field label="子代理名称"><input value={member.name} onChange={e => patch(index, { name: e.target.value })} /></Field>
+      <Field label="子代理任务"><textarea value={member.prompt} onChange={e => patch(index, { prompt: e.target.value })} /></Field>
+      <Field label="子代理模型"><input placeholder="留空继承主会话" value={member.model?.mode === 'explicit' ? member.model.id : ''} onChange={e => patch(index, { model: e.target.value ? { mode: 'explicit', id: e.target.value } : { mode: 'inherit' } })} /></Field>
+      <Field label="子代理工具"><input placeholder="工具名称，以逗号分隔" value={(member.tools ?? []).join(', ')} onChange={e => patch(index, { tools: [...new Set(e.target.value.split(',').map(t => t.trim()).filter(Boolean))] })} /></Field>
+      <button type="button" onClick={() => update(members.filter((_, i) => i !== index))}>移除子代理</button>
+    </details>)}
+    <button type="button" disabled={members.length >= 8} onClick={() => update([...members, { id: `member-${crypto.randomUUID().slice(0, 8)}`, name: `子代理 ${members.length + 1}`, prompt: '' }])}><Plus size={14} />添加子代理</button>
+  </section>;
 }
 function JsonField({ label, value, change, rows = 5 }) {
   const [text, setText] = useState(pretty(value ?? {}));
@@ -275,6 +290,7 @@ export function apply(ctx) {
     panelListeners.forEach((f) => f());
   };
   const openEditor = (id, tab = "graph") => {
+    void refresh();
     panel = { id, tab };
     setPanelOpen(true);
     panelListeners.forEach((f) => f());
@@ -1635,6 +1651,7 @@ export function apply(ctx) {
                     <option key={t} value={t} />
                   ))}
                 </datalist>
+                {node.kind === 'agent' && <TeamEditor members={node.subagents ?? []} update={subagents => update({ subagents })} />}
                 <details className="wf-advanced">
                   <summary>高级设置</summary>
                   <Field label="步骤标识"><input value={node.id} readOnly /></Field>
@@ -1866,7 +1883,7 @@ export function apply(ctx) {
                   </div>
                 );
               })()}
-              <pre>{pretty(detail.run.nodes)}</pre>
+              <RunTimeline ctx={ctx} api={api} runId={detail.run.id} openSession={openSession} onChange={refresh} />
               {detail.artifacts.map((a) => (
                 <button
                   key={a.id}
@@ -2556,6 +2573,8 @@ export function apply(ctx) {
     const data = useData();
     const binding = data.bindings.find((item) => item.sessionId === sessionId);
     const creating = (data.authoring ?? []).some((item) => item.sessionId === sessionId);
+    const step = data.stepSessions?.find(item => item.sessionId === sessionId);
+    if (step) return null;
     if (!binding && !creating) return null;
     const workflow = binding
       ? data.workflows.find((w) => w.id === binding.workflowId)
@@ -2568,6 +2587,9 @@ export function apply(ctx) {
           item.status,
         ),
     );
+    const latest = data.runs.find(r => r.sessionId === sessionId);
+    const recipients = (data.stepSessions ?? []).filter(s => s.runId === latest?.id);
+    if (!authoring) return null;
     const name = workflow?.name ?? "新工作流";
     const label = authoring
       ? creating
@@ -2591,6 +2613,8 @@ export function apply(ctx) {
           <strong>{name}</strong>
           {binding && <small>v{binding.revision}</small>}
         </button>
+        {!authoring && recipients.length > 0 && <select aria-label="步骤消息接收者" className="wf-recipient" value={binding?.recipient ?? ''} onChange={async e => { await api({ action: 'setRecipient', sessionId, recipient: e.target.value }); await refresh(); }}><option value="">当前步骤</option>{recipients.map(r => <option key={r.sessionId} value={r.sessionId}>{r.name}</option>)}</select>}
+        {!authoring && binding && !active && <label className="wf-debug-toggle"><input type="checkbox" checked={Boolean(binding.debug)} onChange={async e => { await api({ action: "setDebug", sessionId, debug: e.target.checked }); await refresh(); }} />逐步调试</label>}
         {active && (
           <span className={`wf-status ${active.status}`}>
             {statuses[active.status] ?? active.status}
@@ -2620,6 +2644,27 @@ export function apply(ctx) {
   ctx.slots.inject("main", () =>
     ctx.slots.register({ name: "main", key: "workflow-studio" }, Panel),
   );
+  ctx.slots.inject("conversation.session", () => {
+    const native = ctx.slots.entriesOfSlot("conversation.session")[0];
+    if (!native?.component) return;
+    const Native = native.component;
+    const Wrapped = props => {
+      const data = useData();
+      const run = data.runs.find(r => r.sessionId === props.sessionId);
+      const view = props.useStore(s => s.view);
+      const step = data.stepSessions?.find(s => s.sessionId === props.sessionId);
+      if (step) return <RunTimeline ctx={ctx} api={api} runId={step.runId} focusNodeId={step.nodeId} openSession={openSession} onChange={refresh} embedded><Native {...props} /></RunTimeline>;
+      if (!run) {
+        const binding = data.bindings.find(b => b.sessionId === props.sessionId && b.mode !== 'author');
+        if (binding) return <><div className="wf wf-timeline"><header className="wf-run-header"><strong>{data.workflows.find(w => w.id === binding.workflowId)?.name}</strong><label className="wf-debug-toggle"><input type="checkbox" checked={Boolean(binding.debug)} onChange={async e => { await api({action:'setDebug',sessionId:props.sessionId,debug:e.target.checked}); await refresh(); }} />逐步调试</label></header></div><Native {...props} /></>;
+        return <Native {...props} />;
+      }
+      if (view === 'trajectory') return <Native {...props} />;
+      return <><RunTimeline ctx={ctx} api={api} runId={run.id} openSession={openSession} onChange={refresh} embedded /><details className="wf-root-conversation"><summary>总会话交流</summary><Native {...props} /></details></>;
+    };
+    native.component = Wrapped;
+    return () => { if (native.component === Wrapped) native.component = Native; };
+  });
   ctx.slots.inject("conversation.input.left", () =>
     ctx.slots.register(
       {
@@ -2730,6 +2775,7 @@ export function apply(ctx) {
       if (!document.hidden) await refresh();
       if (!stopped) timer = setTimeout(poll, 2000);
     };
+    void refresh();
     void poll();
     if (window.innerWidth < 700) {
       try { ctx.layout.toggleSidebar(); } catch {}

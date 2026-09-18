@@ -1,9 +1,11 @@
+import { readFile } from "node:fs/promises";
 import { fail } from "./definition.js";
 import { hash, uid } from "./store.js";
 import { renderPrompt } from "./graph-edit.js";
 
 export function harnessAdapter(ctx) {
   return {
+    async file(path, name) { return { type: 'file', attachment: await ctx.attachments.saveFile({ data: await readFile(path), name }) }; },
     rootRoute(parent) {
       const selection = ctx.sessionProjections.stateOf(
         parent.session,
@@ -57,8 +59,35 @@ export function harnessAdapter(ctx) {
       }
       return result;
     },
-    async agent(node, input, route, skills, parent, signal) {
+    async agent(node, input, route, skills, parent, signal, hooks = {}) {
       const { executor, ...agentOptions } = route;
+      const material = typeof input === 'string' ? input : Object.entries(input ?? {}).filter(([key]) => key !== 'attachments').map(([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value, null, 2)}`).join('\n\n');
+      const prompt = [{ type: "text", text: [renderPrompt(node.prompt, input), ...skills.map(s => s.content), material, node.outputSchema ? `Return only a JSON object matching this schema: ${JSON.stringify(node.outputSchema)}` : ''].filter(Boolean).join('\n\n') }, ...(input?.attachments ?? []).filter(a => ['file', 'image'].includes(a.type) && a.attachment?.attachmentId)];
+      if (ctx.subagents.getProvider(executor)?.prepareContinuable) {
+        const started = await ctx.agents.withInitiator(parent, () => ctx.subagents.startContinuable({
+          provider: executor, label: node.name, signal,
+          request: { parent, agentOptions, toolFilter: { allow: node.tools ?? [] }, prompt },
+        }));
+        const child = ctx.agents.get(started.childId);
+        if (!child) fail("STEP_SESSION_UNAVAILABLE");
+        hooks.onSession?.({ sessionId: started.childId, executor, continuable: true });
+        const cancel = () => child.cancel({ kind: "parent" });
+        signal.addEventListener("abort", cancel, { once: true });
+        if (signal.aborted) cancel();
+        try {
+          await child.whenIdle();
+          signal.throwIfAborted();
+          const events = child.session.snapshotEvents();
+          const end = [...events].reverse().find(e => e.type === 'turn/end');
+          if (end?.data.reason?.kind !== 'completed') fail('NODE_EXECUTION_FAILED', end?.data.reason?.kind ?? 'missing-result');
+          const last = [...events].reverse().find(e => e.type === 'assistant/message' && e.data.message.content.length);
+          const text = last?.data.message.content.filter(b => b.type === 'text').map(b => b.text).join('\n') ?? '';
+          if (node.outputSchema) {
+            try { return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch { fail('STRUCTURED_OUTPUT_MISSING'); }
+          }
+          return { text };
+        } finally { signal.removeEventListener('abort', cancel); hooks.onTrace?.(child.session.snapshotEvents()); }
+      }
       const child = await ctx.agents.withInitiator(parent, () =>
         ctx.subagents.start(executor, {
           label: node.name,
@@ -75,6 +104,7 @@ export function harnessAdapter(ctx) {
           ],
         }),
       );
+      hooks.onSession?.({ sessionId: child.localAgent ? child.id : null, executor: route.executor });
       try {
         const result = await child.result;
         if (result.stopReason !== "completed")
@@ -91,6 +121,7 @@ export function harnessAdapter(ctx) {
             .join("\n"),
         };
       } finally {
+        if (child.localAgent) hooks.onTrace?.(child.localAgent.session.snapshotEvents());
         await child.dispose();
       }
     },
@@ -128,7 +159,7 @@ export async function materialInput(ctx, messages, signal) {
         chunks.push(chunk);
       }
       const data = Buffer.concat(chunks);
-      attachments.push({ id: ref.attachmentId, name: ref.name });
+      attachments.push({ type: "file", attachment: ref, id: ref.attachmentId, name: ref.name });
       if (data.subarray(0, 5).toString() === "%PDF-") {
         const { getDocument } = await import("pdfjs-dist/legacy/build/pdf.mjs");
         const task = getDocument({

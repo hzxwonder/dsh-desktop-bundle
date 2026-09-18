@@ -117,3 +117,12 @@ node scripts/vendor.mjs --check                   # 只报告偏差
 逐个见各自 `LICENSE`）；本仓库的脚本与文档同插件族一致，采用 LGPL-3.0-only。
 桌面壳来自 [anywhere-labs/dsh-desktop](https://github.com/anywhere-labs/dsh-desktop) 的 fork，
 按上游 MIT 许可使用。
+
+
+## Workflow Notebook
+
+工作流 0.3.0 提供居中的步骤对话、淡色分步背景、顶部调试控制和图标工具栏。总会话及独立步骤页均可编辑本次运行的 prompt、添加附件并单步重跑；步骤保留结论、文件、模型与本地快照。
+
+![Workflow Notebook](vendor/dsh-plugin-workflow/assets/workflow-conversation.gif)
+
+本版本的插件单元测试与 Web 行为测试通过。Desktop 兼容模式的内容区恢复仍有待修复问题，完整产品验收尚未通过。详见[验收报告与截图](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md)。

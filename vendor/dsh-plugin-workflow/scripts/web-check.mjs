@@ -15,6 +15,8 @@ import { chromium } from "../../dsh-plugin-browser/node_modules/playwright/index
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const plugin = fileURLToPath(new URL("../", import.meta.url));
 const temporary = await mkdtemp("/private/tmp/dsh-workflow-check-");
+const workspace = join(temporary, "workspace");
+await mkdir(workspace);
 const profile = join(temporary, "profiles", "workflow-check");
 await mkdir(join(profile, "node_modules"), { recursive: true });
 await writeFile(
@@ -43,7 +45,7 @@ await symlink(
 await symlink(plugin, join(profile, "node_modules/dsh-plugin-workflow"));
 await writeFile(
   join(profile, "cordis.patch.yml"),
-  `- insert:\n    - id: workflow-verification-fixture\n      name: ${JSON.stringify(join(plugin, "scripts/fixture.js"))}\n      config:\n        cwd: ${JSON.stringify(temporary)}\n`,
+  `- insert:\n    - id: workflow-verification-fixture\n      name: ${JSON.stringify(join(plugin, "scripts/fixture.js"))}\n      config:\n        cwd: ${JSON.stringify(workspace)}\n`,
 );
 const port = Number(process.env.WORKFLOW_TEST_PORT ?? 3398);
 const child = spawn(
@@ -97,6 +99,8 @@ try {
   browser = await chromium.connect(browserServer.wsEndpoint());
   page = await browser.newPage({ viewport: { width: 1500, height: 980 } });
   const errors = [];
+  const networkOrigins = new Set();
+  page.on("request", request => { try { networkOrigins.add(new URL(request.url()).origin); } catch {} });
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(url);
   await page.evaluate(() => localStorage.removeItem("workflow-studio:expanded"));
@@ -126,7 +130,11 @@ try {
     assert(r.ok, JSON.stringify(r));
     return r.value;
   };
-  if (process.argv.includes("--interactive")) {
+  if (process.argv.includes("--acceptance")) {
+    const { acceptance } = await import("./acceptance-scenarios.mjs");
+    await acceptance({ page, call, api, plugin, errors });
+    await writeFile(join(plugin, 'docs/acceptance/web/network.json'), JSON.stringify({ origins: [...networkOrigins] }, null, 2));
+  } else if (process.argv.includes("--interactive")) {
     console.log("READY", scrub(url));
     console.log("STATE", await page.locator("body").ariaSnapshot());
     for await (const line of createInterface({ input: process.stdin })) {
@@ -362,8 +370,8 @@ try {
     console.error((await page.locator("body").ariaSnapshot()).slice(0, 10000));
   process.exitCode = 1;
 } finally {
-  await browser?.close();
-  await browserServer?.close();
+  await Promise.race([browser?.close(), new Promise(r => setTimeout(r, 2000))]);
+  await browserServer?.kill();
   child.kill("SIGTERM");
   await Promise.race([exited, new Promise((r) => setTimeout(r, 4000))]);
   if (child.exitCode === null) child.kill("SIGKILL");

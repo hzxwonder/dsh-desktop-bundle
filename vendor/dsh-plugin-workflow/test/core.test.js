@@ -277,7 +277,7 @@ test("parallel approval preserves completed sibling without repeating its effect
 test("restart marks interrupted runs for inspection", async (t) => {
   const { store, engine } = await fixture(t);
   store.put("run", "interrupted", { id: "interrupted", status: "running" });
-  engine.recover();
+  await engine.recover();
   assert.equal(store.get("run", "interrupted").status, "needs_attention");
 });
 const interactionDefinition = (node, edges) => ({

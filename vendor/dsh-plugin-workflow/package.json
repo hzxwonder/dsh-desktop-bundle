@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-workflow",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Versioned visual workflows with user interactions and durable schedules for DeepSeek Harness",
   "type": "module",
   "main": "index.js",
@@ -16,13 +16,17 @@
     "skills",
     "cordis.patch.yml",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "assets"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test test/*.test.js",
     "check:host": "node scripts/host-check.mjs",
-    "check:web": "node scripts/web-check.mjs"
+    "check:web": "node scripts/web-check.mjs",
+    "check:acceptance": "node scripts/web-check.mjs --acceptance",
+    "check:privacy": "node scripts/privacy-check.mjs",
+    "check:desktop": "node scripts/desktop-check.mjs"
   },
   "engines": {
     "node": ">=24.0.0"

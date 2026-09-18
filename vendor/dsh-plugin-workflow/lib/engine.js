@@ -9,6 +9,7 @@ import {
   validateDefinition,
 } from "./definition.js";
 import { uid, hash } from "./store.js";
+import { Checkpoints } from "./checkpoints.js";
 import { renderMaterial } from "./graph-edit.js";
 
 const done = new Set(["completed", "skipped"]);
@@ -88,6 +89,8 @@ export class Engine {
     this.adapter = adapter;
     this.directory = directory;
     this.active = new Map();
+    this.starting = new Set();
+    this.checkpoints = new Checkpoints(join(directory, "checkpoints"));
   }
   async prepare(snapshot, parent, rootRoute, signal, chain = []) {
     const def = snapshot.definition;
@@ -118,6 +121,13 @@ export class Engine {
           signal,
         );
       }
+      if (node.subagents?.length) {
+        prepared.teams ??= {};
+        prepared.teams[node.id] = await Promise.all(node.subagents.map(async member => ({
+          node: member, route: await this.adapter.route(member, rootRoute, signal),
+          skills: await this.adapter.skills(member.skills ?? [], parent, signal),
+        })));
+      }
       if (node.workflow) {
         const child = this.store.get(
           "revision",
@@ -144,7 +154,11 @@ export class Engine {
     rootRoute,
     unattended,
     runId,
+    debug = false,
   }) {
+    if (this.starting.has(parent.session.id) || this.store.list("run").some(r => r.sessionId === parent.session.id && ["queued", "running", "paused", "waiting_input", "waiting_approval"].includes(r.status))) fail("SESSION_RUN_ACTIVE");
+    this.starting.add(parent.session.id);
+    try {
     const snapshot = this.store.get("revision", `${workflowId}:${revision}`);
     if (!snapshot) fail("REVISION_NOT_FOUND");
     const options = rootRoute ?? this.adapter.rootRoute(parent);
@@ -161,6 +175,8 @@ export class Engine {
       inputHash: hash(input),
       unattended: unattended ?? null,
       status: "queued",
+      debug,
+      checkpointRevision: 0,
       outputs: {},
       nodes: {},
       createdAt: Date.now(),
@@ -168,9 +184,10 @@ export class Engine {
     };
     if (this.store.get("run", run.id)) fail("RUN_EXISTS");
     this.store.updateRun(run, "run.queued");
-    return this.drive(run, parent, signal);
+    return await this.drive(run, parent, signal);
+    } finally { this.starting.delete(parent.session.id); }
   }
-  async resume(id, parent, signal, response) {
+  async resume(id, parent, signal, response, options = {}) {
     const run = this.store.get("run", id);
     if (!run || this.active.has(id)) fail("RUN_NOT_RESUMABLE");
     if (
@@ -184,6 +201,10 @@ export class Engine {
       ].includes(run.status)
     )
       fail("RUN_NOT_RESUMABLE");
+    if (options.expectedRevision !== undefined && options.expectedRevision !== run.checkpointRevision) fail("RUN_CONFLICT");
+    if (options.debug !== undefined) run.debug = options.debug;
+    if (options.nodeId) run.nextNode = options.nodeId;
+    run.debugBoundary = false;
     for (const [key, state] of Object.entries(run.nodes)) {
       if (state.status === "waiting_approval") {
         if (response === undefined) fail("APPROVAL_RESPONSE_REQUIRED", key);
@@ -213,12 +234,13 @@ export class Engine {
       } else if (!done.has(state.status)) {
         if (state.effects === "write" && response !== true)
           fail("EFFECT_RECONCILIATION_REQUIRED", key);
-        state.status = "pending";
+        if (state.status !== "stale") state.status = "pending";
       }
     }
     return this.drive(run, parent, signal);
   }
   async drive(run, parent, signal) {
+    if (this.active.has(run.id)) fail("RUN_ACTIVE");
     const controller = new AbortController();
     const timeout = AbortSignal.timeout(
       (run.prepared.definition.limits?.timeoutSeconds ?? 3600) * 1000,
@@ -229,11 +251,14 @@ export class Engine {
       ...(signal ? [signal] : []),
     ]);
     this.active.set(run.id, controller);
+    let unlock;
+    run.stepBudget = run.debug ? 1 : null;
     run.status = "running";
     run.startedAt ??= Date.now();
     run.error = null;
     this.store.updateRun(run, "run.started");
     try {
+      if (parent.session.header?.cwd) unlock = await this.checkpoints.lock(parent.session.header.cwd, run.id);
       await this.executeGraph(
         run.prepared,
         run.input,
@@ -246,6 +271,7 @@ export class Engine {
         run.status = "waiting_approval";
       else if (Object.values(run.nodes).some((n) => n.status === "waiting_input"))
         run.status = "waiting_input";
+      else if (run.debugBoundary) run.status = "paused";
       else if (controller.signal.reason?.code === "PAUSED")
         run.status = "paused";
       else {
@@ -269,6 +295,7 @@ export class Engine {
       run.endedAt = Date.now();
       this.store.updateRun(run, `run.${run.status}`);
       this.active.delete(run.id);
+      unlock?.();
     }
     return run;
   }
@@ -297,10 +324,14 @@ export class Engine {
         if (Object.values(run.nodes).some(paused)) return local;
         fail("GRAPH_BLOCKED");
       }
-      const batch = ready.slice(0, def.limits?.concurrency ?? 2);
+      if (run.debug && run.stepBudget === 0) { run.debugBoundary = true; return local; }
+      // Shared-directory checkpoints serialize graph steps; each step may run a parallel team.
+      if (run.nextNode && !prefix) ready.sort((a, b) => (b.id === run.nextNode) - (a.id === run.nextNode));
+      const batch = ready.slice(0, parent.session.header?.cwd || run.debug ? 1 : (def.limits?.concurrency ?? 2));
       const results = await Promise.allSettled(
         batch.map(async (node) => {
           const key = prefix + node.id;
+          if (run.nextNode === key) delete run.nextNode;
           const incoming = def.edges.filter((e) => e.to === node.id);
           const activeEdges = incoming.filter(
             (e) =>
@@ -315,6 +346,7 @@ export class Engine {
             return;
           }
           if (paused(run.nodes[key])) return;
+          if (run.debug && !["subworkflow", "loop"].includes(node.kind)) run.stepBudget--;
           const mapped = mapInputs(node.input, input, local);
           const output = await this.executeNode(
             node,
@@ -335,25 +367,50 @@ export class Engine {
       batch.forEach((n) => pending.delete(n.id));
       const rejected = results.find((r) => r.status === "rejected");
       if (rejected) throw rejected.reason;
-      if (Object.values(run.nodes).some(paused)) return local;
+      if (Object.values(run.nodes).some(paused) || run.debugBoundary) return local;
     }
     return def.outputs ? mapInputs(def.outputs, input, local) : local;
   }
   async executeNode(node, input, prepared, run, parent, signal, key, scope = {}) {
+    const override = run.stepOverrides?.[key];
+    if (override) node = { ...node, prompt: override.prompt };
+    const inherited = [];
+    const collect = value => {
+      if (!value || typeof value !== 'object') return;
+      if (value.type && ['file', 'image'].includes(value.type) && value.attachment?.attachmentId) inherited.push(value);
+      else if (value.artifact) {
+        const artifact = this.store.get('artifact', value.artifact);
+        if (artifact?.attachment) inherited.push(artifact.attachment);
+      }
+      for (const [name, child] of Object.entries(value)) if (name !== 'attachment') {
+        if (Array.isArray(child)) child.forEach(collect); else if (child && typeof child === 'object') collect(child);
+      }
+    };
+    collect(input);
+    // Files produced by an incoming step remain material even when its text is mapped separately.
+    for (const edge of prepared.definition.edges.filter(e => e.to === node.id)) collect(run.outputs[key.slice(0, -node.id.length) + edge.from]);
+    const attachments = [...new Map([...inherited, ...(override?.attachments ?? [])].map(a => [a.attachment.attachmentId, a])).values()];
+    if (attachments.length) input = { ...input, attachments };
     const old = run.nodes[key];
     const attempts = old?.attempts ?? [];
     const state = (run.nodes[key] = {
       status: "running",
       input,
+      prompt: node.prompt ?? "",
       effects:
         node.kind === "tool" || node.tools?.length
           ? "write"
           : (node.effects ?? "read-only"),
       attempts,
       ...(old?.interaction ? { interaction: old.interaction } : {}),
+      name: node.name, kind: node.kind, route: prepared.routes[node.id] ?? null,
     });
     if (node.kind === "approval") {
       state.status = "waiting_approval";
+      const record = { index: attempts.length + 1, startedAt: Date.now(), status: 'waiting_approval' };
+      record.folder = this.checkpoints.folder(run.id, key, record.index); attempts.push(record);
+      await this.checkpoints.begin(null, record.folder, { prompt: node.prompt ?? "", material: input });
+      record.checkpoint = await this.checkpoints.finish(null, record.folder, { awaitingApproval: true });
       this.store.updateRun(run, "node.waiting_approval", { nodeId: key });
       return;
     }
@@ -367,17 +424,20 @@ export class Engine {
         });
         fail("INTERACTION_UNATTENDED", key);
       }
-      return this.executeInteraction(
-        node,
-        state,
-        input,
-        scope,
-        prepared,
-        run,
-        parent,
-        signal,
-        key,
-      );
+      const record = { index: attempts.length + 1, startedAt: Date.now() };
+      record.folder = this.checkpoints.folder(run.id, key, record.index); attempts.push(record);
+      const before = await this.checkpoints.begin(parent.session.header?.cwd, record.folder, { prompt: node.prompt ?? "", material: input });
+      try {
+        const output = await this.executeInteraction(node, state, input, scope, prepared, run, parent, signal, key);
+        record.checkpoint = await this.checkpoints.finish(before, record.folder, output ?? state.interaction);
+        record.status = state.status; record.endedAt = Date.now(); run.checkpointRevision++;
+        this.store.updateRun(run, 'node.interaction_checkpoint', { nodeId: key });
+        return output;
+      } catch (error) {
+        record.status = 'failed'; record.error = String(error.message);
+        record.checkpoint = await this.checkpoints.finish(before, record.folder, null).catch(e => ({ folder: record.folder, error: e.code ?? e.message }));
+        this.store.updateRun(run, 'node.failed', { nodeId: key }); throw error;
+      }
     }
     const allowed = run.unattended?.tools ?? [];
     if (
@@ -401,6 +461,7 @@ export class Engine {
         startedAt: Date.now(),
         route: prepared.routes[node.id] ?? null,
       };
+      record.folder = this.checkpoints.folder(run.id, key, record.index);
       attempts.push(record);
       this.store.updateRun(run, "node.started", {
         nodeId: key,
@@ -410,9 +471,31 @@ export class Engine {
         signal,
         AbortSignal.timeout((node.timeoutSeconds ?? 600) * 1000),
       ]);
+      let before;
       try {
+        // Container steps delegate checkpoints to their leaf steps to avoid overlapping patches.
+        before = await this.checkpoints.begin(['subworkflow', 'loop'].includes(node.kind) ? null : parent.session.header?.cwd, record.folder, { prompt: node.prompt ?? "", material: input });
         let output;
-        if (node.kind === "agent")
+        if (node.kind === "agent") {
+          if (prepared.teams?.[node.id]?.length) {
+            state.subagents = {};
+            const team = await Promise.allSettled(prepared.teams[node.id].map(async member => {
+              if (++run.calls > (run.prepared.definition.limits?.maxNodeCalls ?? 100)) fail('CALL_BUDGET');
+              const memberState = state.subagents[member.node.id] = { name: member.node.name, status: "running", route: member.route };
+              try {
+                memberState.output = await this.adapter.agent(member.node, input, member.route, member.skills, parent, deadline, {
+                  onTrace: events => { memberState.trace = events; },
+                  onSession: info => { Object.assign(memberState, info); this.store.updateRun(run, "subagent.started", { nodeId: key, memberId: member.node.id }); },
+                });
+                memberState.status = "completed";
+                return [member.node.id, memberState.output];
+              } catch (error) { memberState.status = "failed"; memberState.error = String(error.message); throw error; }
+              finally { this.store.updateRun(run, "subagent.settled", { nodeId: key, memberId: member.node.id }); }
+            }));
+            const failure = team.find(r => r.status === "rejected");
+            if (failure) throw failure.reason;
+            input = { ...input, subagents: Object.fromEntries(team.map(r => r.value)) };
+          }
           output = await this.adapter.agent(
             node,
             input,
@@ -420,13 +503,14 @@ export class Engine {
             prepared.skills[node.id],
             parent,
             deadline,
+            { onTrace: events => { state.trace = events; }, onSession: info => { Object.assign(state, info); record.sessionId = info.sessionId; this.store.updateRun(run, "node.session", { nodeId: key }); } },
           );
-        else if (node.kind === "tool")
+        } else if (node.kind === "tool")
           output = await this.adapter.tool(node.tool, input, parent, deadline);
         else if (node.kind === "condition")
           output = { condition: evaluateCondition(node.condition, input) };
         else if (node.kind === "artifact") {
-          const folder = join(this.directory, run.id);
+          const folder = record.folder;
           await mkdir(folder, { recursive: true, mode: 0o700 });
           const extension =
             node.format === "application/json"
@@ -452,8 +536,9 @@ export class Engine {
             mediaType: node.format ?? "text/markdown",
             bytes: Buffer.byteLength(content),
           };
+          if (this.adapter.file) artifact.attachment = await this.adapter.file(path, artifact.name);
           this.store.put("artifact", artifact.id, artifact);
-          output = { artifact: artifact.id, text: content };
+          output = { artifact: artifact.id, text: content, ...(artifact.attachment ? { attachments: [artifact.attachment] } : {}) };
         } else if (node.kind === "subworkflow")
           output = await this.executeGraph(
             prepared.children[node.id],
@@ -481,10 +566,10 @@ export class Engine {
           output = { items: values };
         } else output = input;
         deadline.throwIfAborted();
-        if (
+        if (run.debugBoundary ||
           Object.entries(run.nodes).some(
             ([id, s]) =>
-              id.startsWith(`${key}/`) && s.status === "waiting_approval",
+              id.startsWith(`${key}/`) && paused(s),
           )
         ) {
           state.status = "pending";
@@ -492,13 +577,27 @@ export class Engine {
         }
         if (node.outputSchema)
           checkData(node.outputSchema, output, "OUTPUT_SCHEMA");
+        record.checkpoint = await this.checkpoints.finish(before, record.folder, output);
+        if (this.adapter.file && output && typeof output === 'object' && record.checkpoint.root) {
+          const files = [];
+          for (const change of record.checkpoint.changes.filter(c => c.afterHash && !/(^|\/)(\.env(?:\.|$)|\.ssh|credentials|secrets)(\/|\.|$)|\.(pem|key|p12|pfx)$/i.test(c.path)).slice(0, 12)) {
+            const path = join(record.checkpoint.root, change.path);
+            if ((await stat(path)).size <= 8 * 1024 * 1024) files.push(await this.adapter.file(path, change.path.split('/').at(-1)));
+          }
+          if (files.length) {
+            output = { ...output, attachments: [...new Map([...(output.attachments ?? []), ...files].map(b => [b.attachment.attachmentId, b])).values()] };
+            await this.checkpoints.save(record.folder, 'output.json', output);
+          }
+        }
         record.endedAt = Date.now();
         record.status = "completed";
+        run.checkpointRevision = (run.checkpointRevision ?? 0) + 1;
         state.output = output;
         state.status = "completed";
         this.store.updateRun(run, "node.completed", { nodeId: key });
         return output;
       } catch (error) {
+        if (before) record.checkpoint = await this.checkpoints.finish(before, record.folder, null).catch(e => ({ folder: record.folder, error: e.code ?? e.message }));
         record.status = "failed";
         record.endedAt = Date.now();
         record.error = String(error.message).slice(0, 2000);
@@ -691,6 +790,60 @@ export class Engine {
       fail("STRUCTURED_OUTPUT_MISSING");
     return decision;
   }
+  descendants(run, nodeId, include = true) {
+    const ids = new Set(include ? [nodeId] : []), queue = [nodeId];
+    while (queue.length) {
+      const id = queue.shift();
+      for (const edge of run.prepared.definition.edges.filter(e => e.from === id))
+        if (!ids.has(edge.to)) { ids.add(edge.to); queue.push(edge.to); }
+    }
+    return ids;
+  }
+  async rewind(id, nodeId, options = {}) {
+    const run = this.store.get('run', id);
+    if (!run || this.active.has(id)) fail('RUN_NOT_RESUMABLE');
+    if (options.expectedRevision !== undefined && options.expectedRevision !== run.checkpointRevision) fail('RUN_CONFLICT');
+    if (!run.prepared.definition.nodes.some(n => n.id === nodeId)) fail('NODE_NOT_FOUND');
+    const ids = this.descendants(run, nodeId, options.include !== false);
+    const entries = Object.entries(run.nodes).filter(([key]) => ids.has(key.split('/')[0]));
+    if (entries.some(([, n]) => (n.attempts ?? []).some(a => !a.reverted && a.checkpoint?.error))) fail('CHECKPOINT_INCOMPLETE');
+    const checkpoints = entries.flatMap(([, n]) => (n.attempts ?? []).filter(a => !a.reverted && a.checkpoint).map(a => ({ a, ...a.checkpoint })))
+      .sort((a, b) => b.a.startedAt - a.a.startedAt);
+    this.active.set(id, new AbortController());
+    let unlock;
+    try {
+      if (checkpoints[0]?.root) unlock = await this.checkpoints.lock(checkpoints[0].root, id);
+      await this.checkpoints.rollback(checkpoints);
+      for (const { a } of checkpoints) a.reverted = true;
+      for (const [key, state] of entries) {
+        state.previousOutput = state.output;
+        state.status = 'stale';
+        delete state.output;
+        delete state.interaction;
+        delete run.outputs[key];
+      }
+      run.status = 'paused';
+      run.debugBoundary = false;
+      run.result = null;
+      run.checkpointRevision = (run.checkpointRevision ?? 0) + 1;
+      options.commit?.(run);
+      return this.store.updateRun(run, options.commit ? 'node.output_adopted' : 'run.rewound', { nodeId, include: options.include !== false });
+    } finally { unlock?.(); this.active.delete(id); }
+  }
+  async adopt(id, nodeId, output, options = {}) {
+    const initial = this.store.get('run', id);
+    if (!initial || this.active.has(id)) fail('RUN_NOT_RESUMABLE');
+    const node = initial.prepared.definition.nodes.find(n => n.id === nodeId);
+    if (!node || !initial.nodes[nodeId] || initial.nodes[nodeId].status !== 'completed') fail('NODE_NOT_COMPLETED');
+    if (node.outputSchema) checkData(node.outputSchema, output, 'OUTPUT_SCHEMA');
+    return this.rewind(id, nodeId, { ...options, include: false, commit: run => {
+      run.nodes[nodeId].outputHistory ??= [];
+      run.nodes[nodeId].outputHistory.push({ output: run.nodes[nodeId].output, at: Date.now() });
+      run.nodes[nodeId].output = output;
+      run.outputs[nodeId] = output;
+    } });
+  }
+
   cancel(id, pause = false) {
     const c = this.active.get(id);
     if (!c) fail("RUN_NOT_ACTIVE");
@@ -700,11 +853,12 @@ export class Engine {
       }),
     );
   }
-  recover() {
+  async recover() {
+    const recoveryError = await this.checkpoints.recover();
     for (const run of this.store.list("run"))
-      if (["queued", "running"].includes(run.status)) {
+      if (recoveryError || ["queued", "running"].includes(run.status)) {
         run.status = "needs_attention";
-        run.error = "Host restarted; review interrupted nodes before resuming.";
+        run.error = recoveryError ? 'CHECKPOINT_RECOVERY_REQUIRED: inspect the rollback journal and workspace before continuing.' : "Host restarted; review interrupted nodes before resuming.";
         this.store.updateRun(run, "run.interrupted");
       }
   }
