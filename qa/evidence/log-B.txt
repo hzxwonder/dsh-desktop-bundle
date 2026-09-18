@@ -1,0 +1,26 @@
+sanitized 1 evidence file(s)
+
+== B: 关闭、后台化、重开与进程行为 ==
+fixture home reset to the golden state
+     · frame before close: {"x":4081,"y":121,"width":1280,"height":840,"innerWidth":1280,"innerHeight":840}; processes 6 -> 5
+ok   B-01 关闭窗口后应用按设计驻留后台 — 26958ms
+     · second launch exit code 0; processes 5 -> 5
+     · app error log: TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio
+FAIL B-02 再次启动应用后窗口与会话列表恢复 — no renderer target on port 9470 to attach to
+FAIL B-03 重开后窗口几何保持 — Runtime.evaluate timed out
+     · app error log: TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio
+     · processes after activation: 4
+FAIL B-04 点击 Dock 图标后窗口能够回来 — the Dock icon did not bring the window back (TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio)
+ok   B-05 收到退出请求后进程干净退出 — 8092ms
+     · rows 1 -> 1, frame {"x":4081,"y":121,"width":1280,"height":840,"innerWidth":1280,"innerHeight":840}
+ok   B-06 重启后会话记录与几何恢复 — 12643ms
+     · frame after restart: {"x":4081,"y":121,"width":1024,"height":700,"innerWidth":1024,"innerHeight":700}
+ok   B-07 窗口尺寸变更后重启仍保持 — 14554ms
+ok   B-08 后台冻结后恢复内容与输入都正常 — 7096ms
+     · second launch exit code 0; processes 6 -> 6
+ok   B-09 应用已运行时再次启动不产生第二实例 — 4556ms
+ok   B-10 强制结束后重启数据仍可读 — 15923ms
+sanitized 0 evidence file(s)
+
+summary 7/10 passed in 330s
+app processes still running: 0

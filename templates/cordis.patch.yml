@@ -15,9 +15,9 @@
     headless: true
     #if-chrome
     executablePath: {{CHROME_EXECUTABLE}}
-    #else
-    # No Chrome was found when this profile was composed. Install Google Chrome
-    # or Chromium, or point DSH_CHROME_EXECUTABLE at a browser binary, then
-    # re-run ./setup.sh. Until then the browser plugin reports
-    # BROWSER_RUNTIME_MISSING on first use.
-    #endif
+#else
+# No Chrome was found when this profile was composed. Install Google Chrome
+# or Chromium, or point DSH_CHROME_EXECUTABLE at a browser binary, then
+# re-run ./setup.sh. Until then the browser plugin reports
+# BROWSER_RUNTIME_MISSING on first use.
+#endif

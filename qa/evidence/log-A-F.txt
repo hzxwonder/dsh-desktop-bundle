@@ -1,0 +1,43 @@
+sanitized 0 evidence file(s)
+
+== A: 启动与会话生命周期 ==
+fixture home reset to the golden state
+     · viewport 1024x700, theme light
+ok   A-01 冷启动进入主界面且输入框可用 — 31ms
+     · welcome overlay already dismissed in this home
+ok   A-02 首次运行的欢迎浮层可关闭且不阻塞输入 — 2ms
+ok   A-03 新建会话进入可输入状态 — 2757ms
+     · sidebar rows: 1
+ok   A-04 发出消息后收到回复且会话被记录 — 21157ms
+     · sidebar rows after three conversations: 4
+ok   A-05 连续创建 3 个会话各自独立 — 61788ms
+     · rows before=4 after=5
+ok   A-06 快速连点新建会话不产生重复会话 — 5852ms
+ok   A-07 会话之间切换内容不串 — 5172ms
+ok   A-08 刷新渲染进程后会话记录保持 — 13048ms
+ok   A-09 工作区菜单可打开并给出工作区入口 — 1693ms
+ok   A-10 输入超长草稿不卡死 — 8364ms
+
+== F: 功能链路 ==
+fixture home reset to the golden state
+     · workspaces=1 conversations=1
+ok   F-01 工作区列表与新建会话入口可用 — 30ms
+ok   F-02 工作区切换菜单可打开并列出工作区 — 2494ms
+ok   F-03 搜索会话入口可与输入框交互 — 2368ms
+ok   F-04 插件市场面板可打开 — 2464ms
+ok   F-05 设置面板可打开 — 2461ms
+ok   F-06 视图选项菜单可打开 — 2471ms
+ok   F-07 模型选择器列出已配置模型 — 2380ms
+ok   F-08 访问模式菜单可打开并列出模式 — 2362ms
+     · command surface text: 新会话 工作流 1 工作区 对话 新会话 插件市场 设置 探索未至之境 预览版 对话 标准模式 描述你想要构建的内容, / 调用指令, @ 文件或对话 工作区内修改 QA Mock Model 对话 添加工作区…
+ok   F-09 指令入口可打开 — 2362ms
+ok   F-10 斜杠指令在输入框中给出候选 — 2657ms
+     · elements 409 -> 409 (terminal false) -> 409 (closed false)
+ok   F-11 右侧边栏与终端面板可开合 — 4394ms
+     · attachment surface text: 新会话 工作流 1 工作区 对话 新会话 插件市场 设置 探索未至之境 预览版 对话 标准模式 描述你想要构建的内容, / 调用指令, @ 文件或对话 工作区内修改 QA Mock Model 标准模式 功能完整的编码 Agent，支持文件
+ok   F-12 附件入口可用 — 2361ms
+FAIL F-13 连续打开并关闭各面板后应用仍可用 — composer gone after cycling through panels
+sanitized 0 evidence file(s)
+
+summary 22/23 passed in 184s
+app processes still running: 0

@@ -123,13 +123,16 @@ function main() {
   // apply, which keeps the written YAML valid without a runtime template engine.
   const chrome = chromeExecutable()
   const patchTemplate = readFileSync(join(templates, 'cordis.patch.yml'), 'utf8')
+  // Drop the whole marker line, newline included: replacing it with its own
+  // indentation would leave that indent in front of the next line and quietly
+  // write a patch layer whose YAML nests the entry one level too deep.
   const patchLayer = (chrome === undefined
     ? patchTemplate
-      .replace(/^(\s*)#if-chrome\n/gm, '$1# [no Chrome found] ')
-      .replace(/^\s*#else\n[\s\S]*?^\s*#endif\n/gm, '')
+      .replace(/^[^\S\n]*#if-chrome\n/gm, '')
+      .replace(/^[^\S\n]*#else\n[\s\S]*?^[^\S\n]*#endif\n/gm, '')
     : patchTemplate
-      .replace(/^(\s*)#if-chrome\n/gm, '$1')
-      .replace(/^\s*#else\n[\s\S]*?^\s*#endif\n/gm, ''))
+      .replace(/^[^\S\n]*#if-chrome\n/gm, '')
+      .replace(/^[^\S\n]*#else\n[\s\S]*?^[^\S\n]*#endif\n/gm, ''))
     .replace('{{CHROME_EXECUTABLE}}', chrome ?? '')
   if (chrome !== undefined) console.log(`chrome         ${chrome}`)
   else console.log('chrome         not found; browser plugin needs Chromium or DSH_CHROME_EXECUTABLE')

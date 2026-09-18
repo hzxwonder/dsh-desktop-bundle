@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-09-17T15:57:23.914Z",
+  "summary": [
+    {
+      "repository": "dsh-plugins/distribution/dsh-desktop-bundle",
+      "commits": 3,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-desktop-suite",
+      "commits": 3,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-desktop-workbench",
+      "commits": 3,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-browser",
+      "commits": 10,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-project-memory",
+      "commits": 11,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-sessions",
+      "commits": 3,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-sidebar",
+      "commits": 4,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-ssh",
+      "commits": 5,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-suite",
+      "commits": 1,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-terminal",
+      "commits": 9,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-workbench",
+      "commits": 4,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-workflow",
+      "commits": 4,
+      "findings": 0
+    }
+  ],
+  "findings": []
+}

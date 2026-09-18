@@ -43,7 +43,7 @@ function check(condition, message) {
   return condition
 }
 
-function main() {
+async function main() {
   const options = parseArgs(process.argv.slice(2))
   const manifest = JSON.parse(readFileSync(join(options.bundle, 'manifest.json'), 'utf8'))
   const vendor = join(options.bundle, 'vendor')
@@ -140,6 +140,18 @@ function main() {
   check(/- id: client-hmr\n  disabled: true/.test(patch), 'patch layer disables the client HMR watcher')
   if (patch.includes('{{')) fail('patch layer still contains an unrendered placeholder')
   else pass('patch layer has no unrendered placeholder')
+  // A mis-indented entry is still valid-looking text but invalid YAML, and the
+  // Desktop shell answers it with the recovery window instead of a session. The
+  // runtime that ships with the app carries the parser the shell itself uses.
+  try {
+    const yaml = await import(join(options.app, 'Contents', 'Resources', 'app', 'node_modules', 'yaml', 'dist', 'index.js'))
+    const parsed = yaml.parse(patch)
+    const ids = Array.isArray(parsed) ? parsed.map(entry => entry?.id).filter(Boolean) : []
+    check(ids.includes('client-hmr') && ids.includes('dsh-plugin-browser'),
+      `patch layer parses as YAML with the expected entries (${ids.join(', ')})`)
+  } catch (cause) {
+    warn(`patch layer YAML check skipped: ${cause instanceof Error ? cause.message : String(cause)}`)
+  }
 
   const chromium = [
     join(profileDir, 'node_modules', 'playwright-core', '.local-browsers'),
@@ -159,4 +171,4 @@ function main() {
   console.log(`verify: passed with ${warnings.length} warning(s)`)
 }
 
-main()
+await main()

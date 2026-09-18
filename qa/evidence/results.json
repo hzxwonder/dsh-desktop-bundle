@@ -1,0 +1,940 @@
+[
+  {
+    "id": "A-01",
+    "group": "A",
+    "title": "冷启动进入主界面且输入框可用",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "31ms",
+    "evidence": [
+      "qa/evidence/A-01-boot.png",
+      "note: viewport 1024x700, theme light"
+    ],
+    "at": "2026-09-18T03:16:07.539Z"
+  },
+  {
+    "id": "A-02",
+    "group": "A",
+    "title": "首次运行的欢迎浮层可关闭且不阻塞输入",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2ms",
+    "evidence": [
+      "note: welcome overlay already dismissed in this home"
+    ],
+    "at": "2026-09-18T03:16:07.546Z"
+  },
+  {
+    "id": "A-03",
+    "group": "A",
+    "title": "新建会话进入可输入状态",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "2757ms",
+    "evidence": [
+      "qa/evidence/A-03-new-conversation.png"
+    ],
+    "at": "2026-09-18T03:16:10.304Z"
+  },
+  {
+    "id": "A-04",
+    "group": "A",
+    "title": "发出消息后收到回复且会话被记录",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "21157ms",
+    "evidence": [
+      "qa/evidence/A-04-first-reply.png",
+      "note: sidebar rows: 1"
+    ],
+    "at": "2026-09-18T03:16:31.462Z"
+  },
+  {
+    "id": "A-05",
+    "group": "A",
+    "title": "连续创建 3 个会话各自独立",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "61788ms",
+    "evidence": [
+      "qa/evidence/A-05-three-conversations.png",
+      "note: sidebar rows after three conversations: 4"
+    ],
+    "at": "2026-09-18T03:17:33.251Z"
+  },
+  {
+    "id": "A-06",
+    "group": "A",
+    "title": "快速连点新建会话不产生重复会话",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "5852ms",
+    "evidence": [
+      "qa/evidence/A-06-rapid-new-conversation.png",
+      "note: rows before=4 after=5"
+    ],
+    "at": "2026-09-18T03:17:39.103Z"
+  },
+  {
+    "id": "A-07",
+    "group": "A",
+    "title": "会话之间切换内容不串",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "5172ms",
+    "evidence": [
+      "qa/evidence/A-07-switched.png"
+    ],
+    "at": "2026-09-18T03:17:44.276Z"
+  },
+  {
+    "id": "A-08",
+    "group": "A",
+    "title": "刷新渲染进程后会话记录保持",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "13048ms",
+    "evidence": [
+      "qa/evidence/A-08-after-reload.png"
+    ],
+    "at": "2026-09-18T03:17:57.324Z"
+  },
+  {
+    "id": "A-09",
+    "group": "A",
+    "title": "工作区菜单可打开并给出工作区入口",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "1693ms",
+    "evidence": [
+      "qa/evidence/A-09-workspace-menu.png"
+    ],
+    "at": "2026-09-18T03:17:59.019Z"
+  },
+  {
+    "id": "A-10",
+    "group": "A",
+    "title": "输入超长草稿不卡死",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "8364ms",
+    "evidence": [
+      "qa/evidence/A-10-long-input.png"
+    ],
+    "at": "2026-09-18T03:18:07.385Z"
+  },
+  {
+    "id": "B-01",
+    "group": "B",
+    "title": "关闭窗口后应用按设计驻留后台",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "26958ms",
+    "evidence": [
+      "note: frame before close: {\"x\":4081,\"y\":121,\"width\":1280,\"height\":840,\"innerWidth\":1280,\"innerHeight\":840}; processes 6 -> 5"
+    ],
+    "at": "2026-09-18T03:04:49.570Z"
+  },
+  {
+    "id": "B-02",
+    "group": "B",
+    "title": "再次启动应用后窗口与会话列表恢复",
+    "priority": "P0",
+    "status": "fail",
+    "detail": "no renderer target on port 9470 to attach to",
+    "evidence": [
+      "note: second launch exit code 0; processes 5 -> 5",
+      "note: app error log: TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio"
+    ],
+    "at": "2026-09-18T03:05:26.204Z"
+  },
+  {
+    "id": "B-03",
+    "group": "B",
+    "title": "重开后窗口几何保持",
+    "priority": "P1",
+    "status": "fail",
+    "detail": "Runtime.evaluate timed out",
+    "evidence": [],
+    "at": "2026-09-18T03:06:26.213Z"
+  },
+  {
+    "id": "B-04",
+    "group": "B",
+    "title": "点击 Dock 图标后窗口能够回来",
+    "priority": "P1",
+    "status": "fail",
+    "detail": "the Dock icon did not bring the window back (TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio)",
+    "evidence": [
+      "note: app error log: TypeError: Object has been destroyed |     at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16) |     at EventEmitter.activate (file:///Applicatio",
+      "note: processes after activation: 4"
+    ],
+    "at": "2026-09-18T03:08:07.613Z"
+  },
+  {
+    "id": "B-05",
+    "group": "B",
+    "title": "收到退出请求后进程干净退出",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "8092ms",
+    "evidence": [],
+    "at": "2026-09-18T03:08:45.712Z"
+  },
+  {
+    "id": "B-06",
+    "group": "B",
+    "title": "重启后会话记录与几何恢复",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "12643ms",
+    "evidence": [
+      "qa/evidence/B-06-after-restart.png",
+      "note: rows 1 -> 1, frame {\"x\":4081,\"y\":121,\"width\":1280,\"height\":840,\"innerWidth\":1280,\"innerHeight\":840}"
+    ],
+    "at": "2026-09-18T03:08:58.357Z"
+  },
+  {
+    "id": "B-07",
+    "group": "B",
+    "title": "窗口尺寸变更后重启仍保持",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "14554ms",
+    "evidence": [
+      "qa/evidence/B-07-resized-before-restart.png",
+      "qa/evidence/B-07-resized-after-restart.png",
+      "note: frame after restart: {\"x\":4081,\"y\":121,\"width\":1024,\"height\":700,\"innerWidth\":1024,\"innerHeight\":700}"
+    ],
+    "at": "2026-09-18T03:09:12.912Z"
+  },
+  {
+    "id": "B-08",
+    "group": "B",
+    "title": "后台冻结后恢复内容与输入都正常",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "7096ms",
+    "evidence": [
+      "qa/evidence/B-08-after-background-return.png"
+    ],
+    "at": "2026-09-18T03:09:20.009Z"
+  },
+  {
+    "id": "B-09",
+    "group": "B",
+    "title": "应用已运行时再次启动不产生第二实例",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "4556ms",
+    "evidence": [
+      "qa/evidence/B-09-second-instance.png",
+      "note: second launch exit code 0; processes 6 -> 6"
+    ],
+    "at": "2026-09-18T03:09:24.572Z"
+  },
+  {
+    "id": "B-10",
+    "group": "B",
+    "title": "强制结束后重启数据仍可读",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "15923ms",
+    "evidence": [
+      "qa/evidence/B-10-after-forced-kill.png"
+    ],
+    "at": "2026-09-18T03:09:40.496Z"
+  },
+  {
+    "id": "D-01",
+    "group": "D",
+    "title": "启动主题与系统外观一致",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "554ms",
+    "evidence": [
+      "qa/evidence/D-01-boot-dark.png"
+    ],
+    "at": "2026-09-17T16:31:38.565Z"
+  },
+  {
+    "id": "D-02",
+    "group": "D",
+    "title": "系统外观变化时界面即时跟随",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "6487ms",
+    "evidence": [
+      "qa/evidence/D-02-switched-light.png"
+    ],
+    "at": "2026-09-17T16:31:45.053Z"
+  },
+  {
+    "id": "D-03",
+    "group": "D",
+    "title": "浅色主题下不存在残留的深色大色块",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "6586ms",
+    "evidence": [
+      "qa/evidence/D-03-light-surfaces.png",
+      "note: surfaces: [{\"color\":\"rgb(255, 255, 255)\",\"luminance\":1,\"area\":1327946,\"samples\":[\"dshDesktopMacCaptionRow\",\"dshDesktopConversationSu\"]}]"
+    ],
+    "at": "2026-09-17T16:31:51.642Z"
+  },
+  {
+    "id": "D-04",
+    "group": "D",
+    "title": "深色主题下不存在残留的浅色大色块",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "1888ms",
+    "evidence": [
+      "qa/evidence/D-04-dark-surfaces.png",
+      "note: surfaces: [{\"color\":\"rgb(21, 21, 23)\",\"luminance\":0.008,\"area\":1247918,\"samples\":[\"dshDesktopMacCaptionRow\",\"dshDesktopConversationSu\"]},{\"color\":\"rgb(44, 44, 46)\",\"luminance\":0.025,\"area\":80028,\"samples\":[\"p_FcLG_card\"]}]"
+    ],
+    "at": "2026-09-17T16:31:53.532Z"
+  },
+  {
+    "id": "D-05",
+    "group": "D",
+    "title": "快速反复切换主题 10 次后界面正常",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "12551ms",
+    "evidence": [
+      "qa/evidence/D-05-after-theme-cycles.png",
+      "note: theme after ten switches: {\"dark\":false,\"colorScheme\":\"light\",\"background\":\"rgba(0, 0, 0, 0)\"}"
+    ],
+    "at": "2026-09-17T16:32:06.083Z"
+  },
+  {
+    "id": "D-06",
+    "group": "D",
+    "title": "切换主题不丢失当前会话内容",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "26285ms",
+    "evidence": [
+      "qa/evidence/D-06-conversation-after-theme.png",
+      "note: transcript length before=299 light=299 dark=299"
+    ],
+    "at": "2026-09-17T16:32:32.374Z"
+  },
+  {
+    "id": "L-01",
+    "group": "L",
+    "title": "基准窗口无横向溢出与意外滚动条",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "77ms",
+    "evidence": [
+      "qa/evidence/L-01-baseline.png",
+      "note: viewport 1280x840, elements 410"
+    ],
+    "at": "2026-09-18T02:22:19.130Z"
+  },
+  {
+    "id": "L-02",
+    "group": "L",
+    "title": "基准布局几何符合设计意图",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "5ms",
+    "evidence": [
+      "note: regions {\"sidebar\":{\"x\":0,\"y\":20,\"width\":280,\"height\":820,\"bottom\":840,\"right\":280},\"composer\":{\"x\":419,\"y\":417,\"width\":708,\"height\":52,\"bottom\":469,\"right\":1127},\"composerBox\":{\"x\":403,\"y\":317,\"width\":744,\"height\":238,\"bottom\":555,\"right\":1147},\"send\":{\"x\":1089,\"y\":481,\"width\":34,\"height\":34,\"bottom\":515,\"right\":1123},\"dock\":null,\"rightbar\":{\"x\":1280,\"y\":32,\"width\":0,\"height\":808,\"bottom\":840,\"right\":1280},\"browserColumn\":null}"
+    ],
+    "at": "2026-09-18T02:22:19.150Z"
+  },
+  {
+    "id": "L-03",
+    "group": "L",
+    "title": "交互元素之间无遮挡重叠",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "46ms",
+    "evidence": [
+      "qa/evidence/L-03-overlap-check.png"
+    ],
+    "at": "2026-09-18T02:22:19.197Z"
+  },
+  {
+    "id": "L-04",
+    "group": "L",
+    "title": "文本不被裁切或溢出容器",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "1ms",
+    "evidence": [],
+    "at": "2026-09-18T02:22:19.199Z"
+  },
+  {
+    "id": "L-05",
+    "group": "L",
+    "title": "浅色主题正文对比度达到 4.5:1",
+    "priority": "P1",
+    "status": "fail",
+    "detail": "lowest text contrast in light theme is 3.71:1 ([{\"role\":\"text\",\"text\":\"工作区\",\"color\":\"rgb(129, 133, 140)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":14,\"large\":false,\"ratio\":3.71},{\"role\":\"text\",\"text\":\"工作区内修改\",\"color\":\"rgb(97, 102, 107)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":13,\"large\":false,\"ratio\":5.8},{\"role\":\"text\",\"text\":\"QA Mock Model\",\"color\":\"rgb(97, 102, 107)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":13,\"large\":false,\"ratio\":5.8}])",
+    "evidence": [
+      "qa/evidence/L-05-light-theme.png",
+      "note: light theme worst=3.71 placeholder=2.13 checked=13",
+      "note: light theme below 4.5: [{\"role\":\"text\",\"text\":\"工作区\",\"color\":\"rgb(129, 133, 140)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":14,\"large\":false,\"ratio\":3.71}]",
+      "note: light theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":2.13}]",
+      "qa/evidence/L-05-failure.png"
+    ],
+    "at": "2026-09-18T02:22:19.619Z"
+  },
+  {
+    "id": "L-06",
+    "group": "L",
+    "title": "深色主题正文对比度达到 4.5:1",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "5138ms",
+    "evidence": [
+      "qa/evidence/L-06-dark-theme.png",
+      "note: dark theme worst=8.78 placeholder=3.76 checked=13",
+      "note: dark theme below 4.5: []",
+      "note: dark theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":3.76}]"
+    ],
+    "at": "2026-09-18T02:22:24.819Z"
+  },
+  {
+    "id": "L-07",
+    "group": "L",
+    "title": "主题切换即时生效且可回退",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "10357ms",
+    "evidence": [],
+    "at": "2026-09-18T02:22:35.178Z"
+  },
+  {
+    "id": "L-08",
+    "group": "L",
+    "title": "窗口放大到 1600×1000 布局自适应",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2149ms",
+    "evidence": [
+      "qa/evidence/L-08-window-1600x1000.png",
+      "note: regions at 1600x1000 {\"sidebar\":{\"x\":0,\"y\":20,\"width\":280,\"height\":873,\"bottom\":893,\"right\":280},\"composer\":{\"x\":480.7578125,\"y\":443.5,\"width\":816.4765625,\"height\":52,\"bottom\":495.5,\"right\":1297.234375},\"composerBox\":{\"x\":464.7578125,\"y\":343.5,\"width\":852.4765625,\"height\":238,\"bottom\":581.5,\"right\":1317.234375},\"send\":{\"x\":1259.234375,\"y\":507.5,\"width\":34,\"height\":34,\"bottom\":541.5,\"right\":1293.234375},\"dock\":null,\"rightbar\":{\"x\":1512,\"y\":32,\"width\":0,\"height\":861,\"bottom\":893,\"right\":1512},\"browserColumn\":null}"
+    ],
+    "at": "2026-09-18T02:22:37.331Z"
+  },
+  {
+    "id": "L-09",
+    "group": "L",
+    "title": "窗口缩小到 900×600 关键控件仍可用",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2060ms",
+    "evidence": [
+      "qa/evidence/L-09-window-900x600.png"
+    ],
+    "at": "2026-09-18T02:22:39.391Z"
+  },
+  {
+    "id": "L-10",
+    "group": "L",
+    "title": "极小窗口 640×480 不破坏布局",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "2052ms",
+    "evidence": [
+      "qa/evidence/L-10-window-640x480.png"
+    ],
+    "at": "2026-09-18T02:22:41.443Z"
+  },
+  {
+    "id": "L-11",
+    "group": "L",
+    "title": "恢复基准尺寸后布局回到原状",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "2561ms",
+    "evidence": [
+      "qa/evidence/L-11-window-restored.png"
+    ],
+    "at": "2026-09-18T02:22:44.005Z"
+  },
+  {
+    "id": "L-12",
+    "group": "L",
+    "title": "侧边栏收起与展开后几何稳定",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "3347ms",
+    "evidence": [
+      "qa/evidence/L-12-sidebar-collapsed.png",
+      "qa/evidence/L-12-sidebar-expanded.png",
+      "note: controls used: 收起侧边栏 then 打开侧边栏",
+      "note: sidebar widths: {\"before\":280,\"collapsed\":56,\"restored\":280}"
+    ],
+    "at": "2026-09-18T02:40:30.422Z"
+  },
+  {
+    "id": "L-13",
+    "group": "L",
+    "title": "侧边栏收起为图标栏时布局正常",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "3280ms",
+    "evidence": [
+      "qa/evidence/L-13-sidebar-rail.png",
+      "note: collapsed sidebar width 56, composer {\"x\":283.203125,\"y\":417,\"width\":789.59375,\"height\":52,\"bottom\":469,\"right\":1072.796875}"
+    ],
+    "at": "2026-09-18T02:40:33.706Z"
+  },
+  {
+    "id": "L-14",
+    "group": "L",
+    "title": "终端面板打开后输入框仍完整可见",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2ms",
+    "evidence": [
+      "note: no terminal control in this profile; covered by group T"
+    ],
+    "at": "2026-09-18T02:22:45.894Z"
+  },
+  {
+    "id": "L-15",
+    "group": "L",
+    "title": "多次开合侧边栏后几何无累积偏移",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "8153ms",
+    "evidence": [
+      "qa/evidence/L-15-after-sidebar-cycles.png"
+    ],
+    "at": "2026-09-18T02:40:41.863Z"
+  },
+  {
+    "id": "F-01",
+    "group": "F",
+    "title": "工作区列表与新建会话入口可用",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "30ms",
+    "evidence": [
+      "qa/evidence/F-01-sidebar-surface.png",
+      "note: workspaces=1 conversations=1"
+    ],
+    "at": "2026-09-18T03:18:16.791Z"
+  },
+  {
+    "id": "F-02",
+    "group": "F",
+    "title": "工作区切换菜单可打开并列出工作区",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2494ms",
+    "evidence": [
+      "qa/evidence/F-02-workspace-selector.png"
+    ],
+    "at": "2026-09-18T03:18:19.286Z"
+  },
+  {
+    "id": "F-03",
+    "group": "F",
+    "title": "搜索会话入口可与输入框交互",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2368ms",
+    "evidence": [
+      "qa/evidence/F-03-search-open.png"
+    ],
+    "at": "2026-09-18T03:18:21.654Z"
+  },
+  {
+    "id": "F-04",
+    "group": "F",
+    "title": "插件市场面板可打开",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2464ms",
+    "evidence": [
+      "qa/evidence/F-04-plugin-market.png"
+    ],
+    "at": "2026-09-18T03:18:24.120Z"
+  },
+  {
+    "id": "F-05",
+    "group": "F",
+    "title": "设置面板可打开",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2461ms",
+    "evidence": [
+      "qa/evidence/F-05-settings.png"
+    ],
+    "at": "2026-09-18T03:18:26.582Z"
+  },
+  {
+    "id": "F-06",
+    "group": "F",
+    "title": "视图选项菜单可打开",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2471ms",
+    "evidence": [
+      "qa/evidence/F-06-view-options.png"
+    ],
+    "at": "2026-09-18T03:18:29.054Z"
+  },
+  {
+    "id": "F-07",
+    "group": "F",
+    "title": "模型选择器列出已配置模型",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2380ms",
+    "evidence": [
+      "qa/evidence/F-07-model-picker.png"
+    ],
+    "at": "2026-09-18T03:18:31.435Z"
+  },
+  {
+    "id": "F-08",
+    "group": "F",
+    "title": "访问模式菜单可打开并列出模式",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2362ms",
+    "evidence": [
+      "qa/evidence/F-08-access-mode.png"
+    ],
+    "at": "2026-09-18T03:18:33.800Z"
+  },
+  {
+    "id": "F-09",
+    "group": "F",
+    "title": "指令入口可打开",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "2362ms",
+    "evidence": [
+      "qa/evidence/F-09-commands.png",
+      "note: command surface text: 新会话 工作流 1 工作区 对话 新会话 插件市场 设置 探索未至之境 预览版 对话 标准模式 描述你想要构建的内容, / 调用指令, @ 文件或对话 工作区内修改 QA Mock Model 对话 添加工作区…"
+    ],
+    "at": "2026-09-18T03:18:36.164Z"
+  },
+  {
+    "id": "F-10",
+    "group": "F",
+    "title": "斜杠指令在输入框中给出候选",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "2657ms",
+    "evidence": [
+      "qa/evidence/F-10-slash-command.png"
+    ],
+    "at": "2026-09-18T03:18:38.822Z"
+  },
+  {
+    "id": "F-11",
+    "group": "F",
+    "title": "右侧边栏与终端面板可开合",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "4394ms",
+    "evidence": [
+      "qa/evidence/F-11-terminal-open.png",
+      "qa/evidence/F-11-terminal-closed.png",
+      "note: elements 409 -> 409 (terminal false) -> 409 (closed false)"
+    ],
+    "at": "2026-09-18T03:18:43.216Z"
+  },
+  {
+    "id": "F-12",
+    "group": "F",
+    "title": "附件入口可用",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "2361ms",
+    "evidence": [
+      "qa/evidence/F-12-attachment-menu.png",
+      "note: attachment surface text: 新会话 工作流 1 工作区 对话 新会话 插件市场 设置 探索未至之境 预览版 对话 标准模式 描述你想要构建的内容, / 调用指令, @ 文件或对话 工作区内修改 QA Mock Model 标准模式 功能完整的编码 Agent，支持文件"
+    ],
+    "at": "2026-09-18T03:18:45.578Z"
+  },
+  {
+    "id": "F-13",
+    "group": "F",
+    "title": "连续打开并关闭各入口后应用仍可用",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "10774ms",
+    "evidence": [
+      "qa/evidence/F-13-after-panel-cycles.png"
+    ],
+    "at": "2026-09-18T03:23:09.371Z"
+  },
+  {
+    "id": "R-01",
+    "group": "R",
+    "title": "空输入回车不产生空会话",
+    "priority": "P0",
+    "status": "fail",
+    "detail": "empty submissions created 1 conversation(s)",
+    "evidence": [
+      "qa/evidence/R-01-empty-enter.png",
+      "qa/evidence/R-01-failure.png"
+    ],
+    "at": "2026-09-18T02:23:00.596Z"
+  },
+  {
+    "id": "R-02",
+    "group": "R",
+    "title": "粘贴超长文本不崩溃且可继续操作",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "4867ms",
+    "evidence": [
+      "qa/evidence/R-02-huge-paste.png",
+      "note: composer holds 40007 characters after pasting 40k"
+    ],
+    "at": "2026-09-18T02:23:05.511Z"
+  },
+  {
+    "id": "R-03",
+    "group": "R",
+    "title": "表情、CJK 与控制字符混合输入正确回显",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "3180ms",
+    "evidence": [
+      "qa/evidence/R-03-unicode-input.png",
+      "note: composer text: \"QA🙂中文テスト​零宽\""
+    ],
+    "at": "2026-09-18T02:23:08.691Z"
+  },
+  {
+    "id": "R-04",
+    "group": "R",
+    "title": "发送过程中重复回车不产生重复消息",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "22872ms",
+    "evidence": [
+      "qa/evidence/R-04-duplicate-guard.png"
+    ],
+    "at": "2026-09-18T02:23:31.563Z"
+  },
+  {
+    "id": "R-05",
+    "group": "R",
+    "title": "模型服务不可用时错误可见且界面可继续使用",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "24258ms",
+    "evidence": [
+      "qa/evidence/R-05-provider-offline.png"
+    ],
+    "at": "2026-09-18T02:23:55.822Z"
+  },
+  {
+    "id": "R-06",
+    "group": "R",
+    "title": "模型服务恢复后可以继续发送",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "20772ms",
+    "evidence": [
+      "qa/evidence/R-06-provider-recovered.png"
+    ],
+    "at": "2026-09-18T02:24:16.595Z"
+  },
+  {
+    "id": "R-07",
+    "group": "R",
+    "title": "回答生成中关闭窗口后重启无损坏",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "19000ms",
+    "evidence": [
+      "qa/evidence/R-07-after-mid-answer-kill.png"
+    ],
+    "at": "2026-09-18T02:24:35.595Z"
+  },
+  {
+    "id": "R-08",
+    "group": "R",
+    "title": "连续刷新 5 次无错误且状态保持一致",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "25619ms",
+    "evidence": [
+      "qa/evidence/R-08-after-five-reloads.png"
+    ],
+    "at": "2026-09-18T02:25:01.216Z"
+  },
+  {
+    "id": "R-09",
+    "group": "R",
+    "title": "快速切换会话 20 次不崩溃",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "49793ms",
+    "evidence": [
+      "qa/evidence/R-09-after-rapid-switching.png"
+    ],
+    "at": "2026-09-18T02:25:51.010Z"
+  },
+  {
+    "id": "R-10",
+    "group": "R",
+    "title": "控件快速连点 20 次不产生异常状态",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "9587ms",
+    "evidence": [
+      "qa/evidence/R-10-after-rapid-control-clicks.png"
+    ],
+    "at": "2026-09-18T02:26:00.598Z"
+  },
+  {
+    "id": "R-11",
+    "group": "R",
+    "title": "空数据目录启动进入可引导状态",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "18385ms",
+    "evidence": [
+      "qa/evidence/R-11-empty-home-boot.png",
+      "note: composer=false addWorkspace=true"
+    ],
+    "at": "2026-09-18T02:26:18.984Z"
+  },
+  {
+    "id": "R-12",
+    "group": "R",
+    "title": "全新 Profile 首次启动的桌面设置向导可跳过",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "31269ms",
+    "evidence": [
+      "qa/evidence/R-12-fresh-profile.png",
+      "note: setup outcome for the new profile: {\"version\":2,\"profileHash\":\"70c9b45991742f713aa79f3eb07d39a3892df06e5eccde5c860ab90d44c61bfc\",\"outcome\":\"skipped\",\"desktopVersion\":\"2.0.10\",\"dshVersion\":\"0.1.5-rc.2\",\"setupRevision\":1,\"recordedAt\":\"2026-09-18T02:35:07.926Z\"}"
+    ],
+    "at": "2026-09-18T02:35:28.238Z"
+  },
+  {
+    "id": "R-13",
+    "group": "R",
+    "title": "配置损坏时进入恢复模式而不是空白页",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "23093ms",
+    "evidence": [
+      "qa/evidence/R-13-broken-settings-boot.png",
+      "note: url=file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/native-ui/recovery.html?state=eyJsb2NhbGUiOiJ6aCIsImZhaWx1cmVTdGFnZSI6InByb2ZpbGUtY29tcG9zaXRpb24iLCJmYWlsdXJlRGV0YWlsIjoiZHNoLXBsdWdpbi1kZXNrdG9wOiBpbnZhbGlkIHNldHRpbmdzIGRvY3VtZW50IGF0IC9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZS9zZXR0aW5ncy55YW1sOiBJbXBsaWNpdCBrZXlzIG9mIGZsb3cgc2VxdWVuY2UgcGFpcnMgbmVlZCB0byBiZSBvbiBhIHNpbmdsZSBsaW5lIGF0IGxpbmUgMSwgY29sdW1uIDE1OlxuXG5kc2gtZGVza3RvcDogW3VuY2xvc2VkXG4gICAgICAgICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gODpcblxuICBiYWQ6IDogOlxuICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gMTA6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgIF5cbjsgRmxvdyBzZXF1ZW5jZSBpbiBibG9jayBjb2xsZWN0aW9uIG11c3QgYmUgc3VmZmljaWVudGx5IGluZGVudGVkIGFuZCBlbmQgd2l0aCBhIF0gYXQgbGluZSAyLCBjb2x1bW4gMTE6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgICBeXG4iLCJzbmFwc2hvdCI6eyJwcm9maWxlTmFtZSI6ImRlc2t0b3AiLCJidW5kbGVzIjpbeyJidW5kbGVJZCI6ImJ1bmRsZV9ta25wRzhCbWZCeXBibkZSb0huTVZsUE1rUVN5ckhCRCIsInBhY2thZ2VOYW1lIjoiQGRlZXBzZWVrLWFpL2RzaC1iYXNlIiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJjb3JlIiwiYWN0aW9uIjpudWxsfSx7ImJ1bmRsZUlkIjoiYnVuZGxlX200ay03bUdlZktmNzlpTHkwZnVoTGp4c19mUHNEX0NFIiwicGFja2FnZU5hbWUiOiJAZGVlcHNlZWstYWkvZHNoLXdlYi1hcHAiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6ImNvcmUiLCJhY3Rpb24iOm51bGx9LHsiYnVuZGxlSWQiOiJidW5kbGVfMDlKX0ktMzY1aFBuV2JQZFhfTzB4VmwxYWt4azBLamEiLCJwYWNrYWdlTmFtZSI6ImRzaC1wbHVnaW4tc3VpdGUiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6InByb2ZpbGUiLCJhY3Rpb24iOiJ1bmluc3RhbGwifSx7ImJ1bmRsZUlkIjoiYnVuZGxlX2ZIMGFlZTBkZ1hnY3dvVnlsNGY2OVNYVTFNV3h2MlpoIiwicGFja2FnZU5hbWUiOiJkc2gtcGx1Z2luLXdvcmtmbG93Iiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJwcm9maWxlIiwiYWN0aW9uIjoidW5pbnN0YWxsIn0seyJidW5kbGVJZCI6ImJ1bmRsZV9vR1h1VjRJM3lyb3pYVEFnaGFHdVFzdGxQTkYxUGMzeCIsInBhY2thZ2VOYW1lIjoiZHNoLXBsdWdpbi1zZXNzaW9ucyIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9XSwiY2hlY2twb2ludHMiOlt7InNsb3RJZCI6InNsb3QtMSIsInN0YXR1cyI6ImF2YWlsYWJsZSIsImNhcHR1cmVkQXQiOiIyMDI2LTA5LTE4VDAyOjQwOjUwLjI5MloiLCJhcHBWZXJzaW9uIjoiMi4wLjEwIiwicHJvdmlkZXIiOiJkZXNrdG9wLXByb2ZpbGUiLCJmaWxlQ291bnQiOjUsInBsdWdpbkNvdW50Ijo1LCJ0b3RhbEJ5dGVzIjozODExOX0seyJzbG90SWQiOiJzbG90LTIiLCJzdGF0dXMiOiJhdmFpbGFibGUiLCJjYXB0dXJlZEF0IjoiMjAyNi0wOS0xOFQwMjozOToyNS4wNTlaIiwiYXBwVmVyc2lvbiI6IjIuMC4xMCIsInByb3ZpZGVyIjoiZGVza3RvcC1wcm9maWxlIiwiZmlsZUNvdW50Ijo1LCJwbHVnaW5Db3VudCI6NSwidG90YWxCeXRlcyI6MzgxMTl9LHsic2xvdElkIjoic2xvdC0zIiwic3RhdHVzIjoiYXZhaWxhYmxlIiwiY2FwdHVyZWRBdCI6IjIwMjYtMDktMThUMDI6NDA6MjYuODY2WiIsImFwcFZlcnNpb24iOiIyLjAuMTAiLCJwcm92aWRlciI6ImRlc2t0b3AtcHJvZmlsZSIsImZpbGVDb3VudCI6NSwicGx1Z2luQ291bnQiOjUsInRvdGFsQnl0ZXMiOjM4MTE5fV19LCJkaWFnbm9zdGljcyI6eyJzdGF0dXMiOiJzYXZlZCIsImZpbGVuYW1lIjoiZGlhZ25vc3RpY3MtMTc4OTY5OTI1NDIxOS1mOGIxZDY2NS03ZjFkLTQyMzktYWIyMi04NzhhODdiOGNmZGUuemlwIn0sImJ1c3kiOmZhbHNlLCJyZXN0YXJ0UmVhZHkiOmZhbHNlLCJhY3RpdmVUYWIiOiJxdWljayIsImNvbmZpZ3VyYXRpb25BdmFpbGFibGUiOnRydWUsInByb2ZpbGVEaXJlY3RvcnkiOiIvVXNlcnMvaHVhbmd6aXhpYW8vRG9jdW1lbnRzL2NvZGUvZHNoLy5xYS9maXh0dXJlLWhvbWUvcHJvZmlsZXMvZGVza3RvcCIsImRhdGFEaXJlY3RvcnkiOnsiY3VycmVudERpcmVjdG9yeSI6Ii9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZSIsInVzaW5nRGVmYXVsdERpcmVjdG9yeSI6ZmFsc2UsImVkaXRpbmciOmZhbHNlfSwicHJvZmlsZXMiOlt7Im5hbWUiOiJkZXNrdG9wIiwiY3VycmVudCI6dHJ1ZSwic2VsZWN0YWJsZSI6dHJ1ZX1dLCJwcm9maWxlQWN0aW9uVG9rZW4iOiI0YTE3OWJjMC0xN2NhLTRkMjktYWYxNC1jY2I5YmEwNmQwY2YiLCJ0ZXJtaW5hbEF2YWlsYWJsZSI6dHJ1ZSwicHJvZmlsZUNyZWF0b3JBdmFpbGFibGUiOnRydWUsInNhZmVNb2RlQXZhaWxhYmxlIjp0cnVlfQ&locale=zh&platform=darwin&frame=true text=打开 DSH 终端 进入恢复模式的原因 当前 Profile: desktop Profile 目录: /Users/<user>/Documents/code/dsh/.qa/fixtur"
+    ],
+    "at": "2026-09-18T02:41:13.581Z"
+  },
+  {
+    "id": "R-14",
+    "group": "R",
+    "title": "长时间空转后仍能响应输入",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "48117ms",
+    "evidence": [
+      "qa/evidence/R-14-after-idle.png"
+    ],
+    "at": "2026-09-18T02:38:06.620Z"
+  },
+  {
+    "id": "P-01",
+    "group": "P",
+    "title": "工作区文件不含个人路径与用户名",
+    "priority": "P0",
+    "status": "fail",
+    "detail": "personal data in tracked files: [{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":171,\"rule\":\"person-name\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":195,\"rule\":\"person-name\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":17,\"rule\":\"person-name\"}]",
+    "evidence": [
+      "note: local private terms configured: 5"
+    ],
+    "at": "2026-09-18T03:37:12.548Z"
+  },
+  {
+    "id": "P-02",
+    "group": "P",
+    "title": "全部提交历史不含个人路径与用户名",
+    "priority": "P0",
+    "status": "fail",
+    "detail": "personal data in history: [{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":171,\"rule\":\"person-name\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":195,\"rule\":\"person-name\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":17,\"rule\":\"person-name\"}]",
+    "evidence": [],
+    "at": "2026-09-18T03:37:23.212Z"
+  },
+  {
+    "id": "P-03",
+    "group": "P",
+    "title": "没有任何凭据文件被提交",
+    "priority": "P0",
+    "status": "pass",
+    "detail": "479ms",
+    "evidence": [
+      "note: no .credentials.yaml, .env, id_rsa, .npmrc or .netrc in any tracked file or commit"
+    ],
+    "at": "2026-09-18T03:37:23.692Z"
+  },
+  {
+    "id": "P-04",
+    "group": "P",
+    "title": "不含真实密钥、私有端点或私有项目名",
+    "priority": "P1",
+    "status": "fail",
+    "detail": "secret-like data found: [{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":310,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":316,\"rule\":\"private-project\"}]",
+    "evidence": [],
+    "at": "2026-09-18T03:37:23.997Z"
+  },
+  {
+    "id": "P-05",
+    "group": "P",
+    "title": "发布磁盘镜像内不含用户数据",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "1351ms",
+    "evidence": [
+      "note: DSH-Desktop-2.0.10-arm64.dmg: 22362 payload files inspected"
+    ],
+    "at": "2026-09-18T03:37:25.349Z"
+  },
+  {
+    "id": "P-06",
+    "group": "P",
+    "title": "仓库不引入遥测或第三方上报",
+    "priority": "P2",
+    "status": "pass",
+    "detail": "258ms",
+    "evidence": [
+      "note: checked 12 repositories for telemetry SDKs"
+    ],
+    "at": "2026-09-18T03:37:25.608Z"
+  },
+  {
+    "id": "P-07",
+    "group": "P",
+    "title": "验收证据本身不泄露个人数据",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "6ms",
+    "evidence": [
+      "note: all text evidence is free of personal paths, identities and secrets"
+    ],
+    "at": "2026-09-18T03:37:25.615Z"
+  },
+  {
+    "id": "P-08",
+    "group": "P",
+    "title": "验收过程未触碰真实用户数据目录",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "56ms",
+    "evidence": [
+      "note: launcher home: /Users/<user>/Documents/code/dsh/.qa/fixture-home"
+    ],
+    "at": "2026-09-18T03:37:25.671Z"
+  }
+]

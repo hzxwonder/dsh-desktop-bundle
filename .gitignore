@@ -9,3 +9,4 @@ vendor/*/node_modules/
 
 # macOS
 .DS_Store
+qa/private-terms.local.txt

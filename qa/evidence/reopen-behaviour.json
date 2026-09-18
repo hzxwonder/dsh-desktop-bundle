@@ -1,0 +1,40 @@
+[
+  {
+    "label": "running",
+    "processes": 6,
+    "mainPid": 91686,
+    "targets": [
+      "http://127.0.0.1:43790/?dsh-desktop-mode=advanced&"
+    ]
+  },
+  {
+    "label": "after window.close()",
+    "processes": 5,
+    "mainPid": 91686,
+    "targets": []
+  },
+  {
+    "label": "after open -a (Dock activation)",
+    "processes": 0,
+    "mainPid": 0,
+    "targets": [
+      "<no debugger endpoint>"
+    ]
+  },
+  {
+    "label": "dock activation reopened a window",
+    "value": false
+  },
+  {
+    "label": "after launching the app again",
+    "processes": 0,
+    "mainPid": 0,
+    "targets": [
+      "<no debugger endpoint>"
+    ]
+  },
+  {
+    "label": "second launch reopened a window",
+    "value": false
+  }
+]
