@@ -19,7 +19,7 @@ SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUNDLE_DIR="$(cd "${SELF_DIR}/.." && pwd)"
 # QA state lives beside the plugin workspace, outside the bundle, so a run never
 # leaves fixture data inside the repository that ships to users.
-QA_DIR="${DSH_QA_DIR:-$(cd "${BUNDLE_DIR}/../.." && pwd)/.qa}"
+QA_DIR="${DSH_QA_DIR:-$(cd "${BUNDLE_DIR}/../../.." && pwd)/.qa}"
 APP="${DSH_QA_APP:-/Applications/DSH Desktop.app}"
 LIVE_HOME="${HOME}/.dsh-desktop"
 LIVE_USER_DATA="${HOME}/Library/Application Support/DSH Desktop"
