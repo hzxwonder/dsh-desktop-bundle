@@ -1,0 +1,10 @@
+sanitized 0 evidence file(s)
+
+== R: 鲁棒性与异常输入 ==
+fixture home reset to the golden state
+     · observed 206 responses across the reloads
+ok   R-08 连续刷新 5 次无错误且状态保持一致 — 25563ms
+sanitized 0 evidence file(s)
+
+summary 1/1 passed in 36s
+app processes still running: 0

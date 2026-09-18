@@ -764,11 +764,12 @@
     "title": "连续刷新 5 次无错误且状态保持一致",
     "priority": "P1",
     "status": "pass",
-    "detail": "25619ms",
+    "detail": "25563ms",
     "evidence": [
-      "qa/evidence/R-08-after-five-reloads.png"
+      "qa/evidence/R-08-after-five-reloads.png",
+      "note: observed 206 responses across the reloads"
     ],
-    "at": "2026-09-18T02:25:01.216Z"
+    "at": "2026-09-18T05:48:19.319Z"
   },
   {
     "id": "R-09",
@@ -936,5 +937,18 @@
       "note: launcher home: /Users/<user>/.dsh-desktop"
     ],
     "at": "2026-09-18T05:27:13.815Z"
+  },
+  {
+    "id": "A-11",
+    "group": "A",
+    "title": "首轮对话全程无失败请求与控制台错误",
+    "priority": "P1",
+    "status": "pass",
+    "detail": "20619ms",
+    "evidence": [
+      "qa/evidence/A-11-network-clean.png",
+      "note: observed 23 responses, 0 failed, 0 console errors"
+    ],
+    "at": "2026-09-18T05:46:27.798Z"
   }
 ]

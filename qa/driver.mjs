@@ -209,6 +209,9 @@ export async function attachSession(options = {}) {
   await client.send('Runtime.enable')
   await client.send('Log.enable')
   await client.send('Page.enable')
+  // Without this the response bookkeeping stays empty and every network assertion
+  // passes for the wrong reason.
+  await client.send('Network.enable')
   return buildSession({ app, home: options.home ?? launcherHome(options.userData ?? DEFAULT_USER_DATA), port, userData: options.userData ?? DEFAULT_USER_DATA, evidenceDir, client, page, logPath: options.logPath })
 }
 
@@ -338,6 +341,10 @@ function buildSession({ app, home, port, userData, logPath, evidenceDir, child, 
         .filter(event => event.method === 'Network.responseReceived' && event.params.response.status >= 400)
         .map(event => `${event.params.response.status} ${event.params.response.url}`)
     },
+    /** Every response the renderer saw, so a check can show it observed real traffic. */
+    responseCount() {
+      return client.events.filter(event => event.method === 'Network.responseReceived').length
+    },
     stop,
   }
   return session
@@ -399,6 +406,9 @@ export async function startSession(options = {}) {
   await client.send('Runtime.enable')
   await client.send('Log.enable')
   await client.send('Page.enable')
+  // Without this the response bookkeeping stays empty and every network assertion
+  // passes for the wrong reason.
+  await client.send('Network.enable')
 
   const session = buildSession({ app, home, port, userData, logPath, evidenceDir, child, client, page, stop })
   const originalStop = session.stop

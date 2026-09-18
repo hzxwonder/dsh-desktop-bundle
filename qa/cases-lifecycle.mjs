@@ -176,6 +176,21 @@ groups.B = {
   title: '关闭、后台化、重开与进程行为',
   cases: [
     {
+      id: 'A-11', group: 'A', priority: 'P1', title: '首轮对话全程无失败请求与控制台错误',
+      async run(context, assert) {
+        const before = context.session.responseCount()
+        await startConversation(context.session, `QA: network ${Date.now() % 100000}`)
+        const responses = context.session.responseCount() - before
+        const failed = context.session.failedResponses()
+        const errors = context.session.consoleErrors()
+        await assert.screenshot(context.session, 'network-clean')
+        assert.check(responses > 0, 'the renderer reported no network activity at all, so nothing was verified')
+        assert.check(failed.length === 0, `failed requests during a conversation: ${failed.slice(0, 3).join(' | ')}`)
+        assert.check(errors.length === 0, `console errors during a conversation: ${errors.slice(0, 3).join(' | ')}`)
+        assert.note(`observed ${responses} responses, 0 failed, 0 console errors`)
+      },
+    },
+    {
       id: 'B-01', group: 'B', priority: 'P0', title: '关闭窗口后应用按设计驻留后台',
       async run(context, assert) {
         const session = context.session

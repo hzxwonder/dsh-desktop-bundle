@@ -1,0 +1,9 @@
+sanitized 0 evidence file(s)
+
+== B: 关闭、后台化、重开与进程行为 ==
+fixture home reset to the golden state
+FAIL A-11 首轮对话全程无失败请求与控制台错误 — the renderer reported no network activity at all, so nothing was verified
+sanitized 0 evidence file(s)
+
+summary 0/1 passed in 33s
+app processes still running: 0
