@@ -851,22 +851,24 @@
     "group": "P",
     "title": "工作区文件不含个人路径与用户名",
     "priority": "P0",
-    "status": "fail",
-    "detail": "personal data in tracked files: [{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":171,\"rule\":\"person-name\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":195,\"rule\":\"person-name\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":17,\"rule\":\"person-name\"}]",
+    "status": "pass",
+    "detail": "373ms",
     "evidence": [
       "note: local private terms configured: 5"
     ],
-    "at": "2026-09-18T05:27:01.228Z"
+    "at": "2026-09-18T06:18:46.963Z"
   },
   {
     "id": "P-02",
     "group": "P",
     "title": "全部提交历史不含个人路径与用户名",
     "priority": "P0",
-    "status": "fail",
-    "detail": "personal data in history: [{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":171,\"rule\":\"person-name\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":195,\"rule\":\"person-name\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":17,\"rule\":\"person-name\"}]",
-    "evidence": [],
-    "at": "2026-09-18T05:27:12.056Z"
+    "status": "pass",
+    "detail": "12500ms",
+    "evidence": [
+      "note: scanned 66 commits and 609 committed blobs"
+    ],
+    "at": "2026-09-18T06:18:59.468Z"
   },
   {
     "id": "P-03",
@@ -874,21 +876,21 @@
     "title": "没有任何凭据文件被提交",
     "priority": "P0",
     "status": "pass",
-    "detail": "372ms",
+    "detail": "407ms",
     "evidence": [
       "note: no .credentials.yaml, .env, id_rsa, .npmrc or .netrc in any tracked file or commit"
     ],
-    "at": "2026-09-18T05:27:12.429Z"
+    "at": "2026-09-18T06:18:59.875Z"
   },
   {
     "id": "P-04",
     "group": "P",
     "title": "不含真实密钥、私有端点或私有项目名",
     "priority": "P1",
-    "status": "fail",
-    "detail": "secret-like data found: [{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":11,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":219,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15-terminal-panel.md\",\"line\":220,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":310,\"rule\":\"private-project\"},{\"repository\":\"dsh-plugins/repositories/dsh-plugin-terminal\",\"path\":\"docs/acceptance/2026-09-15/results.json\",\"line\":316,\"rule\":\"private-project\"}]",
+    "status": "pass",
+    "detail": "308ms",
     "evidence": [],
-    "at": "2026-09-18T05:27:12.715Z"
+    "at": "2026-09-18T06:19:00.184Z"
   },
   {
     "id": "P-05",
@@ -896,11 +898,11 @@
     "title": "发布磁盘镜像内不含用户数据",
     "priority": "P1",
     "status": "pass",
-    "detail": "797ms",
+    "detail": "1285ms",
     "evidence": [
       "note: DSH-Desktop-2.0.10-arm64.dmg: 22362 payload files inspected"
     ],
-    "at": "2026-09-18T05:27:13.512Z"
+    "at": "2026-09-18T06:19:01.471Z"
   },
   {
     "id": "P-06",
@@ -908,11 +910,11 @@
     "title": "仓库不引入遥测或第三方上报",
     "priority": "P2",
     "status": "pass",
-    "detail": "254ms",
+    "detail": "244ms",
     "evidence": [
       "note: checked 12 repositories for telemetry SDKs"
     ],
-    "at": "2026-09-18T05:27:13.767Z"
+    "at": "2026-09-18T06:19:01.715Z"
   },
   {
     "id": "P-07",
@@ -924,7 +926,7 @@
     "evidence": [
       "note: all text evidence is free of personal paths, identities and secrets"
     ],
-    "at": "2026-09-18T05:27:13.772Z"
+    "at": "2026-09-18T06:19:01.719Z"
   },
   {
     "id": "P-08",
@@ -932,11 +934,11 @@
     "title": "验收过程未触碰真实用户数据目录",
     "priority": "P1",
     "status": "pass",
-    "detail": "43ms",
+    "detail": "63ms",
     "evidence": [
       "note: launcher home: /Users/<user>/.dsh-desktop"
     ],
-    "at": "2026-09-18T05:27:13.815Z"
+    "at": "2026-09-18T06:19:01.783Z"
   },
   {
     "id": "A-11",

@@ -1,19 +1,19 @@
 # DSH Desktop 打包版验收报告
 
-生成时间：2026-09-18 14:00　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
+生成时间：2026-09-18 14:19　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
 
 ## 一、结论
 
-本轮共执行 **77** 条用例：**通过 69**、失败 8、跳过 0。
+本轮共执行 **77** 条用例：**通过 72**、失败 5、跳过 0。
 
 用例覆盖启动与生命周期、窗口与进程、主题、布局、功能链路、鲁棒性、仓库隐私七组，其中 P0 10 条、P1 51 条、P2 16 条；完整清单见 `qa/cases.md`。
 
-主流程（启动、会话、主题、布局、面板、异常输入）可用，没有出现数据损坏或会话丢失；下面 4 项需要处理，其中 F-1 影响窗口唤回并伴随未捕获异常，F-2 属于已发布仓库的隐私泄露：
+主流程（启动、会话、主题、布局、面板、异常输入）可用，没有出现数据损坏或会话丢失；下面 3 项需要处理，其中 F-1 影响窗口唤回并伴随未捕获异常：
 
 - **F-1 · 高 · 窗口关闭后无法唤回：激活路径访问已销毁的窗口并抛出未捕获异常** —— 对应用例 B-02、B-03、B-04
-- **F-2 · 高（隐私） · 已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名** —— 对应用例 P-01、P-02、P-04
 - **F-3 · 低 · 空输入回车会新建空会话** —— 对应用例 R-01
 - **F-4 · 低 · 浅色主题次级文字对比度低于 WCAG AA** —— 对应用例 L-05
+- ~~F-2 · 高（隐私） · 已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名~~ —— 已修复：对应用例 P-01、P-02、P-04 复验通过，见第五节
 
 ## 二、测试环境与方法
 
@@ -132,18 +132,18 @@
 | R-13 | P1 | 配置损坏时进入恢复模式而不是空白页 | 通过 | 23093ms | [图](evidence/R-13-broken-settings-boot.png) |
 | R-14 | P2 | 长时间空转后仍能响应输入 | 通过 | 48117ms | [图](evidence/R-14-after-idle.png) |
 
-### P　仓库隐私与脱敏（5/8 通过）
+### P　仓库隐私与脱敏（8/8 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 耗时/说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| P-01 | P0 | 工作区文件不含个人路径与用户名 | 失败 | personal data in tracked files: [{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":171,"rule":"person-name"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":195,"rule":"person-name"}, | — |
-| P-02 | P0 | 全部提交历史不含个人路径与用户名 | 失败 | personal data in history: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line": | — |
-| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 372ms | — |
-| P-04 | P1 | 不含真实密钥、私有端点或私有项目名 | 失败 | secret-like data found: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":21 | — |
-| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 797ms | — |
-| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 254ms | — |
+| P-01 | P0 | 工作区文件不含个人路径与用户名 | 通过 | 373ms | — |
+| P-02 | P0 | 全部提交历史不含个人路径与用户名 | 通过 | 12500ms | — |
+| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 407ms | — |
+| P-04 | P1 | 不含真实密钥、私有端点或私有项目名 | 通过 | 308ms | — |
+| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 1285ms | — |
+| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 244ms | — |
 | P-07 | P1 | 验收证据本身不泄露个人数据 | 通过 | 4ms | — |
-| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 43ms | — |
+| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 63ms | — |
 
 ## 四、界面证据
 
@@ -216,12 +216,13 @@
 
 ### F-2　已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名
 
-- 严重程度：高（隐私）　相关用例：P-01、P-02、P-04
+- 严重程度：高（隐私）　相关用例：P-01、P-02、P-04（复验通过）
 - 现象：审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）——`docs/acceptance/2026-09-15-terminal-panel.md` 与 `docs/acceptance/2026-09-15/results.json` 两个文件共 63 处：本机用户名与家目录路径 48 处、私有项目名与内部连接别名 13 处、会话 id 2 处；其中 29 处在当前工作区、29 处在提交 `5cdb931`、5 处在更早的提交 `dac3169`，即已进入公开历史。
 - 影响：公开仓库里泄露本机用户名、目录结构、私有项目名与内部连接别名，等于给出内网与账号线索；仅改当前文件无法从历史中移除。其余 11 个仓库未发现个人路径、密钥或私有别名。
 - 复现：`node qa/privacy-scan.mjs`（完整清单写入 `evidence/privacy.json`，含仓库、修订、文件、行号与规则；不打印命中内容本身），对应用例 `node qa/run-cases.mjs run P`。
-- 证据：`evidence/privacy.json`（63 条命中明细与逐仓库覆盖），附录 A 是从该文件生成的覆盖表
+- 证据：`evidence/privacy.json`（当前扫描的逐仓库覆盖与命中明细；发现阶段记录到 63 处命中，处置后为 0），附录 A 由该文件生成
 - 建议：把文档与结果文件里的绝对路径改为 `~/.dsh-desktop/...`、把 SSH 别名替换为 `<ssh-alias>`，并补一条提交前检查；历史清理需要 force push，属于不可逆操作，确认后再执行。
+- 处理结果：已修复并复验通过。仓库新增 `scripts/redact-personal-data.mjs`（占位符 `<user>`、`<ssh-connection>`、`session-<id>`，词表由运行环境提供，不写进仓库），两个文档在全部提交上重写；同时移除了 20 张在真实机器上采集的截图——终端回显带本机用户名与家目录，SSH 场景带远端主机名、远端用户名与私有工程路径，README 引用的一张外部资产同样如此；正文与两份 README 改写为说明性文字，图片留存在仓库之外。历史用 `git filter-branch` 重写（含 5 个 tag）后 force push；复验：12 个仓库的工作区与全部提交 0 命中，插件自测 15/15 通过，`results.json` 仍是合法 JSON。远端旧对象在被 GitHub 回收前仍可按旧 sha 访问。
 
 ### F-3　空输入回车会新建空会话
 
@@ -283,11 +284,11 @@
 
 ## 八、附录 A：隐私审查覆盖
 
-扫描时间：2026-09-18 05:15（UTC）。每个仓库都检查了工作区文件、未跟踪文件、全部提交的目录树与去重后的文件内容，共 12 个仓库、62 个提交、63 处命中。
+扫描时间：2026-09-18 06:08（UTC）。每个仓库都检查了工作区文件、未跟踪文件、全部提交的目录树与去重后的文件内容，共 12 个仓库、66 个提交、0 处命中。
 
 | 仓库 | 提交数 | 命中 |
 | --- | --- | --- |
-| dsh-plugins/distribution/dsh-desktop-bundle | 5 | 0 |
+| dsh-plugins/distribution/dsh-desktop-bundle | 8 | 0 |
 | dsh-plugins/repositories/dsh-desktop-suite | 3 | 0 |
 | dsh-plugins/repositories/dsh-desktop-workbench | 3 | 0 |
 | dsh-plugins/repositories/dsh-plugin-browser | 10 | 0 |
@@ -296,55 +297,11 @@
 | dsh-plugins/repositories/dsh-plugin-sidebar | 4 | 0 |
 | dsh-plugins/repositories/dsh-plugin-ssh | 5 | 0 |
 | dsh-plugins/repositories/dsh-plugin-suite | 1 | 0 |
-| dsh-plugins/repositories/dsh-plugin-terminal | 9 | **63** |
+| dsh-plugins/repositories/dsh-plugin-terminal | 10 | 0 |
 | dsh-plugins/repositories/dsh-plugin-workbench | 4 | 0 |
 | dsh-plugins/repositories/dsh-plugin-workflow | 4 | 0 |
 
-命中按规则汇总：private-project 13 处、person-name 48 处、session-id 2 处。
-
-涉及的文件与修订：
-
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:11` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:171` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:195` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:219` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:220` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:17` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:23` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:35` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:83` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:89` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:107` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:131` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:142` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:167` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:191` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:209` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:226` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:233` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:251` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:275` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:310` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:311` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:316` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:317` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:329` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:335` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:365` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:411` [session-id]
-- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:415` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:11` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:171` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:195` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:219` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:220` [private-project]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:17` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:23` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:35` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:83` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:89` [person-name]
-- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:107` [person-name]
-- 其余 23 条见 `evidence/privacy.json`
+全部仓库未发现个人路径、用户名、私有别名、密钥或凭据文件。
 
 ## 九、复现方式
 

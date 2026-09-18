@@ -58,9 +58,15 @@ const FINDINGS = [
       + '仅改当前文件无法从历史中移除。其余 11 个仓库未发现个人路径、密钥或私有别名。',
     repro: '`node qa/privacy-scan.mjs`（完整清单写入 `evidence/privacy.json`，含仓库、修订、文件、行号与规则；'
       + '不打印命中内容本身），对应用例 `node qa/run-cases.mjs run P`。',
-    evidence: '`evidence/privacy.json`（63 条命中明细与逐仓库覆盖），附录 A 是从该文件生成的覆盖表',
+    evidence: '`evidence/privacy.json`（当前扫描的逐仓库覆盖与命中明细；发现阶段记录到 63 处命中，处置后为 0），附录 A 由该文件生成',
     suggestion: '把文档与结果文件里的绝对路径改为 `~/.dsh-desktop/...`、把 SSH 别名替换为 `<ssh-alias>`，'
       + '并补一条提交前检查；历史清理需要 force push，属于不可逆操作，确认后再执行。',
+    resolved: '已修复并复验通过。仓库新增 `scripts/redact-personal-data.mjs`（占位符 `<user>`、`<ssh-connection>`、`session-<id>`，'
+      + '词表由运行环境提供，不写进仓库），两个文档在全部提交上重写；同时移除了 20 张在真实机器上采集的截图——'
+      + '终端回显带本机用户名与家目录，SSH 场景带远端主机名、远端用户名与私有工程路径，README 引用的一张外部资产同样如此；'
+      + '正文与两份 README 改写为说明性文字，图片留存在仓库之外。历史用 `git filter-branch` 重写（含 5 个 tag）后 force push；'
+      + '复验：12 个仓库的工作区与全部提交 0 命中，插件自测 15/15 通过，`results.json` 仍是合法 JSON。'
+      + '远端旧对象在被 GitHub 回收前仍可按旧 sha 访问。',
   },
   {
     id: 'F-3',
@@ -217,13 +223,17 @@ function main() {
   if (failed.length === 0) {
     out.push('安装包在当前环境下可以正常启动、创建与恢复会话、跟随系统主题、在多种窗口尺寸下保持布局，并且未在仓库中发现个人隐私数据。')
   } else {
-    out.push('主流程（启动、会话、主题、布局、面板、异常输入）可用，没有出现数据损坏或会话丢失；'
-      + '下面 4 项需要处理，其中 F-1 影响窗口唤回并伴随未捕获异常，F-2 属于已发布仓库的隐私泄露：')
+    const openFindings = FINDINGS.filter(finding => finding.cases.some(id => failedIds.has(id)))
+    out.push(`主流程（启动、会话、主题、布局、面板、异常输入）可用，没有出现数据损坏或会话丢失；`
+      + `下面 ${openFindings.length} 项需要处理，其中 F-1 影响窗口唤回并伴随未捕获异常：`)
     out.push('')
-    for (const finding of FINDINGS) {
+    for (const finding of openFindings) {
       const open = finding.cases.filter(id => failedIds.has(id))
-      if (open.length === 0) continue
       out.push(`- **${finding.id} · ${finding.severity} · ${finding.title}** —— 对应用例 ${open.join('、')}`)
+    }
+    for (const finding of FINDINGS) {
+      if (openFindings.includes(finding) || finding.resolved === undefined) continue
+      out.push(`- ~~${finding.id} · ${finding.severity} · ${finding.title}~~ —— 已修复：对应用例 ${finding.cases.join('、')} 复验通过，见第五节`)
     }
   }
   out.push('')
@@ -274,15 +284,20 @@ function main() {
   }
   for (const finding of FINDINGS) {
     const open = finding.cases.filter(id => failedIds.has(id))
-    if (open.length === 0) continue
+    // A finding that has been fixed still belongs here: the reader wants to see
+    // what was wrong and what changed, not an empty list.
+    if (open.length === 0 && finding.resolved === undefined) continue
+    const related = open.length > 0 ? open : finding.cases
     out.push(`### ${finding.id}　${finding.title}`)
     out.push('')
-    out.push(`- 严重程度：${finding.severity}　相关用例：${open.join('、')}`)
+    out.push(`- 严重程度：${finding.severity}　相关用例：${related.join('、')}`
+      + (open.length === 0 ? '（复验通过）' : ''))
     out.push(`- 现象：${finding.symptom}`)
     out.push(`- 影响：${finding.impact}`)
     out.push(`- 复现：${finding.repro}`)
     if (finding.evidence !== undefined) out.push(`- 证据：${finding.evidence}`)
     out.push(`- 建议：${finding.suggestion}`)
+    if (finding.resolved !== undefined) out.push(`- 处理结果：${finding.resolved}`)
     for (const shot of finding.shots ?? []) {
       if (!available.has(`${shot}.png`)) continue
       out.push('')
