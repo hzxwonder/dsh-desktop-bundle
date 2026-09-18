@@ -1078,7 +1078,7 @@ export function apply(ctx) {
         name: labels[kind],
         kind,
         position: position ?? {
-          x: 100 + (definition.nodes.length % 3) * 240,
+          x: 100 + (definition.nodes.length % 3) * 400,
           y: 100 + Math.floor(definition.nodes.length / 3) * 150,
         },
       };
@@ -1113,8 +1113,8 @@ export function apply(ctx) {
       id: n.id,
       type: "workflowNode",
       position: n.position ?? {
-        x: 80 + (i % 3) * 240,
-        y: 80 + Math.floor(i / 3) * 160,
+        x: 80 + (i % 3) * 400,
+        y: 80 + Math.floor(i / 3) * 300,
       },
       data: {
         kind: n.kind,
@@ -1381,14 +1381,15 @@ export function apply(ctx) {
             </div>
             <div className="wf-step-composer">
               <div className="wf-instruction">
-                <input
+                <textarea
+                  rows={2}
                   aria-label="编辑这些步骤"
-                  placeholder="编辑这些步骤"
+                  placeholder="描述你想调整的步骤…"
                   value={instruction}
                   disabled={sending}
                   onChange={(e) => setInstruction(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") {
+                    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                       e.preventDefault();
                       void submitInstruction();
                     }
@@ -1404,9 +1405,7 @@ export function apply(ctx) {
                   <Send size={16} />
                 </button>
               </div>
-              <p className="wf-composer-note" role="status">
-                {notice || "用一句话说明要改什么，Agent 会更新步骤定义；保存后生成新版本。"}
-              </p>
+              {notice && <p className="wf-composer-note" role="status">{notice}</p>}
             </div>
           </div>
           <aside className="wf-inspector" aria-label="步骤设置">
@@ -2334,6 +2333,7 @@ export function apply(ctx) {
                 <MessageSquare size={16} />
                 对话修改
               </button>
+              <label className="wf-editor-debug"><input type="checkbox" aria-label="逐步调试" checked={Boolean(data.workflows.find(w => w.id === record.id)?.debug)} onChange={e => perform(() => api({ action: 'setWorkflowDebug', id: record.id, debug: e.target.checked }))} />逐步调试</label>
               <button onClick={() => setTrial(true)}>
                 <Play size={16} />
                 试运行
@@ -2613,8 +2613,6 @@ export function apply(ctx) {
           <strong>{name}</strong>
           {binding && <small>v{binding.revision}</small>}
         </button>
-        {!authoring && recipients.length > 0 && <select aria-label="步骤消息接收者" className="wf-recipient" value={binding?.recipient ?? ''} onChange={async e => { await api({ action: 'setRecipient', sessionId, recipient: e.target.value }); await refresh(); }}><option value="">当前步骤</option>{recipients.map(r => <option key={r.sessionId} value={r.sessionId}>{r.name}</option>)}</select>}
-        {!authoring && binding && !active && <label className="wf-debug-toggle"><input type="checkbox" checked={Boolean(binding.debug)} onChange={async e => { await api({ action: "setDebug", sessionId, debug: e.target.checked }); await refresh(); }} />逐步调试</label>}
         {active && (
           <span className={`wf-status ${active.status}`}>
             {statuses[active.status] ?? active.status}
@@ -2654,11 +2652,7 @@ export function apply(ctx) {
       const view = props.useStore(s => s.view);
       const step = data.stepSessions?.find(s => s.sessionId === props.sessionId);
       if (step) return <RunTimeline ctx={ctx} api={api} runId={step.runId} focusNodeId={step.nodeId} openSession={openSession} onChange={refresh} embedded><Native {...props} /></RunTimeline>;
-      if (!run) {
-        const binding = data.bindings.find(b => b.sessionId === props.sessionId && b.mode !== 'author');
-        if (binding) return <><div className="wf wf-timeline"><header className="wf-run-header"><strong>{data.workflows.find(w => w.id === binding.workflowId)?.name}</strong><label className="wf-debug-toggle"><input type="checkbox" checked={Boolean(binding.debug)} onChange={async e => { await api({action:'setDebug',sessionId:props.sessionId,debug:e.target.checked}); await refresh(); }} />逐步调试</label></header></div><Native {...props} /></>;
-        return <Native {...props} />;
-      }
+      if (!run) return <Native {...props} />;
       if (view === 'trajectory') return <Native {...props} />;
       return <><RunTimeline ctx={ctx} api={api} runId={run.id} openSession={openSession} onChange={refresh} embedded /><details className="wf-root-conversation"><summary>总会话交流</summary><Native {...props} /></details></>;
     };

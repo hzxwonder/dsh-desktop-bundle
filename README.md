@@ -121,7 +121,7 @@ node scripts/vendor.mjs --check                   # 只报告偏差
 
 ## Workflow Notebook
 
-工作流 0.3.0 提供居中的步骤对话、淡色分步背景、顶部调试控制和图标工具栏。总会话及独立步骤页均可编辑本次运行的 prompt、添加附件并单步重跑；步骤保留结论、文件、模型与本地快照。
+工作流 0.3.0 提供左对齐的步骤对话、淡色分步背景、编辑器调试设置和图标工具栏。总会话及独立步骤页均可编辑本次运行的 prompt、添加附件并单步重跑；步骤保留结论、文件、模型与本地快照。
 
 ![Workflow Notebook](vendor/dsh-plugin-workflow/assets/workflow-conversation.gif)
 

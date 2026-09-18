@@ -217,7 +217,7 @@ export async function apply(ctx, config = {}) {
     const { action, ...a } = args;
     if (action === "state")
       return {
-        workflows: store.list("workflow"),
+        workflows: store.list("workflow").map(w => ({ ...w, debug: Boolean(store.get("runSettings", w.id)?.debug) })),
         authoring: store.list("authoring"),
         bindings: store.list("binding"),
         stepSessions: store.list("run").flatMap(run => Object.entries(run.nodes).flatMap(([nodeId, n]) => [
@@ -248,6 +248,7 @@ export async function apply(ctx, config = {}) {
       if (!wf) fail("WORKFLOW_NOT_FOUND");
       return {
         ...wf,
+        debug: Boolean(store.get("runSettings", wf.id)?.debug),
         snapshot: store.get("revision", `${a.id}:${a.revision ?? wf.revision}`),
       };
     }
@@ -365,14 +366,24 @@ export async function apply(ctx, config = {}) {
         archived: a.archived !== false,
       });
     }
+    if (action === "setWorkflowDebug") {
+      if (!store.get('workflow', a.id)) fail('WORKFLOW_NOT_FOUND');
+      const debug = Boolean(a.debug);
+      store.put('runSettings', a.id, { debug });
+      for (const binding of store.list('binding').filter(b => b.workflowId === a.id && b.mode === 'run')) {
+        if (!store.list('run').some(r => r.sessionId === binding.sessionId)) store.put('binding', binding.sessionId, { ...binding, debug });
+      }
+      return { debug };
+    }
     if (action === "bind") {
       if (!["run", "author"].includes(a.mode ?? "run")) fail("BIND_MODE");
-      return store.bind(
+      const binding = store.bind(
         parent?.session.id ?? a.sessionId,
         a.id,
         a.revision,
         a.mode,
       );
+      return store.put('binding', binding.sessionId, { ...binding, debug: Boolean(store.get('runSettings', a.id)?.debug) });
     }
     if (action === "unbind") {
       store.remove("binding", parent?.session.id ?? a.sessionId);
@@ -544,7 +555,7 @@ export async function apply(ctx, config = {}) {
               input: a.input,
               parent,
               runId,
-              debug: Boolean(a.debug),
+              debug: a.debug === undefined ? Boolean(store.get("runSettings", a.id)?.debug) : Boolean(a.debug),
             });
       if (a.background) {
         track(promise.then((run) => deliverQuestion(run, parent)));

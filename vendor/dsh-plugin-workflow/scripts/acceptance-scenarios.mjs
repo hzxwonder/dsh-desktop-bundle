@@ -35,6 +35,14 @@ export async function acceptance({ page, call, api, plugin, errors, environment 
     const state = await call({ action: 'state' });
     assert(state.workflows.some(w => w.id === 'editorial-demo')); assert(state.workflows.some(w => w.id === 'release-demo'));
   });
+  await record('U12', '编辑器调试设置持久化并传递到新绑定', async () => {
+    await call({action:'setWorkflowDebug',id:def.id,debug:true});
+    assert.equal((await call({action:'read',id:def.id})).debug,true);
+    const sid=(await api('/api/workflow-fixture',{action:'create',sessionId:'debug-setting-session'})).sessionId;
+    const binding=await call({action:'bind',id:def.id,revision:1,sessionId:sid});assert.equal(binding.debug,true);
+    await call({action:'setWorkflowDebug',id:def.id,debug:false});
+    assert.equal((await call({action:'state'})).bindings.find(b=>b.sessionId===sid).debug,false);
+  });
   await record('D01', '调试执行一个步骤后停止', async () => {
     const created = await api('/api/workflow-fixture', { action: 'create', sessionId: 'editorial-session' }); sessionId = created.sessionId;
     await call({ action: 'bind', id: def.id, revision: 1, sessionId });
@@ -55,6 +63,7 @@ export async function acceptance({ page, call, api, plugin, errors, environment 
     await page.getByRole('button', { name: '打开总会话', exact: true }).click();
     await page.getByRole('region', { name: '工作流运行时间线' }).waitFor({ timeout: 10000 });
     assert.equal(await page.locator('[data-step-id]').count(), 3);
+    assert.equal(await page.getByRole('checkbox',{name:'逐步调试',exact:true}).count(),0);
     await shot('timeline-debug');
   });
   await record('D02', '界面单步推进并自动折叠历史', async () => {

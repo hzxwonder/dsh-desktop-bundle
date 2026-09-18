@@ -969,3 +969,26 @@ body[data-ds-dark-theme] .wf-run-step { background: hsl(var(--wf-cell-hue) 10% 1
 .wf-run-header .wf-debug-toggle { white-space: nowrap; }
 .wf-run-header .wf-debug-toggle input { width: auto; }
 .wf-run-header .wf-run-actions button { flex: 0 0 auto; }
+
+/* Workflow conversations follow the native reading rhythm. */
+.wf .wf-session-name { justify-content: flex-start; text-align: left; }
+.wf-session-name > svg { flex-shrink: 0; }
+.wf-timeline { margin-left: 0; margin-right: auto; text-align: left; padding: 12px 28px; }
+.wf-run-step { border: 0; border-top: 1px solid var(--wf-line); border-radius: 0; margin: 12px 0; padding: 18px 16px 22px; }
+.wf-cell-input { margin: 12px 0 18px; width: 100%; }
+.wf-input-bubble { border-radius: 12px; }
+.wf-file-row { justify-content: flex-start; }
+.wf-run-header { position: static; padding: 4px 0 12px; }
+.wf-root-conversation { margin-left: 0; margin-right: auto; }
+.wf-editor-debug { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 12px; padding: 0 8px; }
+.wf-editor-debug input { width: auto; margin: 0; }
+.wf-step-composer { padding: 12px 20px; background: var(--wf-bg); }
+.wf-instruction { align-items: flex-end; border-radius: 18px; background: var(--wf-bg); padding: 12px; box-shadow: 0 2px 12px rgb(0 0 0 / 3%); }
+.wf .wf-instruction textarea { flex: 1; min-width: 0; min-height: 48px; max-height: 160px; resize: vertical; padding: 3px 5px; border: 0; border-radius: 0; background: transparent; box-shadow: none; font: inherit; line-height: 1.6; }
+.wf-instruction textarea:focus-visible { outline: none; }
+.wf .wf-composer-note { text-align: left; margin: 6px 4px 0; }
+@media(max-width:700px) { .wf-timeline { padding: 8px 12px; } .wf-run-step { padding-inline: 8px; } .wf-step-composer { padding: 10px; } }
+.wf-appbar { flex-wrap: wrap; }
+.wf-appbar > button,.wf-appbar > .wf-segmented,.wf-appbar > .wf-chip,.wf-appbar > .wf-editor-debug { flex-shrink: 0; white-space: nowrap; }
+.wf-appbar .wf-segmented button { white-space: nowrap; flex-shrink: 0; }
+@media(max-width:700px) { .wf-appbar { flex-wrap: nowrap; overflow-x: auto; } }
