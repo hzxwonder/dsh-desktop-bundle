@@ -995,6 +995,32 @@ export function apply(ctx) {
       </>
     );
   }
+  const nodeTypes = {
+    workflowNode: ({ data: view, selected: active }) => (
+      <div className={`wf-node-card wf-step-${view.kind} ${active ? "is-selected" : ""}`}>
+        {view.kind !== 'input' && <Handle type="target" position={Position.Left} />}
+        <div className="wf-step-heading">
+          <span className="wf-step-glyph">{glyphFor(view.kind, 14)}</span>
+          <strong>{view.title}</strong>
+          <em>{labels[view.kind]}</em>
+        </div>
+        <div className="wf-step-body">
+          <p>{view.summary}</p>
+          {view.references.length > 0 && (
+            <div className="wf-step-references">
+              {view.references.map((ref, i) => (
+                <span key={`${ref.id}-${i}`} className={`wf-inline-reference wf-step-${ref.kind}`}>{ref.name}</span>
+              ))}
+            </div>
+          )}
+          {view.kind === 'agent' && <span className="wf-step-model">{view.model}</span>}
+          {view.kind === 'interact' && <span className="wf-step-model">{view.mode}</span>}
+        </div>
+        <Handle type="source" position={Position.Right} />
+      </div>
+    ),
+  };
+
   function Editor({ record, caps, save }) {
     const data = useData();
     const draftKey = `${record.id}:${record.revision}`;
@@ -1134,31 +1160,6 @@ export function apply(ctx) {
       label: e.on === "true" ? "是" : e.on === "false" ? "否" : undefined,
       className: e.on === "false" ? "wf-edge-dashed" : undefined,
     }));
-    const nodeTypes = {
-      workflowNode: ({ data: view, selected: active }) => (
-        <div className={`wf-node-card wf-step-${view.kind} ${active ? "is-selected" : ""}`}>
-          {view.kind !== 'input' && <Handle type="target" position={Position.Left} />}
-          <div className="wf-step-heading">
-            <span className="wf-step-glyph">{glyphFor(view.kind, 14)}</span>
-            <strong>{view.title}</strong>
-            <em>{labels[view.kind]}</em>
-          </div>
-          <div className="wf-step-body">
-            <p>{view.summary}</p>
-            {view.references.length > 0 && (
-              <div className="wf-step-references">
-                {view.references.map((ref, i) => (
-                  <span key={`${ref.id}-${i}`} className={`wf-inline-reference wf-step-${ref.kind}`}>{ref.name}</span>
-                ))}
-              </div>
-            )}
-            {view.kind === 'agent' && <span className="wf-step-model">{view.model}</span>}
-            {view.kind === 'interact' && <span className="wf-step-model">{view.mode}</span>}
-          </div>
-          <Handle type="source" position={Position.Right} />
-        </div>
-      ),
-    };
     const latestRun = data.runs.find((item) => item.workflowId === record.id);
     useEffect(() => {
       let live = true;
