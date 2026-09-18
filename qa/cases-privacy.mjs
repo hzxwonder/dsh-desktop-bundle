@@ -226,9 +226,12 @@ export const privacyCases = [
           const absolute = join(repository, path)
           if (!existsSync(absolute) || statSync(absolute).size > 1024 * 1024) continue
           if (/(package-lock\.json|pnpm-lock\.yaml)$/.test(path)) continue
+          // The scanners name the SDKs they look for; their own sources are not vendors.
+          if (/(qa\/cases-privacy\.mjs|qa\/privacy-scan\.mjs)$/.test(path)) continue
           const text = readFileSync(absolute, 'utf8')
           const match = TELEMETRY.exec(text)
-          if (match !== null) hits.push({ repository: repository.replace(`${WORKSPACE}/`, ''), path, rule: match[0] })
+          // Record the rule, never the matched token: the evidence is committed too.
+          if (match !== null) hits.push({ repository: repository.replace(`${WORKSPACE}/`, ''), path, rule: 'telemetry-sdk' })
         }
       }
       assert.note(`checked ${repositories().length} repositories for telemetry SDKs`)

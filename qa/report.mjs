@@ -49,14 +49,16 @@ const FINDINGS = [
     title: '已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名',
     severity: '高（隐私）',
     cases: ['P-01', 'P-02', 'P-04'],
-    symptom: '`dsh-plugin-terminal` 仓库（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）中，'
-      + '`docs/acceptance/2026-09-15-terminal-panel.md` 第 171、195 行写着 `/Users/<用户名>/.dsh-desktop/plain-sessions…`，'
-      + '第 11、219、220 行出现私有 SSH 连接别名；`docs/acceptance/2026-09-15/results.json` 第 17、310、316 行同样命中。'
-      + '这些内容既在工作区文件中，也已经进入提交历史。',
-    impact: '公开仓库里泄露本机用户名、目录结构与私有 SSH 主机别名，等于给出内网与账号线索；'
-      + '仅改当前文件无法从历史中移除。',
-    repro: '`node qa/run-cases.mjs run P`（用例 P-01 / P-02 / P-04），扫描覆盖 12 个仓库的工作区文件、未跟踪文件与全部历史 blob。',
-    evidence: '`evidence/privacy.json`（逐条命中：仓库、文件、行号、规则）',
+    symptom: '审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：'
+      + '11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）——'
+      + '`docs/acceptance/2026-09-15-terminal-panel.md` 与 `docs/acceptance/2026-09-15/results.json` 两个文件共 63 处：'
+      + '本机用户名与家目录路径 48 处、私有项目名与内部连接别名 13 处、会话 id 2 处；'
+      + '其中 29 处在当前工作区、29 处在提交 `5cdb931`、5 处在更早的提交 `dac3169`，即已进入公开历史。',
+    impact: '公开仓库里泄露本机用户名、目录结构、私有项目名与内部连接别名，等于给出内网与账号线索；'
+      + '仅改当前文件无法从历史中移除。其余 11 个仓库未发现个人路径、密钥或私有别名。',
+    repro: '`node qa/privacy-scan.mjs`（完整清单写入 `evidence/privacy.json`，含仓库、修订、文件、行号与规则；'
+      + '不打印命中内容本身），对应用例 `node qa/run-cases.mjs run P`。',
+    evidence: '`evidence/privacy.json`（63 条命中明细与逐仓库覆盖），附录 A 是从该文件生成的覆盖表',
     suggestion: '把文档与结果文件里的绝对路径改为 `~/.dsh-desktop/...`、把 SSH 别名替换为 `<ssh-alias>`，'
       + '并补一条提交前检查；历史清理需要 force push，属于不可逆操作，确认后再执行。',
   },
@@ -227,6 +229,7 @@ function main() {
   out.push(`| 控制方式 | Chrome DevTools Protocol（渲染进程真实 DOM 与截屏） |`)
   out.push('')
   out.push('测试在一个独立的 fixture home 中进行，用户日常使用的 home 全程未被写入；')
+  out.push('隐私审查覆盖分发仓库与 11 个插件仓库（工作区、未跟踪文件与全部提交历史），结果见附录 A。')
   out.push('推理走本地 mock 模型服务（OpenAI 兼容接口），不使用任何真实密钥。')
   out.push('窗口关闭、重开、后台冻结、进程退出等场景通过 DevTools 协议与进程信号驱动，')
   out.push('因为测试进程没有 macOS 辅助功能权限，无法注入原生菜单快捷键；受限项在第六节列出。')
@@ -320,20 +323,67 @@ function main() {
     + '`log-*.txt` 是各组运行日志。')
   out.push('')
 
-  out.push('## 八、复现方式')
+  out.push('## 八、附录 A：隐私审查覆盖')
+  out.push('')
+  const privacyPath = join(EVIDENCE, 'privacy.json')
+  if (existsSync(privacyPath)) {
+    const privacy = JSON.parse(readFileSync(privacyPath, 'utf8'))
+    const totalCommits = privacy.summary.reduce((sum, entry) => sum + entry.commits, 0)
+    const totalFindings = privacy.summary.reduce((sum, entry) => sum + entry.findings, 0)
+    out.push(`扫描时间：${privacy.generatedAt.slice(0, 16).replace('T', ' ')}（UTC）。`
+      + `每个仓库都检查了工作区文件、未跟踪文件、全部提交的目录树与去重后的文件内容，共 ${privacy.summary.length} 个仓库、`
+      + `${totalCommits} 个提交、${totalFindings} 处命中。`)
+    out.push('')
+    out.push('| 仓库 | 提交数 | 命中 |')
+    out.push('| --- | --- | --- |')
+    for (const entry of privacy.summary) {
+      out.push(`| ${entry.repository} | ${entry.commits} | ${entry.findings === 0 ? '0' : `**${entry.findings}**`} |`)
+    }
+    out.push('')
+    const byRule = new Map()
+    for (const finding of privacy.findings) byRule.set(finding.rule, (byRule.get(finding.rule) ?? 0) + 1)
+    if (byRule.size > 0) {
+      out.push('命中按规则汇总：' + [...byRule].map(([rule, count]) => `${rule} ${count} 处`).join('、') + '。')
+      out.push('')
+      out.push('涉及的文件与修订：')
+      out.push('')
+      for (const finding of privacy.findings.slice(0, 40)) {
+        out.push(`- \`${finding.repository}\` ${finding.revision} \`${finding.path}:${finding.line}\` [${finding.rule}]`)
+      }
+      if (privacy.findings.length > 40) out.push(`- 其余 ${privacy.findings.length - 40} 条见 \`evidence/privacy.json\``)
+      out.push('')
+    } else {
+      out.push('全部仓库未发现个人路径、用户名、私有别名、密钥或凭据文件。')
+      out.push('')
+    }
+  } else {
+    out.push('未找到 `evidence/privacy.json`，先运行 `node qa/privacy-scan.mjs`。')
+    out.push('')
+  }
+
+  out.push('## 九、复现方式')
   out.push('')
   out.push('```bash')
-  out.push('# 准备独立的测试 home（不会改动日常使用的数据目录）')
-  out.push('node dsh-plugins/distribution/dsh-desktop-bundle/qa/setup-qa.sh fixture')
-  out.push('node dsh-plugins/distribution/dsh-desktop-bundle/qa/configure-provider.mjs')
-  out.push('node dsh-plugins/distribution/dsh-desktop-bundle/qa/mock-llm.mjs --port 43921 &')
-  out.push('')
-  out.push('# 执行全部用例并生成报告')
   out.push('cd dsh-plugins/distribution/dsh-desktop-bundle')
+  out.push('')
+  out.push('# 1. 备份日常 home，准备隔离的 fixture home，并启动本地 mock 模型服务')
+  out.push('bash qa/setup-qa.sh backup            # 结束后用 bash qa/setup-qa.sh restore 还原')
+  out.push('node qa/mock-llm.mjs --port 43921 &')
+  out.push('')
+  out.push('# 2. 记录基线，执行用例（可只跑一组或单条：run B L、run R-12 L-05）')
   out.push('node qa/run-cases.mjs capture')
   out.push('node qa/run-cases.mjs run all')
+  out.push('')
+  out.push('# 3. 隐私审查与报告（词表放在 qa/private-terms.local.txt，或用 QA_PRIVATE_TERMS 传入）')
+  out.push('node qa/privacy-scan.mjs')
   out.push('node qa/report.mjs')
+  out.push('')
+  out.push('# 4. 还原日常 home 与启动器')
+  out.push('bash qa/setup-qa.sh restore')
   out.push('```')
+  out.push('')
+  out.push('报告与证据里的本机路径在写入前统一改写为 `/Users/<user>`（`qa/sanitize-evidence.mjs`），'
+    + '仓库里不含测试用的真实密钥，也不含日常 home 的任何内容。')
   out.push('')
 
   writeFileSync(outPath, `${out.join('\n')}\n`)

@@ -59,7 +59,6 @@ const ALLOWED_PATHS = [
   /(^|\/)qa\/privacy-scan\.mjs$/,   // defines the patterns it looks for
   /(^|\/)qa\/cases-privacy\.mjs$/, // and so does the privacy case group
   /(^|\/)qa\/evidence\//,
-  /(^|\/)docs\/acceptance\//,
 ]
 
 const TEXT_LIMIT = 2 * 1024 * 1024

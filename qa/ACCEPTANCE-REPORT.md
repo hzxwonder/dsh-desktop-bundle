@@ -1,6 +1,6 @@
 # DSH Desktop 打包版验收报告
 
-生成时间：2026-09-18 11:39　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
+生成时间：2026-09-18 13:27　应用版本：2.0.10（DSH 运行时 0.1.5-rc.2）　安装包：DSH-Desktop-2.0.10-arm64.dmg
 
 ## 一、结论
 
@@ -26,6 +26,7 @@
 | 控制方式 | Chrome DevTools Protocol（渲染进程真实 DOM 与截屏） |
 
 测试在一个独立的 fixture home 中进行，用户日常使用的 home 全程未被写入；
+隐私审查覆盖分发仓库与 11 个插件仓库（工作区、未跟踪文件与全部提交历史），结果见附录 A。
 推理走本地 mock 模型服务（OpenAI 兼容接口），不使用任何真实密钥。
 窗口关闭、重开、后台冻结、进程退出等场景通过 DevTools 协议与进程信号驱动，
 因为测试进程没有 macOS 辅助功能权限，无法注入原生菜单快捷键；受限项在第六节列出。
@@ -136,12 +137,12 @@
 | --- | --- | --- | --- | --- |
 | P-01 | P0 | 工作区文件不含个人路径与用户名 | 失败 | personal data in tracked files: [{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":171,"rule":"person-name"},{"path":"docs/acceptance/2026-09-15-terminal-panel.md","line":195,"rule":"person-name"}, |
 | P-02 | P0 | 全部提交历史不含个人路径与用户名 | 失败 | personal data in history: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line": |
-| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 479ms |
+| P-03 | P0 | 没有任何凭据文件被提交 | 通过 | 372ms |
 | P-04 | P1 | 不含真实密钥、私有端点或私有项目名 | 失败 | secret-like data found: [{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":11,"rule":"private-project"},{"repository":"dsh-plugins/repositories/dsh-plugin-terminal","path":"docs/acceptance/2026-09-15-terminal-panel.md","line":21 |
-| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 1351ms |
-| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 258ms |
-| P-07 | P1 | 验收证据本身不泄露个人数据 | 通过 | 6ms |
-| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 56ms |
+| P-05 | P1 | 发布磁盘镜像内不含用户数据 | 通过 | 797ms |
+| P-06 | P2 | 仓库不引入遥测或第三方上报 | 通过 | 254ms |
+| P-07 | P1 | 验收证据本身不泄露个人数据 | 通过 | 4ms |
+| P-08 | P1 | 验收过程未触碰真实用户数据目录 | 通过 | 43ms |
 
 ## 四、界面证据
 
@@ -215,10 +216,10 @@
 ### F-2　已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名
 
 - 严重程度：高（隐私）　相关用例：P-01、P-02、P-04
-- 现象：`dsh-plugin-terminal` 仓库（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）中，`docs/acceptance/2026-09-15-terminal-panel.md` 第 171、195 行写着 `/Users/<user>/.dsh-desktop/plain-sessions…`，第 11、219、220 行出现私有 SSH 连接别名；`docs/acceptance/2026-09-15/results.json` 第 17、310、316 行同样命中。这些内容既在工作区文件中，也已经进入提交历史。
-- 影响：公开仓库里泄露本机用户名、目录结构与私有 SSH 主机别名，等于给出内网与账号线索；仅改当前文件无法从历史中移除。
-- 复现：`node qa/run-cases.mjs run P`（用例 P-01 / P-02 / P-04），扫描覆盖 12 个仓库的工作区文件、未跟踪文件与全部历史 blob。
-- 证据：`evidence/privacy.json`（逐条命中：仓库、文件、行号、规则）
+- 现象：审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）——`docs/acceptance/2026-09-15-terminal-panel.md` 与 `docs/acceptance/2026-09-15/results.json` 两个文件共 63 处：本机用户名与家目录路径 48 处、私有项目名与内部连接别名 13 处、会话 id 2 处；其中 29 处在当前工作区、29 处在提交 `5cdb931`、5 处在更早的提交 `dac3169`，即已进入公开历史。
+- 影响：公开仓库里泄露本机用户名、目录结构、私有项目名与内部连接别名，等于给出内网与账号线索；仅改当前文件无法从历史中移除。其余 11 个仓库未发现个人路径、密钥或私有别名。
+- 复现：`node qa/privacy-scan.mjs`（完整清单写入 `evidence/privacy.json`，含仓库、修订、文件、行号与规则；不打印命中内容本身），对应用例 `node qa/run-cases.mjs run P`。
+- 证据：`evidence/privacy.json`（63 条命中明细与逐仓库覆盖），附录 A 是从该文件生成的覆盖表
 - 建议：把文档与结果文件里的绝对路径改为 `~/.dsh-desktop/...`、把 SSH 别名替换为 `<ssh-alias>`，并补一条提交前检查；历史清理需要 force push，属于不可逆操作，确认后再执行。
 
 ### F-3　空输入回车会新建空会话
@@ -266,18 +267,91 @@
 
 证据文件都在 `qa/evidence/`：截图以用例编号命名（`<用例>-<场景>.png`，失败现场为 `<用例>-failure.png`），`results.json` 保存逐条结果与说明，`privacy.json` 保存隐私扫描命中，`dock-activation-crash.log` 与 `reopen-behaviour.json` 是 F-1 的原始证据，`log-*.txt` 是各组运行日志。
 
-## 八、复现方式
+## 八、附录 A：隐私审查覆盖
+
+扫描时间：2026-09-18 05:15（UTC）。每个仓库都检查了工作区文件、未跟踪文件、全部提交的目录树与去重后的文件内容，共 12 个仓库、62 个提交、63 处命中。
+
+| 仓库 | 提交数 | 命中 |
+| --- | --- | --- |
+| dsh-plugins/distribution/dsh-desktop-bundle | 5 | 0 |
+| dsh-plugins/repositories/dsh-desktop-suite | 3 | 0 |
+| dsh-plugins/repositories/dsh-desktop-workbench | 3 | 0 |
+| dsh-plugins/repositories/dsh-plugin-browser | 10 | 0 |
+| dsh-plugins/repositories/dsh-plugin-project-memory | 11 | 0 |
+| dsh-plugins/repositories/dsh-plugin-sessions | 3 | 0 |
+| dsh-plugins/repositories/dsh-plugin-sidebar | 4 | 0 |
+| dsh-plugins/repositories/dsh-plugin-ssh | 5 | 0 |
+| dsh-plugins/repositories/dsh-plugin-suite | 1 | 0 |
+| dsh-plugins/repositories/dsh-plugin-terminal | 9 | **63** |
+| dsh-plugins/repositories/dsh-plugin-workbench | 4 | 0 |
+| dsh-plugins/repositories/dsh-plugin-workflow | 4 | 0 |
+
+命中按规则汇总：private-project 13 处、person-name 48 处、session-id 2 处。
+
+涉及的文件与修订：
+
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:11` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:171` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:195` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:219` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15-terminal-panel.md:220` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:17` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:23` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:35` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:83` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:89` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:107` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:131` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:142` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:167` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:191` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:209` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:226` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:233` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:251` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:275` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:310` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:311` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:316` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:317` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:329` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:335` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:365` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:411` [session-id]
+- `dsh-plugins/repositories/dsh-plugin-terminal` WORKTREE `docs/acceptance/2026-09-15/results.json:415` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:11` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:171` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:195` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:219` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15-terminal-panel.md:220` [private-project]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:17` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:23` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:35` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:83` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:89` [person-name]
+- `dsh-plugins/repositories/dsh-plugin-terminal` 5cdb931ee0 `docs/acceptance/2026-09-15/results.json:107` [person-name]
+- 其余 23 条见 `evidence/privacy.json`
+
+## 九、复现方式
 
 ```bash
-# 准备独立的测试 home（不会改动日常使用的数据目录）
-node dsh-plugins/distribution/dsh-desktop-bundle/qa/setup-qa.sh fixture
-node dsh-plugins/distribution/dsh-desktop-bundle/qa/configure-provider.mjs
-node dsh-plugins/distribution/dsh-desktop-bundle/qa/mock-llm.mjs --port 43921 &
-
-# 执行全部用例并生成报告
 cd dsh-plugins/distribution/dsh-desktop-bundle
+
+# 1. 备份日常 home，准备隔离的 fixture home，并启动本地 mock 模型服务
+bash qa/setup-qa.sh backup            # 结束后用 bash qa/setup-qa.sh restore 还原
+node qa/mock-llm.mjs --port 43921 &
+
+# 2. 记录基线，执行用例（可只跑一组或单条：run B L、run R-12 L-05）
 node qa/run-cases.mjs capture
 node qa/run-cases.mjs run all
+
+# 3. 隐私审查与报告（词表放在 qa/private-terms.local.txt，或用 QA_PRIVATE_TERMS 传入）
+node qa/privacy-scan.mjs
 node qa/report.mjs
+
+# 4. 还原日常 home 与启动器
+bash qa/setup-qa.sh restore
 ```
+
+报告与证据里的本机路径在写入前统一改写为 `/Users/<user>/sanitize-evidence.mjs`），仓库里不含测试用的真实密钥，也不含日常 home 的任何内容。
 
