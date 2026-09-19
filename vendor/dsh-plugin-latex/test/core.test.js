@@ -228,23 +228,3 @@ test("annotation preserves compiled prose and paragraph boundaries", async (t) =
     after = await run("pdftotext", [second, "-"]);
   assert.equal(after.output, before.output);
 });
-
-test("paper instructions are independent and preserve imported custom rules", async t => {
-  const {s,p} = await setup(t);
-  const second = await s.add({name: "Second paper"});
-  const instructions = await s.read(p.id, "AGENTS.md");
-  assert.match(instructions.content, /Overleaf/);
-  await s.save(p.id, "AGENTS.md", "# Local writing rules\nUse concise prose.\n", instructions.hash);
-  await s.ensureInstructions(p);
-  assert.match((await s.read(p.id, "AGENTS.md")).content, /Local writing rules/);
-  assert.match((await s.read(second.id, "AGENTS.md")).content, /Overleaf/);
-  const imported = await new Store(join(s.directory, "other-store")).init();
-  const copy = await imported.add({name: "Imported", path:p.root});
-  assert.match((await imported.read(copy.id, "AGENTS.md")).content, /Local writing rules/);
-  await rm(join(second.root,"AGENTS.md"));
-  await s.ensureInstructions(second);
-  assert.match((await s.read(second.id,"AGENTS.md")).content,/Overleaf/);
-  await rm(join(second.root,"AGENTS.md"));
-  await symlink(join(p.root,"AGENTS.md"),join(second.root,"AGENTS.md"));
-  await assert.rejects(s.ensureInstructions(second),/符号链接/);
-});

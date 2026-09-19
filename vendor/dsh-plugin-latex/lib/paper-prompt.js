@@ -1,3 +1,6 @@
+import { mkdir, writeFile, readFile, lstat, rename } from "node:fs/promises";
+import { join } from "node:path";
+
 export const PAPER_AGENTS = `# 论文工作区
 
 你正在论文工作台中协助用户完善当前论文。
@@ -17,4 +20,32 @@ export const PAPER_AGENTS = `# 论文工作区
 如果不是 Git 仓库，正常完成本地论文编辑并说明尚未配置 Git 同步。如果缺少 Overleaf remote、存在多个不明确的目标、凭据缺失、远端领先或合并冲突，保留本地成果并说明具体阻碍，请用户补充必要信息。
 不强制推送，不重写远端历史，不擅自创建或更换 remote，不推送到未经确认的其他仓库。不要在回复、日志或提交中泄露访问令牌、密码或含凭据的远端 URL。`;
 
-export const PAPER_GUIDANCE = `当前会话绑定论文工作区。每轮开始论文操作前，使用文件工具读取当前论文根目录的 AGENTS.md，并按照其中的论文写作、审阅和同步要求执行。文件由用户维护，以本轮读取的版本为准。`;
+export async function loadPaperInstructions(directory, projects = []) {
+  const folder = join(directory, "instructions");
+  await mkdir(folder, { recursive: true, mode: 0o700 });
+  const file = join(folder, "AGENTS.md");
+  try {
+    await writeFile(file, PAPER_AGENTS + "\n", { flag: "wx", mode: 0o600 });
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+  }
+  const stat = await lstat(file);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 128 * 1024)
+    throw new Error("论文工作台内部指令文件无效");
+  const text = await readFile(file, "utf8");
+  // Archive the exact template produced by the project-file migration.
+  for (const project of projects) {
+    const source = join(project.root, "AGENTS.md");
+    try {
+      const entry = await lstat(source);
+      if (!entry.isFile() || entry.isSymbolicLink() || entry.size > 128 * 1024) continue;
+      if (await readFile(source, "utf8") !== PAPER_AGENTS + "\n") continue;
+      const archive = join(folder, "project-template-backups", project.id);
+      await mkdir(archive, { recursive: true, mode: 0o700 });
+      await rename(source, join(archive, "AGENTS.md"));
+    } catch (error) {
+      if (!["ENOENT", "EACCES", "EPERM", "EXDEV"].includes(error.code)) throw error;
+    }
+  }
+  return text;
+}

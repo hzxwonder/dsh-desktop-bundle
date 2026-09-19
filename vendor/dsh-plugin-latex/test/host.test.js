@@ -210,7 +210,7 @@ test("paper system guidance is restricted to bound project sessions", async t =>
   const render = h.variables.get("latex_paper_guidance");
   assert.equal(render({agent}), "");
   await h.request({ action: "update", id: p.id, patch: { chat: { id: agent.session.id, title: "Paper" } } });
-  assert.match(render({agent}), /AGENTS\.md/);
+  assert.match(render({agent}), /Overleaf/);
 
   assert.equal(render({}), "");
   assert.equal(render({agent: {session: {id: "other", header: {cwd: p.root}}}}), "");
@@ -218,11 +218,10 @@ test("paper system guidance is restricted to bound project sessions", async t =>
   assert.equal(h.sections.find(s => s.name === "latex-paper-workbench").text, "{{latex_paper_guidance}}");
 });
 
-test("opening an existing paper creates its editable workspace instructions", async t => {
+test("paper instructions stay outside project files", async t => {
   const h = await host(t);
   const p = (await h.request({action:"create",name:"Workspace rules"})).value;
-  await rm(join(p.root,"AGENTS.md"));
   const opened = (await h.request({action:"open",id:p.id})).value;
-  assert.ok(opened.files.some(file => file.name === "AGENTS.md"));
-  assert.match((await readFile(join(p.root,"AGENTS.md"),"utf8")), /Overleaf/);
+  assert.ok(!opened.files.some(file => file.name === "AGENTS.md"));
+  await assert.rejects(readFile(join(p.root,"AGENTS.md")), {code:"ENOENT"});
 });

@@ -6,7 +6,7 @@ import { Store, fail, digest } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
 import { collectSources, mergeMaps } from "./lib/project-sources.js";
-import { PAPER_GUIDANCE } from "./lib/paper-prompt.js";
+import { loadPaperInstructions } from "./lib/paper-prompt.js";
 export const name = "dsh-plugin-latex";
 export const inject = [
   "connection",
@@ -20,12 +20,13 @@ export async function apply(ctx, config = {}) {
     config.directory ||
       join(process.env.DSH_HOME || join(homedir(), ".dsh"), "latex-studio"),
   ).init();
+  const paperInstructions = await loadPaperInstructions(store.directory, store.projects);
   ctx.systemPrompt.variable("latex_paper_guidance", ({ agent }) => {
     if (!agent?.session?.header?.cwd) return "";
     const project = store.projects.find(p =>
       p.chats.some(c => c.id === agent.session.id) &&
       p.root === resolve(agent.session.header.cwd));
-    return project ? PAPER_GUIDANCE : "";
+    return project ? paperInstructions : "";
   });
   ctx.systemPrompt.section({ name: "latex-paper-workbench", order: 85, text: "{{latex_paper_guidance}}" });
   const jobs = new Map(),
@@ -232,7 +233,6 @@ export async function apply(ctx, config = {}) {
       case "create":
         return publicProject(await store.add(a));
       case "open":
-        await store.ensureInstructions(store.get(a.id));
         return {
           project: publicProject(store.get(a.id)),
           files: await store.listFiles(a.id),
