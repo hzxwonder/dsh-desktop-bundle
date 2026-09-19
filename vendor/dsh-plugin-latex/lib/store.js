@@ -18,6 +18,7 @@ import {
   extname,
 } from "node:path";
 import { createHash, randomUUID } from "node:crypto";
+import { PAPER_AGENTS } from "./paper-prompt.js";
 export const digest = (text) => createHash("sha256").update(text).digest("hex");
 export function fail(message, code = "INVALID_REQUEST") {
   throw Object.assign(new Error(message), { code });
@@ -147,6 +148,7 @@ State the scope and limitations.
         );
       }
       root = await realpath(root);
+      await this.ensureInstructions({ root });
       const p = {
         id,
         name: name.trim(),
@@ -163,6 +165,16 @@ State the scope and limitations.
       await this.persist();
       return p;
     });
+  }
+  async ensureInstructions(project) {
+    const path = await inside(project.root, "AGENTS.md");
+    try {
+      await writeFile(path, PAPER_AGENTS + "\n", { flag: "wx", mode: 0o600 });
+    } catch (error) {
+      if (error.code !== "EEXIST") throw error;
+      const stat = await lstat(path);
+      if (!stat.isFile() || stat.isSymbolicLink()) fail("AGENTS.md 必须是项目内的普通文件");
+    }
   }
   async listFiles(id) {
     const p = this.get(id),

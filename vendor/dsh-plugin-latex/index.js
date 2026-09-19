@@ -232,6 +232,7 @@ export async function apply(ctx, config = {}) {
       case "create":
         return publicProject(await store.add(a));
       case "open":
+        await store.ensureInstructions(store.get(a.id));
         return {
           project: publicProject(store.get(a.id)),
           files: await store.listFiles(a.id),

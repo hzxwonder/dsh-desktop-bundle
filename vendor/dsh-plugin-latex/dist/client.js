@@ -44726,7 +44726,7 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-workspaces-host > .wf-workspace-wrapper { display:contents; }
 .lp-workspaces-host .wf-workspace-wrapper > .wf-tree { order:-1; }
 .lp-workspaces-host .wf-workspace-wrapper > :not(.wf-tree) { order:1; }
-.lp-sidebar-entry { display:flex; align-items:center; gap:8px; flex:none; order:0; margin:0 6px 8px; padding:8px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:500 13px/1.5 system-ui; text-align:left; }
+.lp-sidebar-entry { display:flex; align-items:center; gap:6px; flex:none; order:0; margin:0 6px 8px; min-height:30px; min-width:0; padding:5px 10px; border-radius:9px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:400 13px/1.5 var(--dsw-font-family, system-ui, sans-serif); letter-spacing:0; text-align:left; }
 .lp-sidebar-entry:hover { background:var(--dsw-alias-interactive-bg-hover); }
 .lp-sidebar-entry.is-rail { justify-content:center; margin-inline:0; }
 .dshDesktopFrame:has(.lp) { grid-template-columns:0 minmax(0,1fr) 0 !important; }
@@ -44735,6 +44735,10 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .dshDesktopFrame:has(.lp) > .dshDesktopResizeHandle { display:none !important; }
 .dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface { grid-column:2; }
 .qNbT7G_frame:has(.lp) > .qNbT7G_centerCol { grid-column:2; }
+
+.lp-sidebar-entry svg { flex:none; display:block; }
+.lp-sidebar-entry > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lp-sidebar-entry.is-rail { padding:6px 0; }
 `;
 
 // client/index.jsx
@@ -45148,7 +45152,10 @@ function apply(ctx) {
         "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0",
         onClick: open,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { "aria-hidden": "true", children: "\u25A7" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 2v6h6M8 13h8M8 17h6" })
+          ] }),
           wide && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" })
         ]
       }
