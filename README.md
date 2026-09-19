@@ -1,6 +1,6 @@
 # DSH Desktop Bundle
 
-一套按固定版本装配的 DSH Desktop 环境：仓库里存放 12 个已发布的插件源码快照，
+一套按固定版本装配的 DSH Desktop 环境：仓库里存放 13 个已发布的插件源码快照，
 `setup.sh` 把它们组装成一个 Desktop profile，Release 里给出配套的桌面应用安装包。
 使用者不需要逐个安装插件，也不会碰到插件之间的版本冲突——一个仓库、一个版本组合。
 
@@ -10,7 +10,7 @@
 | --- | --- |
 | `setup.sh` | 把插件、profile 与启动器状态装配到目标 DSH home |
 | `build-dmg.sh` | 从固定 revision 的桌面包编译出 dmg（维护者用） |
-| `vendor/` | 12 个插件的源码快照，逐个固定在发布版本上 |
+| `vendor/` | 13 个插件的源码快照，逐个固定在发布版本上 |
 | `templates/` | profile 清单、pnpm 工作区与 `cordis.patch.yml` 模板 |
 | `scripts/` | 装配、注册、校验与同步脚本 |
 | `docs/` | 安装、构建与插件更新说明 |
@@ -18,7 +18,9 @@
 
 插件集合：`dsh-plugin-suite`、`dsh-plugin-browser`、`dsh-plugin-project-memory`、
 `dsh-plugin-ssh`、`dsh-plugin-terminal`、`dsh-plugin-sidebar`、`dsh-plugin-workbench`、
-`dsh-plugin-workflow`、`dsh-plugin-sessions`、`dsh-plugin-latex`、`dsh-desktop-suite`、`dsh-desktop-workbench`。
+`dsh-plugin-workflow`、`dsh-plugin-sessions`、`dsh-plugin-latex`、`dsh-desktop-suite`、`dsh-desktop-workbench`、`dsh-better-reasoning-effort`。
+
+`dsh-better-reasoning-effort` 固定为 0.3.10（MIT），默认启用，提供模型推理强度配置、图片输入能力声明及对话输入区的推理强度滑块。上游源码和许可证保存在 `vendor/dsh-better-reasoning-effort/`。
 
 ## 安装
 
@@ -84,7 +86,7 @@ desktop main process`）。ad-hoc 签名、未公证，首次打开需要右键�
 node scripts/verify.mjs --home ~/.dsh-desktop --app "/Applications/DSH Desktop.app"
 ```
 
-输出逐项确认：profile 三件套齐全、12 个插件全部从本仓库的 `vendor/` 解析、
+输出逐项确认：profile 三件套齐全、13 个插件全部从本仓库的 `vendor/` 解析、
 没有任何插件回落到应用自带副本、声明 `dsh.client` 的包都导出了 `./package.json`、
 运行时依赖已安装、补丁层无未渲染占位符。缺少 Chromium 时给警告而非失败
 （浏览器插件可改用 `DSH_CHROME_EXECUTABLE` 指向本机 Chrome）。

@@ -15,7 +15,8 @@
       "dsh-plugin-suite",
       "dsh-plugin-workflow",
       "dsh-plugin-sessions",
-      "dsh-plugin-latex"
+      "dsh-plugin-latex",
+      "dsh-better-reasoning-effort"
     ],
     "runtimeDependencies": {
       "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2"
@@ -94,6 +95,12 @@
       "version": "0.1.7",
       "commit": "2a927ed79d7ee2576a87f6eb2f7d7993a8e2d05c",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex.git"
+    },
+    {
+      "name": "dsh-better-reasoning-effort",
+      "version": "0.3.10",
+      "commit": "1d951a7a436dd4780aa038fb34e27c3af4d8f156",
+      "repository": "https://github.com/HaoyueQin/dsh-better-reasoning-effort.git"
     }
   ]
 }
