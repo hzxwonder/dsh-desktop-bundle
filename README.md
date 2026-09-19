@@ -1,6 +1,6 @@
 # DSH Desktop Bundle
 
-一套按固定版本装配的 DSH Desktop 环境：仓库里存放 11 个已发布的插件源码快照，
+一套按固定版本装配的 DSH Desktop 环境：仓库里存放 12 个已发布的插件源码快照，
 `setup.sh` 把它们组装成一个 Desktop profile，Release 里给出配套的桌面应用安装包。
 使用者不需要逐个安装插件，也不会碰到插件之间的版本冲突——一个仓库、一个版本组合。
 
@@ -10,7 +10,7 @@
 | --- | --- |
 | `setup.sh` | 把插件、profile 与启动器状态装配到目标 DSH home |
 | `build-dmg.sh` | 从固定 revision 的桌面包编译出 dmg（维护者用） |
-| `vendor/` | 11 个插件的源码快照，逐个固定在发布版本上 |
+| `vendor/` | 12 个插件的源码快照，逐个固定在发布版本上 |
 | `templates/` | profile 清单、pnpm 工作区与 `cordis.patch.yml` 模板 |
 | `scripts/` | 装配、注册、校验与同步脚本 |
 | `docs/` | 安装、构建与插件更新说明 |
@@ -18,7 +18,7 @@
 
 插件集合：`dsh-plugin-suite`、`dsh-plugin-browser`、`dsh-plugin-project-memory`、
 `dsh-plugin-ssh`、`dsh-plugin-terminal`、`dsh-plugin-sidebar`、`dsh-plugin-workbench`、
-`dsh-plugin-workflow`、`dsh-plugin-sessions`、`dsh-desktop-suite`、`dsh-desktop-workbench`。
+`dsh-plugin-workflow`、`dsh-plugin-sessions`、`dsh-plugin-latex`、`dsh-desktop-suite`、`dsh-desktop-workbench`。
 
 ## 安装
 
@@ -84,7 +84,7 @@ desktop main process`）。ad-hoc 签名、未公证，首次打开需要右键�
 node scripts/verify.mjs --home ~/.dsh-desktop --app "/Applications/DSH Desktop.app"
 ```
 
-输出逐项确认：profile 三件套齐全、11 个插件全部从本仓库的 `vendor/` 解析、
+输出逐项确认：profile 三件套齐全、12 个插件全部从本仓库的 `vendor/` 解析、
 没有任何插件回落到应用自带副本、声明 `dsh.client` 的包都导出了 `./package.json`、
 运行时依赖已安装、补丁层无未渲染占位符。缺少 Chromium 时给警告而非失败
 （浏览器插件可改用 `DSH_CHROME_EXECUTABLE` 指向本机 Chrome）。
@@ -126,3 +126,11 @@ node scripts/vendor.mjs --check                   # 只报告偏差
 ![Workflow Notebook](vendor/dsh-plugin-workflow/assets/workflow-conversation.gif)
 
 本版本的插件单元测试与 Web 行为测试通过。Desktop 兼容模式的内容区恢复仍有待修复问题，完整产品验收尚未通过。详见[验收报告与截图](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md)。
+
+## LaTeX 论文工作台
+
+`dsh-plugin-latex` 提供本地论文项目选择、LaTeX / PDF 双栏、审阅选择与原生 Harness 对话抽屉。模型生成四级行文导图，并复用未改段落的分析结果。编译需本机安装 TeX Live 或 MacTeX 与 `latexmk`，模型沿用 Desktop 设置。
+
+![论文工作台演示](vendor/dsh-plugin-latex/assets/workbench-demo.gif)
+
+详见 [插件说明](vendor/dsh-plugin-latex/README.md) 和 [验收报告](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex/blob/main/docs/ACCEPTANCE.md)。演示由合成论文的实际 Desktop 操作截图组成。

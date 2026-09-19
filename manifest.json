@@ -14,7 +14,8 @@
       "@deepseek-ai/dsh-web-app",
       "dsh-plugin-suite",
       "dsh-plugin-workflow",
-      "dsh-plugin-sessions"
+      "dsh-plugin-sessions",
+      "dsh-plugin-latex"
     ],
     "runtimeDependencies": {
       "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2"
@@ -87,6 +88,12 @@
       "version": "0.1.0",
       "commit": "3d3cd33f69d5d109a334d724e5d61a12b39011c1",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-desktop-workbench.git"
+    },
+    {
+      "name": "dsh-plugin-latex",
+      "version": "0.1.0",
+      "commit": "1813b0211048df9f1aa7985725c52aa4ca3bfde0",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex.git"
     }
   ]
 }

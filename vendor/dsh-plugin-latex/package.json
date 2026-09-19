@@ -1,0 +1,61 @@
+{
+  "name": "dsh-plugin-latex",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local LaTeX paper workbench with native DeepSeek Harness conversations",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./dist/client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "dist",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE",
+    "assets"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test test/*.test.js",
+    "check:privacy": "node scripts/privacy-check.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex.git"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-workspace",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-commands"
+      ]
+    }
+  },
+  "dependencies": {
+    "@codemirror/state": "6.5.2",
+    "@codemirror/view": "6.38.6",
+    "@codemirror/commands": "6.8.1",
+    "@codemirror/language": "6.11.3",
+    "@codemirror/legacy-modes": "6.5.1",
+    "pdfjs-dist": "5.4.624",
+    "@lezer/highlight": "1.2.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  }
+}

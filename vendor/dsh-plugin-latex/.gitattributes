@@ -1,0 +1,3 @@
+dist/* linguist-generated=true -whitespace
+*.png binary
+*.gif binary
