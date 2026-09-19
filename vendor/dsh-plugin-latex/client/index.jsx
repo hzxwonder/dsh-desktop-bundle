@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -46,19 +47,62 @@ const api = async (args) => {
   return data.value;
 };
 const uid = () => crypto.randomUUID();
-function Editor({ file, onChange, onSelect, jump }) {
+export function Editor({ file, onChange, onSelect, jump }) {
   const host = useRef(),
     view = useRef(),
     handlers = useRef({ onChange, onSelect });
   handlers.current = { onChange, onSelect };
   useEffect(() => {
     if (!file) return;
+    let selecting = false, pointerAnchor = null;
+    const reportSelection = (v) => v.requestMeasure({
+      read: () => {
+        const { from, to } = v.state.selection.main;
+        const rect = from !== to ? v.coordsAtPos(to) : null;
+        return rect ? { start: from, end: to, text: v.state.sliceDoc(from, to), x: rect.left, y: rect.bottom } : null;
+      },
+      write: (value) => { if (!selecting) handlers.current.onSelect(value); },
+    });
+    const finishSelection = () => { selecting = false; reportSelection(v); };
     const v = new EditorView({
       parent: host.current,
       state: EditorState.create({
         doc: file.content,
         extensions: [
           lineNumbers(),
+          EditorView.contentAttributes.of({ "aria-label": "LaTeX 源码", spellcheck: "false" }),
+          EditorView.domEventHandlers({
+            pointerdown: (event, editor) => {
+              if (event.button !== 0 || event.pointerType === "touch" || !event.target.closest(".cm-content")) return false;
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY });
+              if (pos == null) return false;
+              selecting = true;
+              handlers.current.onSelect(null);
+              pointerAnchor = event.shiftKey ? editor.state.selection.main.anchor : pos;
+              editor.focus();
+              editor.dispatch({ selection: { anchor: pointerAnchor, head: pos } });
+              editor.contentDOM.setPointerCapture(event.pointerId);
+              event.preventDefault();
+              return true;
+            },
+            pointermove: (event, editor) => {
+              if (!selecting || pointerAnchor == null) return false;
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY }, false);
+              if (pos != null) editor.dispatch({ selection: { anchor: pointerAnchor, head: pos }, scrollIntoView: true });
+              return true;
+            },
+            pointerup: (event, editor) => {
+              if (editor.contentDOM.hasPointerCapture(event.pointerId)) editor.contentDOM.releasePointerCapture(event.pointerId);
+              pointerAnchor = null;
+              return false;
+            },
+            dblclick: (event, editor) => {
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY });
+              const word = pos == null ? null : editor.state.wordAt(pos);
+              if (word) editor.dispatch({ selection: { anchor: word.from, head: word.to } });
+              return !!word;
+            },
+          }),
           history(),
           drawSelection(),
           highlightActiveLine(),
@@ -102,29 +146,18 @@ function Editor({ file, onChange, onSelect, jump }) {
           EditorView.updateListener.of((u) => {
             if (u.docChanged) handlers.current.onChange(u.state.doc.toString());
             if (u.selectionSet || u.docChanged || u.viewportChanged) {
-              u.view.requestMeasure({
-                read: (v) => {
-                  const { from, to } = v.state.selection.main;
-                  const rect = from !== to ? v.coordsAtPos(to) : null;
-                  return rect
-                    ? {
-                        start: from,
-                        end: to,
-                        text: v.state.sliceDoc(from, to),
-                        x: rect.left,
-                        y: rect.bottom,
-                      }
-                    : null;
-                },
-                write: (value) => handlers.current.onSelect(value),
-              });
+              if (!selecting) reportSelection(u.view);
             }
           }),
         ],
       }),
     });
+    document.addEventListener("pointerup", finishSelection);
+    document.addEventListener("pointercancel", finishSelection);
     view.current = v;
     return () => {
+      document.removeEventListener("pointerup", finishSelection);
+      document.removeEventListener("pointercancel", finishSelection);
       v.destroy();
       view.current = null;
     };
@@ -220,19 +253,43 @@ function PDF({ base64, zoom = 1 }) {
     </div>
   );
 }
-function MindMap({ data, onLocate }) {
+export function MindMap({ data, onLocate }) {
   const scroll = useRef(),
     canvas = useRef(),
     drag = useRef();
   const [fold, setFold] = useState(new Set()),
-    [scale, setScale] = useState(0.8);
+    [scale, setScale] = useState(0.8),
+    [selected, setSelected] = useState(null),
+    [edges, setEdges] = useState([]);
   const nodes = data?.nodes || [],
     root = nodes.find((n) => n.type === "paper"),
     children = (id) => nodes.filter((n) => n.parent === id);
+  useLayoutEffect(() => {
+    const plane = canvas.current;
+    const measure = () => {
+      const base = plane.getBoundingClientRect();
+      const visible = new Map([...plane.querySelectorAll("[data-node-id]")].map(el => [el.dataset.nodeId, el.getBoundingClientRect()]));
+      setEdges(nodes.flatMap(n => {
+        const a = visible.get(n.parent), b = visible.get(n.id);
+        if (!a || !b) return [];
+        const x1 = (a.right - base.left) / scale, y1 = (a.top + a.height / 2 - base.top) / scale;
+        const x2 = (b.left - base.left) / scale, y2 = (b.top + b.height / 2 - base.top) / scale;
+        const mid = (x1 + x2) / 2;
+        return [{ id: n.id, d: `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}` }];
+      }));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(plane);
+    return () => observer.disconnect();
+  }, [data, fold, scale]);
   const branch = (n, depth = 0) => (
     <div className={"lp-branch depth-" + depth} key={n.id}>
       <div className="lp-node-wrap">
-        <button className="lp-node" onClick={() => onLocate(n)}>
+        <button data-node-id={n.id} className="lp-node" aria-pressed={selected === n.id}
+          onClick={() => setSelected(n.id)} onDoubleClick={() => onLocate(n)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onLocate(n); } }}
+          title="双击定位原文">
           {n.label}
         </button>
         {children(n.id).length > 0 && (
@@ -296,8 +353,10 @@ function MindMap({ data, onLocate }) {
       >
         <div
           ref={canvas}
+          className="lp-map-plane"
           style={{ zoom: scale, padding: 40, width: "max-content" }}
         >
+          <svg className="lp-map-edges" aria-hidden="true">{edges.map(e => <path key={e.id} d={e.d} />)}</svg>
           {root ? branch(root) : <p>生成导图，梳理论文的章节、段落与句子。</p>}
         </div>
       </div>
@@ -393,11 +452,12 @@ export function apply(ctx) {
         binding = adapter?.resolve(sessionId);
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {} };
+      const slot = "main.conversation";
       const entry = {
-        component: (props) => props.renderSlot("main.conversation", {}),
+        component: (props) => props.renderSlot(slot, {}),
         options: {},
         children: {
-          "main.conversation": { kind: "single", scope: "session-maybe" },
+          [slot]: { kind: "single", scope: "session-maybe" },
         },
       };
       const host = {
@@ -442,6 +502,8 @@ export function apply(ctx) {
       [pdfZoom, setPdfZoom] = useState(1),
       [map, setMap] = useState(null),
       [view, setView] = useState("source"),
+      [split, setSplit] = useState(55),
+      [sideHidden, setSideHidden] = useState(false),
       [job, setJob] = useState(null),
       [showLog, setShowLog] = useState(false),
       [form, setForm] = useState(null),
@@ -617,6 +679,7 @@ export function apply(ctx) {
       }
       await ctx.sessions.open(id);
       ctx.layout.selectPanel("latex-studio");
+      setView("source");
       setChatOpen(true);
       return id;
     }
@@ -914,7 +977,8 @@ export function apply(ctx) {
       );
     return (
       <div className={"lp lp-theme-" + theme}>
-        <aside className="lp-sidebar">
+        <aside className="lp-sidebar" hidden={sideHidden}>
+          <button className="lp-collapse" aria-label="收起论文侧栏" onClick={() => setSideHidden(true)}>◫</button>
           <button className="lp-back" onClick={back}>
             ← 主会话
           </button>
@@ -1144,19 +1208,19 @@ export function apply(ctx) {
             </select>
           </footer>
         </aside>
-        <main className="lp-main">
+        <main className={"lp-main " + (view === "map" ? "lp-mapping" : "")} style={{"--lp-split": split + "%"}}>
           <header className="lp-toolbar">
+            {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}>◫</button>}
             <button aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
               ◌ 论文对话
             </button>
             <button
-              aria-pressed={view === "source"}
-              onClick={() => setView("source")}
+              aria-pressed={view === "source" && !chatOpen}
+              onClick={() => { setView("source"); setChatOpen(false); }}
             >
               ▧ {file?.name || "源码"}
             </button>
             <span className="lp-status">{status}</span>
-            {saveButton}
             <button
               disabled={job?.status === "running"}
               onClick={safe(() => start("compile"))}
@@ -1174,6 +1238,7 @@ export function apply(ctx) {
             <details className="lp-settings">
               <summary>设置</summary>
               <div>
+                {saveButton}
                 <label>
                   主文件
                   <select
@@ -1268,7 +1333,7 @@ export function apply(ctx) {
               </button>
             </div>
           )}
-          {view === "map" ? (
+          {view === "map" && (
             <>
               <div className="lp-map-toolbar">
                 <button onClick={() => setView("source")}>← 源码</button>
@@ -1281,10 +1346,10 @@ export function apply(ctx) {
               </div>
               <MindMap data={map} onLocate={safe(locate)} />
             </>
-          ) : (
-            <div className="lp-split">
+          )}
+            <div className="lp-split" hidden={view === "map"}>
               <section className="lp-source">
-                <div className="lp-tabs">
+                <div className="lp-tabs" hidden={chatOpen || tabs.length < 2}>
                   {tabs.map((t) => (
                     <span key={t}>
                       <button
@@ -1311,6 +1376,7 @@ export function apply(ctx) {
                     </span>
                   ))}
                 </div>
+                <div className="lp-source-body" hidden={chatOpen}>
                 {file ? (
                   <Editor
                     file={file}
@@ -1321,7 +1387,16 @@ export function apply(ctx) {
                 ) : (
                   <div className="lp-empty">选择文件开始编辑</div>
                 )}
+                </div>
+                {p.lastChat ? <div className={"lp-native " + (chatOpen ? "lp-conversation" : "lp-composer")}>
+                  <NativeChat sessionId={p.lastChat} />
+                </div> : <button className="lp-start-chat" onClick={safe(() => ensureChat())}>继续讨论论文…</button>}
               </section>
+              <div className="lp-splitter" role="separator" tabIndex={0} aria-label="调整源码和 PDF 宽度" aria-orientation="vertical" aria-valuenow={split} aria-valuemin={35} aria-valuemax={70}
+                onKeyDown={e => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); setSplit(v => Math.max(35, Math.min(70, v + (e.key === "ArrowLeft" ? -2 : 2)))); } }}
+                onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); e.preventDefault(); }}
+                onPointerMove={e => { if (e.currentTarget.hasPointerCapture(e.pointerId)) { const rect = e.currentTarget.parentElement.getBoundingClientRect(); setSplit(Math.max(35, Math.min(70, 100 * (e.clientX - rect.left) / rect.width))); } }}
+                onPointerUp={e => { if(e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }} />
               <section className="lp-pdf">
                 <header>
                   <span>PDF</span>
@@ -1370,14 +1445,13 @@ export function apply(ctx) {
                 <PDF base64={pdf} zoom={pdfZoom} />
               </section>
             </div>
-          )}
           {showLog && (
             <pre className="lp-log">
               {job?.result?.log || job?.error || "暂无编译日志"}
             </pre>
           )}
         </main>
-        {selection && !comment && view === "source" && (
+        {selection && !chatOpen && !comment && view === "source" && (
           <div
             className="lp-selection"
             style={{
@@ -1443,17 +1517,7 @@ export function apply(ctx) {
             </button>
           </div>
         )}
-        {chatOpen && (
-          <aside className="lp-chat">
-            <header>
-              <b>论文对话</b>
-              <button onClick={() => setChatOpen(false)}>收起 ×</button>
-            </header>
-            <div className="lp-native">
-              {<NativeChat sessionId={p.lastChat} />}
-            </div>
-          </aside>
-        )}
+
       </div>
     );
   }
@@ -1479,10 +1543,8 @@ export function apply(ctx) {
     ),
   );
   ctx.slots.inject("shell.overlay", () =>
-    ctx.slots.register({ name: "shell.overlay", id: name + "-entry" }, () => (
-      <div className="lp-launch">
-        <Entry />
-      </div>
+    ctx.slots.register({ name: "shell.overlay", id: name + "-home-entry" }, () => (
+      <div className="lp-home-entry"><Entry /></div>
     )),
   );
 }

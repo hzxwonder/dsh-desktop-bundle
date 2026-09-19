@@ -463,6 +463,8 @@ var require_logic = __commonJS({
 // client/index.jsx
 var index_exports = {};
 __export(index_exports, {
+  Editor: () => Editor,
+  MindMap: () => MindMap,
   apply: () => apply,
   inject: () => inject,
   name: () => name2
@@ -43973,7 +43975,7 @@ globalThis.pdfjsLib = {
 };
 
 // client/style.css
-var style_default = '.lp {\n  --lp-bg: #fff;\n  --lp-side: #f7f7f8;\n  --lp-editor: #fff;\n  --lp-text: #292b30;\n  --lp-muted: #777b84;\n  --lp-line: #e4e5e8;\n  --lp-hover: #eef0f4;\n  --lp-accent: #5165a0;\n  color: var(--lp-text);\n  background: var(--lp-bg);\n  display: flex;\n  height: 100%;\n  min-height: 0;\n  position: relative;\n  font:\n    13px/1.5 system-ui,\n    sans-serif;\n}\n.lp-theme-dark {\n  --lp-bg: #202126;\n  --lp-side: #191a1e;\n  --lp-editor: #222329;\n  --lp-text: #e5e7ed;\n  --lp-muted: #a2a6b2;\n  --lp-line: #393b45;\n  --lp-hover: #30333e;\n  --lp-accent: #a6baff;\n}\n@media (prefers-color-scheme: dark) {\n  .lp-theme-system {\n    --lp-bg: #202126;\n    --lp-side: #191a1e;\n    --lp-editor: #222329;\n    --lp-text: #e5e7ed;\n    --lp-muted: #a2a6b2;\n    --lp-line: #393b45;\n    --lp-hover: #30333e;\n    --lp-accent: #a6baff;\n  }\n}\n.lp * {\n  box-sizing: border-box;\n}\n.lp button:not(.lp-native *),\n.lp select:not(.lp-native *),\n.lp input:not(.lp-native *),\n.lp textarea:not(.lp-native *) {\n  font: inherit;\n  color: inherit;\n}\n.lp button:not(.lp-native *) {\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  padding: 6px 9px;\n  cursor: pointer;\n}\n.lp button:not(.lp-native *):hover,\n.lp button:not(.lp-native *)[aria-pressed="true"],\n.lp .active {\n  background: var(--lp-hover);\n}\n.lp button:not(.lp-native *):disabled {\n  opacity: 0.45;\n  cursor: default;\n}\n.lp button:not(.lp-native *):focus-visible,\n.lp input:not(.lp-native *):focus-visible,\n.lp textarea:not(.lp-native *):focus-visible {\n  outline: 2px solid var(--lp-accent);\n  outline-offset: 1px;\n}\n.lp input:not(.lp-native *),\n.lp textarea:not(.lp-native *),\n.lp select:not(.lp-native *) {\n  background: var(--lp-editor);\n  border: 1px solid var(--lp-line);\n  border-radius: 6px;\n  padding: 7px;\n}\n.lp input:not(.lp-native *)[type="checkbox"] {\n  accent-color: var(--lp-accent);\n  width: 14px;\n  height: 14px;\n  padding: 0;\n}\n.lp-sidebar {\n  width: 238px;\n  flex-shrink: 0;\n  background: var(--lp-side);\n  border-right: 1px solid var(--lp-line);\n  display: flex;\n  flex-direction: column;\n  padding: 12px 8px;\n}\n.lp-back {\n  text-align: left;\n  color: var(--lp-muted) !important;\n}\n.lp-project-title {\n  font-weight: 600 !important;\n  text-align: left;\n  margin: 14px 0;\n}\n.lp-nav {\n  display: flex;\n  border-bottom: 1px solid var(--lp-line);\n  padding-bottom: 8px;\n  gap: 3px;\n}\n.lp-side-content {\n  flex: 1;\n  overflow: auto;\n  padding-top: 10px;\n}\n.lp-file {\n  display: block;\n  width: 100%;\n  text-align: left;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.lp-side-footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-top: 12px;\n  color: var(--lp-muted);\n}\n.lp-side-footer select {\n  max-width: 115px;\n}\n.lp-main {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.lp-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 9px 12px;\n  border-bottom: 1px solid var(--lp-line);\n  min-height: 49px;\n}\n.lp-status {\n  flex: 1;\n  color: var(--lp-muted);\n  font-size: 11px;\n}\n.lp-split {\n  display: flex;\n  flex: 1;\n  min-height: 0;\n}\n.lp-source,\n.lp-pdf {\n  width: 50%;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n.lp-source {\n  border-right: 1px solid var(--lp-line);\n}\n.lp-tabs,\n.lp-pdf > header {\n  height: 39px;\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  border-bottom: 1px solid var(--lp-line);\n  padding: 0 10px;\n  overflow: auto;\n  white-space: nowrap;\n}\n.lp-pdf > header span {\n  flex: 1;\n}\n.lp-editor {\n  flex: 1;\n  min-height: 0;\n  background: var(--lp-editor);\n}\n.lp-editor .cm-editor {\n  color: var(--lp-text);\n}\n.lp-editor .cm-cursor {\n  border-left-color: var(--lp-text);\n}\n.lp-pdf-scroll {\n  overflow: auto;\n  flex: 1;\n  background: var(--lp-side);\n  text-align: center;\n  padding: 16px 8px;\n}\n.lp-pdf-scroll canvas {\n  display: block;\n  margin: 0 auto 16px;\n  box-shadow: 0 2px 12px #0002;\n}\n.lp-empty {\n  color: var(--lp-muted);\n  padding: 64px 24px;\n  text-align: center;\n}\n.lp-selection,\n.lp-comment {\n  position: fixed;\n  z-index: 500;\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  box-shadow: 0 5px 25px #0003;\n  border-radius: 10px;\n  padding: 5px;\n}\n.lp-selection {\n  display: flex;\n  gap: 3px;\n}\n.lp-comment {\n  width: 320px;\n  padding: 14px;\n}\n.lp-comment header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.lp-comment textarea {\n  width: 100%;\n  min-height: 90px;\n  resize: vertical;\n}\n.lp-comment blockquote {\n  max-height: 85px;\n  overflow: auto;\n  color: var(--lp-muted);\n  margin: 10px 0;\n  border-left: 2px solid var(--lp-accent);\n  padding-left: 10px;\n}\n.lp-review-bar {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n  flex-wrap: wrap;\n  margin-bottom: 12px;\n}\n.lp-review-bar label {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n}\n.lp-review-bar small {\n  color: var(--lp-muted);\n}\n.lp-review-bar button {\n  margin-left: auto;\n}\n.lp-review {\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  border-radius: 9px;\n  margin-bottom: 10px;\n  padding: 9px;\n}\n.lp-review-jump {\n  width: 100%;\n  text-align: left;\n  padding: 2px !important;\n}\n.lp-review-jump small {\n  color: var(--lp-muted);\n}\n.lp-review blockquote {\n  margin: 8px 0;\n  padding-left: 8px;\n  border-left: 2px solid var(--lp-line);\n  font-size: 12px;\n  max-height: 100px;\n  overflow: auto;\n}\n.lp-review p {\n  white-space: pre-wrap;\n  margin: 8px 0;\n}\n.lp-review footer,\n.lp-review footer > div {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n}\n.lp-review footer {\n  justify-content: space-between;\n}\n.lp-state {\n  font-size: 11px !important;\n  color: var(--lp-muted) !important;\n}\n.lp-chat {\n  width: min(440px, 42%);\n  min-width: 310px;\n  display: flex;\n  flex-direction: column;\n  border-left: 1px solid var(--lp-line);\n  background: var(--lp-bg);\n}\n.lp-chat > header {\n  display: flex;\n  justify-content: space-between;\n  padding: 12px;\n  border-bottom: 1px solid var(--lp-line);\n}\n.lp-native {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.lp-native > * {\n  flex: 1;\n  min-height: 0;\n}\n.lp-error {\n  background: #b3484815;\n  color: #d65d62;\n  padding: 9px 14px;\n  margin: 0;\n}\n.lp-log {\n  max-height: 230px;\n  overflow: auto;\n  margin: 0;\n  padding: 12px;\n  background: var(--lp-side);\n  font-size: 11px;\n  white-space: pre-wrap;\n}\n.lp-picker-head {\n  position: absolute;\n  top: 15px;\n  left: 20px;\n  display: flex;\n  align-items: center;\n  gap: 20px;\n}\n.lp-picker {\n  width: 560px;\n  max-width: 90%;\n  margin: 100px auto;\n  overflow: auto;\n}\n.lp-picker h1 {\n  font-size: 25px;\n  font-weight: 550;\n  margin-bottom: 25px;\n}\n.lp-picker > input {\n  width: 100%;\n  margin-bottom: 20px;\n}\n.lp-project {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  gap: 14px;\n  text-align: left;\n  padding: 18px 12px !important;\n  border-bottom: 1px solid var(--lp-line) !important;\n}\n.lp-project small {\n  color: var(--lp-muted);\n}\n.lp-project span {\n  margin-left: auto;\n}\n.lp-row {\n  display: flex;\n  gap: 12px;\n  margin: 24px 0;\n}\n.lp-picker form {\n  padding: 18px;\n  background: var(--lp-side);\n  border-radius: 10px;\n}\n.lp-picker label {\n  display: block;\n  margin: 12px 0;\n}\n.lp-picker label input {\n  display: block;\n  width: 100%;\n  margin-top: 5px;\n}\n.lp-inline-file {\n  width: 100%;\n  margin-bottom: 5px;\n}\n.lp-settings {\n  position: relative;\n}\n.lp-settings > div {\n  position: absolute;\n  right: 0;\n  top: 30px;\n  z-index: 40;\n  width: 235px;\n  background: var(--lp-bg);\n  padding: 16px;\n  border: 1px solid var(--lp-line);\n  border-radius: 8px;\n}\n.lp-settings label {\n  display: block;\n  margin-bottom: 12px;\n}\n.lp-settings select {\n  display: block;\n  width: 100%;\n  margin-top: 6px;\n}\n.lp-map {\n  position: relative;\n  flex: 1;\n  min-height: 0;\n  background: var(--lp-side);\n}\n.lp-map-scroll {\n  overflow: auto;\n  height: 100%;\n  background-image: radial-gradient(var(--lp-line) 1px, transparent 1px);\n  background-size: 20px 20px;\n}\n.lp-branch {\n  display: flex;\n  align-items: center;\n  width: max-content;\n  position: relative;\n}\n.lp-node-wrap {\n  display: flex;\n  align-items: center;\n  position: relative;\n  max-width: 320px;\n  flex-shrink: 0;\n}\n.lp-node {\n  background: var(--lp-bg) !important;\n  border: 1px solid var(--lp-line) !important;\n  box-shadow: 0 2px 5px #0001;\n  border-radius: 9px !important;\n  text-align: left;\n  max-width: 285px;\n  padding: 12px 16px !important;\n  line-height: 1.6;\n}\n.depth-0 > .lp-node-wrap > .lp-node {\n  background: var(--lp-accent) !important;\n  color: var(--lp-bg);\n  font-size: 18px;\n  font-weight: 600;\n}\n.depth-1 > .lp-node-wrap > .lp-node {\n  border-left: 4px solid var(--lp-accent) !important;\n  font-weight: 600;\n}\n.lp-children {\n  padding-left: 46px;\n  display: flex;\n  flex-direction: column;\n  gap: 17px;\n  position: relative;\n}\n.lp-children > .lp-branch:before {\n  content: "";\n  position: absolute;\n  left: -25px;\n  width: 25px;\n  border-top: 1px solid var(--lp-accent);\n}\n.lp-children:before {\n  content: "";\n  position: absolute;\n  left: 21px;\n  top: 25px;\n  bottom: 25px;\n  border-left: 1px solid var(--lp-accent);\n}\n.lp-node-wrap:after {\n  content: "";\n  width: 21px;\n  border-top: 1px solid var(--lp-accent);\n  position: absolute;\n  right: -21px;\n}\n.lp-node-wrap:has(+ .lp-children) {\n  margin-right: 0;\n}\n.lp-node-wrap:not(:has(.lp-fold)):after {\n  display: none;\n}\n.lp-fold {\n  position: absolute;\n  right: -12px;\n  z-index: 2;\n  border: 1px solid var(--lp-accent) !important;\n  border-radius: 50% !important;\n  background: var(--lp-bg) !important;\n  width: 23px;\n  height: 23px;\n  padding: 0 !important;\n  color: var(--lp-accent) !important;\n  font-size: 12px !important;\n}\n.lp-map-zoom {\n  position: absolute;\n  right: 20px;\n  bottom: 20px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  border-radius: 8px;\n  padding: 5px;\n}\n.lp-launch {\n  position: fixed;\n  bottom: 12px;\n  left: 12px;\n  z-index: 30;\n}\n.lp-entry {\n  font: 12px system-ui;\n  padding: 7px 10px;\n  border: 1px solid #8884;\n  border-radius: 7px;\n  background: var(--background, #f7f7f8);\n  color: var(--foreground, #333);\n  cursor: pointer;\n}\n@media (max-width: 1000px) {\n  .lp-sidebar {\n    width: 200px;\n  }\n  .lp-chat {\n    position: absolute;\n    right: 0;\n    top: 0;\n    bottom: 0;\n    width: 420px;\n    z-index: 50;\n    box-shadow: -5px 0 30px #0002;\n  }\n  .lp-toolbar {\n    gap: 2px;\n    padding: 8px 4px;\n  }\n  .lp-status {\n    display: none;\n  }\n}\nbody:has(.lp) .lp-launch {\n  display: none;\n}\n.lp-progress,\n.lp-map-toolbar {\n  padding: 7px 14px;\n  background: var(--lp-side);\n  border-bottom: 1px solid var(--lp-line);\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lp-progress button {\n  margin-left: auto;\n}\n.lp {\n  --lp-code-comment: #877250;\n  --lp-code-command: #2c7c68;\n  --lp-code-value: #615ba0;\n}\n.lp-theme-dark {\n  --lp-code-comment: #bcac8f;\n  --lp-code-command: #91d3bd;\n  --lp-code-value: #c2b5fa;\n}\n@media (prefers-color-scheme: dark) {\n  .lp-theme-system {\n    --lp-code-comment: #bcac8f;\n    --lp-code-command: #91d3bd;\n    --lp-code-value: #c2b5fa;\n  }\n}\n.lp-chat {\n  position: absolute;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  z-index: 50;\n  width: min(440px, calc(100% - 60px));\n  box-shadow: -8px 0 28px #0002;\n}\nbody[data-ds-dark-theme] .lp-theme-system {\n  --lp-bg: #202126;\n  --lp-side: #191a1e;\n  --lp-editor: #222329;\n  --lp-text: #e5e7ed;\n  --lp-muted: #a2a6b2;\n  --lp-line: #393b45;\n  --lp-hover: #30333e;\n  --lp-accent: #a6baff;\n  --lp-code-comment: #bcac8f;\n  --lp-code-command: #91d3bd;\n  --lp-code-value: #c2b5fa;\n}\nbody:not([data-ds-dark-theme]) .lp-theme-system {\n  --lp-bg: #fff;\n  --lp-side: #f7f7f8;\n  --lp-editor: #fff;\n  --lp-text: #292b30;\n  --lp-muted: #777b84;\n  --lp-line: #e4e5e8;\n  --lp-hover: #eef0f4;\n  --lp-accent: #5165a0;\n  --lp-code-comment: #877250;\n  --lp-code-command: #2c7c68;\n  --lp-code-value: #615ba0;\n}\n\n.lp-native {\n  color: var(--lp-text);\n  --dsw-alias-bg-base: var(--lp-bg);\n  --dsw-alias-bg-layer-1: var(--lp-bg);\n  --dsw-alias-bg-layer-2: var(--lp-bg);\n  --dsw-alias-bg-layer-3: var(--lp-bg);\n  --dsw-alias-button-elevated-fill: var(--lp-bg);\n  --dsw-alias-button-floating-fill: var(--lp-bg);\n  --dsw-alias-bg-module-platform: var(--lp-side);\n  --dsw-alias-markdown-code-block: var(--lp-side);\n  --dsw-alias-markdown-code-block-banner: var(--lp-side);\n  --dsw-alias-markdown-inline-code: var(--lp-side);\n  --dsw-alias-interactive-bg-hover: var(--lp-hover);\n  --dsw-alias-interactive-bg-hover-solid: var(--lp-hover);\n  --dsw-alias-interactive-bg-active: var(--lp-hover);\n  --dsw-alias-button-floating-hover: var(--lp-hover);\n  --dsw-alias-button-ghost-active-fill: var(--lp-hover);\n  --dsw-alias-button-primary-dimmed: var(--lp-hover);\n  --dsw-alias-label-primary: var(--lp-text);\n  --dsw-alias-label-primary-dimmed: var(--lp-text);\n  --dsw-alias-label-primary-bluish: var(--lp-text);\n  --dsw-alias-brand-primary: var(--lp-text);\n  --dsw-alias-brand-text: var(--lp-text);\n  --dsw-alias-button-primary-fill: var(--lp-text);\n  --dsw-alias-label-caption: var(--lp-muted);\n  --dsw-alias-label-secondary: var(--lp-muted);\n  --dsw-alias-label-tertiary: var(--lp-muted);\n  --dsw-alias-label-dimmed: var(--lp-muted);\n  --dsw-alias-border-l1: var(--lp-line);\n  --dsw-alias-border-l2: var(--lp-line);\n  --dsw-alias-border-l3: var(--lp-line);\n  --dsw-alias-border-l4: var(--lp-line);\n  --dsw-alias-border-l2-darkmode-thin: var(--lp-line);\n  --dsw-specific-input-major: var(--lp-bg);\n  --dsw-specific-bubble: var(--lp-hover);\n  --dsw-alias-label-primary-foreground: var(--lp-bg);\n  --dsw-alias-label-primary-inverted: var(--lp-bg);\n}\n.lp-native .lp-entry {\n  display: none;\n}\n.lp-native {\n  --dsw-static-neutral-50: var(--lp-side);\n  --dsw-static-neutral-100: var(--lp-hover);\n  --dsw-static-neutral-850: var(--lp-side);\n  --dsw-static-neutral-800: var(--lp-hover);\n}\n';
+var style_default = '.lp {\n  --lp-bg: #fff;\n  --lp-side: #f7f7f8;\n  --lp-editor: #fff;\n  --lp-text: #292b30;\n  --lp-muted: #777b84;\n  --lp-line: #e4e5e8;\n  --lp-hover: #eef0f4;\n  --lp-accent: #5165a0;\n  color: var(--lp-text);\n  background: var(--lp-bg);\n  display: flex;\n  height: 100%;\n  min-height: 0;\n  position: relative;\n  font:\n    13px/1.5 system-ui,\n    sans-serif;\n}\n.lp-theme-dark {\n  --lp-bg: #202126;\n  --lp-side: #191a1e;\n  --lp-editor: #222329;\n  --lp-text: #e5e7ed;\n  --lp-muted: #a2a6b2;\n  --lp-line: #393b45;\n  --lp-hover: #30333e;\n  --lp-accent: #a6baff;\n}\n@media (prefers-color-scheme: dark) {\n  .lp-theme-system {\n    --lp-bg: #202126;\n    --lp-side: #191a1e;\n    --lp-editor: #222329;\n    --lp-text: #e5e7ed;\n    --lp-muted: #a2a6b2;\n    --lp-line: #393b45;\n    --lp-hover: #30333e;\n    --lp-accent: #a6baff;\n  }\n}\n.lp * {\n  box-sizing: border-box;\n}\n.lp button:not(.lp-native *),\n.lp select:not(.lp-native *),\n.lp input:not(.lp-native *),\n.lp textarea:not(.lp-native *) {\n  font: inherit;\n  color: inherit;\n}\n.lp button:not(.lp-native *) {\n  border: 0;\n  background: transparent;\n  border-radius: 6px;\n  padding: 6px 9px;\n  cursor: pointer;\n}\n.lp button:not(.lp-native *):hover,\n.lp button:not(.lp-native *)[aria-pressed="true"],\n.lp .active {\n  background: var(--lp-hover);\n}\n.lp button:not(.lp-native *):disabled {\n  opacity: 0.45;\n  cursor: default;\n}\n.lp button:not(.lp-native *):focus-visible,\n.lp input:not(.lp-native *):focus-visible,\n.lp textarea:not(.lp-native *):focus-visible {\n  outline: 2px solid var(--lp-accent);\n  outline-offset: 1px;\n}\n.lp input:not(.lp-native *),\n.lp textarea:not(.lp-native *),\n.lp select:not(.lp-native *) {\n  background: var(--lp-editor);\n  border: 1px solid var(--lp-line);\n  border-radius: 6px;\n  padding: 7px;\n}\n.lp input:not(.lp-native *)[type="checkbox"] {\n  accent-color: var(--lp-accent);\n  width: 14px;\n  height: 14px;\n  padding: 0;\n}\n.lp-sidebar {\n  width: 238px;\n  flex-shrink: 0;\n  background: var(--lp-side);\n  border-right: 1px solid var(--lp-line);\n  display: flex;\n  flex-direction: column;\n  padding: 12px 8px;\n}\n.lp-back {\n  text-align: left;\n  color: var(--lp-muted) !important;\n}\n.lp-project-title {\n  font-weight: 600 !important;\n  text-align: left;\n  margin: 14px 0;\n}\n.lp-nav {\n  display: flex;\n  border-bottom: 1px solid var(--lp-line);\n  padding-bottom: 8px;\n  gap: 3px;\n}\n.lp-side-content {\n  flex: 1;\n  overflow: auto;\n  padding-top: 10px;\n}\n.lp-file {\n  display: block;\n  width: 100%;\n  text-align: left;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.lp-side-footer {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding-top: 12px;\n  color: var(--lp-muted);\n}\n.lp-side-footer select {\n  max-width: 115px;\n}\n.lp-main {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.lp-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 9px 12px;\n  border-bottom: 1px solid var(--lp-line);\n  min-height: 49px;\n}\n.lp-status {\n  flex: 1;\n  color: var(--lp-muted);\n  font-size: 11px;\n}\n.lp-split {\n  display: flex;\n  flex: 1;\n  min-height: 0;\n}\n.lp-source,\n.lp-pdf {\n  width: 50%;\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n}\n.lp-source {\n  border-right: 1px solid var(--lp-line);\n}\n.lp-tabs,\n.lp-pdf > header {\n  height: 39px;\n  flex-shrink: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  border-bottom: 1px solid var(--lp-line);\n  padding: 0 10px;\n  overflow: auto;\n  white-space: nowrap;\n}\n.lp-pdf > header span {\n  flex: 1;\n}\n.lp-editor {\n  flex: 1;\n  min-height: 0;\n  background: var(--lp-editor);\n}\n.lp-editor .cm-editor {\n  color: var(--lp-text);\n}\n.lp-editor .cm-cursor {\n  border-left-color: var(--lp-text);\n}\n.lp-pdf-scroll {\n  overflow: auto;\n  flex: 1;\n  background: var(--lp-side);\n  text-align: center;\n  padding: 16px 8px;\n}\n.lp-pdf-scroll canvas {\n  display: block;\n  margin: 0 auto 16px;\n  box-shadow: 0 2px 12px #0002;\n}\n.lp-empty {\n  color: var(--lp-muted);\n  padding: 64px 24px;\n  text-align: center;\n}\n.lp-selection,\n.lp-comment {\n  position: fixed;\n  z-index: 500;\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  box-shadow: 0 5px 25px #0003;\n  border-radius: 10px;\n  padding: 5px;\n}\n.lp-selection {\n  display: flex;\n  gap: 3px;\n}\n.lp-comment {\n  width: 320px;\n  padding: 14px;\n}\n.lp-comment header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.lp-comment textarea {\n  width: 100%;\n  min-height: 90px;\n  resize: vertical;\n}\n.lp-comment blockquote {\n  max-height: 85px;\n  overflow: auto;\n  color: var(--lp-muted);\n  margin: 10px 0;\n  border-left: 2px solid var(--lp-accent);\n  padding-left: 10px;\n}\n.lp-review-bar {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n  flex-wrap: wrap;\n  margin-bottom: 12px;\n}\n.lp-review-bar label {\n  display: flex;\n  align-items: center;\n  gap: 5px;\n}\n.lp-review-bar small {\n  color: var(--lp-muted);\n}\n.lp-review-bar button {\n  margin-left: auto;\n}\n.lp-review {\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  border-radius: 9px;\n  margin-bottom: 10px;\n  padding: 9px;\n}\n.lp-review-jump {\n  width: 100%;\n  text-align: left;\n  padding: 2px !important;\n}\n.lp-review-jump small {\n  color: var(--lp-muted);\n}\n.lp-review blockquote {\n  margin: 8px 0;\n  padding-left: 8px;\n  border-left: 2px solid var(--lp-line);\n  font-size: 12px;\n  max-height: 100px;\n  overflow: auto;\n}\n.lp-review p {\n  white-space: pre-wrap;\n  margin: 8px 0;\n}\n.lp-review footer,\n.lp-review footer > div {\n  display: flex;\n  align-items: center;\n  gap: 7px;\n}\n.lp-review footer {\n  justify-content: space-between;\n}\n.lp-state {\n  font-size: 11px !important;\n  color: var(--lp-muted) !important;\n}\n\n.lp-chat > header {\n  display: flex;\n  justify-content: space-between;\n  padding: 12px;\n  border-bottom: 1px solid var(--lp-line);\n}\n.lp-native {\n  flex: 1;\n  min-height: 0;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n}\n.lp-native > * {\n  flex: 1;\n  min-height: 0;\n}\n.lp-error {\n  background: #b3484815;\n  color: #d65d62;\n  padding: 9px 14px;\n  margin: 0;\n}\n.lp-log {\n  max-height: 230px;\n  overflow: auto;\n  margin: 0;\n  padding: 12px;\n  background: var(--lp-side);\n  font-size: 11px;\n  white-space: pre-wrap;\n}\n.lp-picker-head {\n  position: absolute;\n  top: 15px;\n  left: 20px;\n  display: flex;\n  align-items: center;\n  gap: 20px;\n}\n.lp-picker {\n  width: 560px;\n  max-width: 90%;\n  margin: 100px auto;\n  overflow: auto;\n}\n.lp-picker h1 {\n  font-size: 25px;\n  font-weight: 550;\n  margin-bottom: 25px;\n}\n.lp-picker > input {\n  width: 100%;\n  margin-bottom: 20px;\n}\n.lp-project {\n  width: 100%;\n  display: flex;\n  align-items: center;\n  gap: 14px;\n  text-align: left;\n  padding: 18px 12px !important;\n  border-bottom: 1px solid var(--lp-line) !important;\n}\n.lp-project small {\n  color: var(--lp-muted);\n}\n.lp-project span {\n  margin-left: auto;\n}\n.lp-row {\n  display: flex;\n  gap: 12px;\n  margin: 24px 0;\n}\n.lp-picker form {\n  padding: 18px;\n  background: var(--lp-side);\n  border-radius: 10px;\n}\n.lp-picker label {\n  display: block;\n  margin: 12px 0;\n}\n.lp-picker label input {\n  display: block;\n  width: 100%;\n  margin-top: 5px;\n}\n.lp-inline-file {\n  width: 100%;\n  margin-bottom: 5px;\n}\n.lp-settings {\n  position: relative;\n}\n.lp-settings > div {\n  position: absolute;\n  right: 0;\n  top: 30px;\n  z-index: 40;\n  width: 235px;\n  background: var(--lp-bg);\n  padding: 16px;\n  border: 1px solid var(--lp-line);\n  border-radius: 8px;\n}\n.lp-settings label {\n  display: block;\n  margin-bottom: 12px;\n}\n.lp-settings select {\n  display: block;\n  width: 100%;\n  margin-top: 6px;\n}\n.lp-map {\n  position: relative;\n  flex: 1;\n  min-height: 0;\n  background: var(--lp-side);\n}\n.lp-map-scroll {\n  overflow: auto;\n  height: 100%;\n  background-image: radial-gradient(var(--lp-line) 1px, transparent 1px);\n  background-size: 20px 20px;\n}\n.lp-branch {\n  display: flex;\n  align-items: center;\n  width: max-content;\n  position: relative;\n}\n.lp-node-wrap {\n  display: flex;\n  align-items: center;\n  position: relative;\n  max-width: 320px;\n  flex-shrink: 0;\n}\n.lp-node {\n  background: var(--lp-bg) !important;\n  border: 1px solid var(--lp-line) !important;\n  box-shadow: 0 2px 5px #0001;\n  border-radius: 9px !important;\n  text-align: left;\n  max-width: 285px;\n  padding: 12px 16px !important;\n  line-height: 1.6;\n}\n.depth-0 > .lp-node-wrap > .lp-node {\n  background: var(--lp-accent) !important;\n  color: var(--lp-bg);\n  font-size: 18px;\n  font-weight: 600;\n}\n.depth-1 > .lp-node-wrap > .lp-node {\n  border-left: 4px solid var(--lp-accent) !important;\n  font-weight: 600;\n}\n.lp-children {\n  padding-left: 46px;\n  display: flex;\n  flex-direction: column;\n  gap: 17px;\n  position: relative;\n}\n.lp-children > .lp-branch:before {\n  content: "";\n  position: absolute;\n  left: -25px;\n  width: 25px;\n  border-top: 1px solid var(--lp-accent);\n}\n.lp-children:before {\n  content: "";\n  position: absolute;\n  left: 21px;\n  top: 25px;\n  bottom: 25px;\n  border-left: 1px solid var(--lp-accent);\n}\n.lp-node-wrap:after {\n  content: "";\n  width: 21px;\n  border-top: 1px solid var(--lp-accent);\n  position: absolute;\n  right: -21px;\n}\n.lp-node-wrap:has(+ .lp-children) {\n  margin-right: 0;\n}\n.lp-node-wrap:not(:has(.lp-fold)):after {\n  display: none;\n}\n.lp-fold {\n  position: absolute;\n  right: -12px;\n  z-index: 2;\n  border: 1px solid var(--lp-accent) !important;\n  border-radius: 50% !important;\n  background: var(--lp-bg) !important;\n  width: 23px;\n  height: 23px;\n  padding: 0 !important;\n  color: var(--lp-accent) !important;\n  font-size: 12px !important;\n}\n.lp-map-zoom {\n  position: absolute;\n  right: 20px;\n  bottom: 20px;\n  display: flex;\n  gap: 8px;\n  align-items: center;\n  background: var(--lp-bg);\n  border: 1px solid var(--lp-line);\n  border-radius: 8px;\n  padding: 5px;\n}\n\n.lp-entry {\n  font: 12px system-ui;\n  padding: 7px 10px;\n  border: 1px solid #8884;\n  border-radius: 7px;\n  background: var(--background, #f7f7f8);\n  color: var(--foreground, #333);\n  cursor: pointer;\n}\n@media (max-width: 1000px) {\n  .lp-sidebar {\n    width: 200px;\n  }\n\n  .lp-toolbar {\n    gap: 2px;\n    padding: 8px 4px;\n  }\n  .lp-status {\n    display: none;\n  }\n}\n.lp-progress,\n.lp-map-toolbar {\n  padding: 7px 14px;\n  background: var(--lp-side);\n  border-bottom: 1px solid var(--lp-line);\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lp-progress button {\n  margin-left: auto;\n}\n.lp {\n  --lp-code-comment: #877250;\n  --lp-code-command: #2c7c68;\n  --lp-code-value: #615ba0;\n}\n.lp-theme-dark {\n  --lp-code-comment: #bcac8f;\n  --lp-code-command: #91d3bd;\n  --lp-code-value: #c2b5fa;\n}\n@media (prefers-color-scheme: dark) {\n  .lp-theme-system {\n    --lp-code-comment: #bcac8f;\n    --lp-code-command: #91d3bd;\n    --lp-code-value: #c2b5fa;\n  }\n}\n\nbody[data-ds-dark-theme] .lp-theme-system {\n  --lp-bg: #202126;\n  --lp-side: #191a1e;\n  --lp-editor: #222329;\n  --lp-text: #e5e7ed;\n  --lp-muted: #a2a6b2;\n  --lp-line: #393b45;\n  --lp-hover: #30333e;\n  --lp-accent: #a6baff;\n  --lp-code-comment: #bcac8f;\n  --lp-code-command: #91d3bd;\n  --lp-code-value: #c2b5fa;\n}\nbody:not([data-ds-dark-theme]) .lp-theme-system {\n  --lp-bg: #fff;\n  --lp-side: #f7f7f8;\n  --lp-editor: #fff;\n  --lp-text: #292b30;\n  --lp-muted: #777b84;\n  --lp-line: #e4e5e8;\n  --lp-hover: #eef0f4;\n  --lp-accent: #5165a0;\n  --lp-code-comment: #877250;\n  --lp-code-command: #2c7c68;\n  --lp-code-value: #615ba0;\n}\n\n.lp-native {\n  color: var(--lp-text);\n  --dsw-alias-bg-base: var(--lp-bg);\n  --dsw-alias-bg-layer-1: var(--lp-bg);\n  --dsw-alias-bg-layer-2: var(--lp-bg);\n  --dsw-alias-bg-layer-3: var(--lp-bg);\n  --dsw-alias-button-elevated-fill: var(--lp-bg);\n  --dsw-alias-button-floating-fill: var(--lp-bg);\n  --dsw-alias-bg-module-platform: var(--lp-side);\n  --dsw-alias-markdown-code-block: var(--lp-side);\n  --dsw-alias-markdown-code-block-banner: var(--lp-side);\n  --dsw-alias-markdown-inline-code: var(--lp-side);\n  --dsw-alias-interactive-bg-hover: var(--lp-hover);\n  --dsw-alias-interactive-bg-hover-solid: var(--lp-hover);\n  --dsw-alias-interactive-bg-active: var(--lp-hover);\n  --dsw-alias-button-floating-hover: var(--lp-hover);\n  --dsw-alias-button-ghost-active-fill: var(--lp-hover);\n  --dsw-alias-button-primary-dimmed: var(--lp-hover);\n  --dsw-alias-label-primary: var(--lp-text);\n  --dsw-alias-label-primary-dimmed: var(--lp-text);\n  --dsw-alias-label-primary-bluish: var(--lp-text);\n  --dsw-alias-brand-primary: var(--lp-text);\n  --dsw-alias-brand-text: var(--lp-text);\n  --dsw-alias-button-primary-fill: var(--lp-text);\n  --dsw-alias-label-caption: var(--lp-muted);\n  --dsw-alias-label-secondary: var(--lp-muted);\n  --dsw-alias-label-tertiary: var(--lp-muted);\n  --dsw-alias-label-dimmed: var(--lp-muted);\n  --dsw-alias-border-l1: var(--lp-line);\n  --dsw-alias-border-l2: var(--lp-line);\n  --dsw-alias-border-l3: var(--lp-line);\n  --dsw-alias-border-l4: var(--lp-line);\n  --dsw-alias-border-l2-darkmode-thin: var(--lp-line);\n  --dsw-specific-input-major: var(--lp-bg);\n  --dsw-specific-bubble: var(--lp-hover);\n  --dsw-alias-label-primary-foreground: var(--lp-bg);\n  --dsw-alias-label-primary-inverted: var(--lp-bg);\n}\n.lp-native .lp-entry {\n  display: none;\n}\n.lp-native {\n  --dsw-static-neutral-50: var(--lp-side);\n  --dsw-static-neutral-100: var(--lp-hover);\n  --dsw-static-neutral-850: var(--lp-side);\n  --dsw-static-neutral-800: var(--lp-hover);\n}\n\n/* Shared paper workspace surfaces. */\n.lp { -webkit-app-region: no-drag; --lp-side:#f3f3f3; --lp-text:#272727; --lp-line:#e3e3e3; --lp-hover:#e9e9e9; }\n.lp-theme-dark, body[data-ds-dark-theme] .lp-theme-system {\n  color-scheme:dark; --lp-bg:#202020; --lp-side:#171717; --lp-editor:#141414;\n  --lp-text:#e4e4e4; --lp-muted:#a4a4a4; --lp-line:#333; --lp-hover:#2a2a2a; --lp-accent:#abc1e9;\n}\n.lp-theme-light, body:not([data-ds-dark-theme]) .lp-theme-system { color-scheme:light; --lp-side:#f3f3f3; --lp-text:#272727; --lp-line:#e3e3e3; --lp-hover:#e9e9e9; }\n.lp [hidden] { display:none !important; }\n.lp-sidebar { width:225px; padding:14px 10px; }\n.lp-toolbar { height:53px; padding:8px 14px; }\n.lp-source { width:55%; background:var(--lp-editor); }\n.lp-pdf { width:45%; }\n.lp-source-body { flex:1; min-height:0; display:flex; flex-direction:column; }\n.lp-editor, .lp-editor * { -webkit-app-region:no-drag; }\n.lp-editor .cm-content, .lp-editor .cm-line { user-select:text !important; -webkit-user-select:text !important; cursor:text; }\n.lp-editor .cm-scroller { line-height:1.8; }\n.lp-editor .cm-line { padding-left:12px; padding-right:18px; }\n.lp-editor .cm-focused { outline:none; }\n.lp-editor .cm-selectionBackground, .lp-editor .cm-focused .cm-selectionBackground { background:color-mix(in srgb, var(--lp-accent) 32%, transparent) !important; }\n.lp-composer { flex:0 0 auto; max-height:35%; padding:10px 14px 14px; border-top:1px solid var(--lp-line); }\n.lp-conversation { flex:1; }\n.lp-start-chat { margin:12px 16px; text-align:left; padding:16px !important; background:var(--lp-side) !important; border:1px solid var(--lp-line) !important; border-radius:18px !important; color:var(--lp-muted) !important; }\n.lp-entry { background:var(--dsw-alias-bg-base, #fff); color:var(--dsw-alias-label-primary, #272727); }\n.lp-map-scroll { background-image:none; padding:20px; }\n.lp-map-plane { position:relative; min-height:100%; }\n.lp-map-edges { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }\n.lp-map-edges path { fill:none; stroke:var(--lp-accent); stroke-width:1.5; opacity:.55; }\n.lp-node-wrap:after, .lp-children:before, .lp-children > .lp-branch:before { display:none; }\n.lp-children { padding-left:66px; gap:24px; }\n.lp-node { min-width:160px; max-width:290px; padding:13px 18px !important; border-radius:12px !important; box-shadow:0 2px 8px #00000008; color:var(--lp-text); white-space:normal; }\n.depth-0 > .lp-node-wrap > .lp-node { background:var(--lp-text) !important; color:var(--lp-bg); font-size:18px; padding:19px 23px !important; border:0 !important; }\n.depth-1 > .lp-node-wrap > .lp-node { border-left:3px solid var(--lp-accent) !important; background:color-mix(in srgb, var(--lp-accent) 10%, var(--lp-bg)) !important; }\n.depth-3 > .lp-node-wrap > .lp-node { font-size:12px; box-shadow:none; }\n.lp-node[aria-pressed="true"] { outline:2px solid var(--lp-accent); outline-offset:3px; }\n.lp-fold { width:20px; height:20px; right:-10px; font-size:13px !important; box-shadow:0 1px 3px #0001; }\n.lp-map-zoom { box-shadow:0 4px 20px #0000000a; border-radius:12px; }\n@media(max-width:1000px) { .lp-sidebar { width:190px; } }\n\n.lp-home-entry { position:fixed; top:48px; right:24px; z-index:30; }\nbody:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) .lp-home-entry { display:none; }\n\n.lp-composer { max-height:none; overflow:visible; }\n.lp-composer .p_FcLG_scroll { max-height:110px; overflow:auto; }\n.lp-composer .p_FcLG_input { min-height:52px; }\n.lp-composer .p_FcLG_card { border-radius:18px; }\n\n/* Native Harness 0.1.5-rc.2 conversation remains mounted across view switches. */\n.lp-composer ._0cyzDW_header, .lp-composer [data-conversation-scroll] > :not([data-composer-seat]), .lp-composer ._0cyzDW_widthHandle { display:none; }\n.lp-composer ._0cyzDW_root, .lp-composer ._0cyzDW_body, .lp-composer [data-conversation-scroll], .lp-composer [data-composer-seat] { height:auto; min-height:0; flex:0 0 auto; padding:0; overflow:visible; }\n.lp-composer ._0cyzDW_composerHero { margin:0; padding:0; }\n.lp-composer ._0cyzDW_composerHero > :not(:last-child) { display:none; }\n.lp-native [data-composer-seat] { min-width:0; width:100%; }\n\n.lp { background:var(--lp-side); }\n.lp-sidebar { position:relative; border:0; }\n.lp-collapse { position:absolute; top:14px; right:10px; }\n.lp-project-title { border:1px solid var(--lp-line) !important; padding:10px !important; border-radius:9px !important; }\n.lp-nav { border:0; }\n.lp-nav button[aria-pressed="true"] { border-bottom:1px solid var(--lp-text) !important; border-radius:0 !important; background:none !important; }\n.lp-main { margin:8px 8px 8px 0; border-radius:14px; background:var(--lp-editor); }\n.lp-toolbar { width:var(--lp-split); border:0; padding:8px; gap:2px; }\n.lp-toolbar button { white-space:nowrap; font-size:11px !important; padding:7px 6px !important; }\n.lp-toolbar > button[aria-pressed="true"] { background:var(--lp-bg) !important; border:1px solid var(--lp-line) !important; border-radius:13px !important; }\n.lp-toolbar .lp-status { overflow:hidden; white-space:nowrap; }\n.lp-source { width:calc(var(--lp-split) - 3px); border:0; }\n.lp-pdf { width:calc(100% - var(--lp-split) - 3px); margin-top:-53px; border:1px solid var(--lp-line); border-radius:12px; overflow:hidden; }\n.lp-pdf > header { height:52px; background:var(--lp-bg); }\n.lp-splitter { width:6px; flex:none; cursor:col-resize; touch-action:none; }\n.lp-splitter:hover, .lp-splitter:focus-visible { background:var(--lp-line); }\n.lp-mapping .lp-toolbar { width:100%; }\n.lp-composer { border:0; }\n\n.lp-editor .cm-activeLine { background:color-mix(in srgb, var(--lp-hover) 25%, transparent) !important; }\n.lp-native .p_FcLG_scroll { max-height:150px; overflow:auto; }\n.lp-composer .p_FcLG_scroll { max-height:110px; }\n.lp-native ._0cyzDW_composerHero > :not(:last-child) { display:none; }\n.lp-conversation:has([data-phase="hero"])::before { content:"\u4F60\u51C6\u5907\u597D\u4E86\uFF0C\u6211\u5C31\u5F00\u59CB\u3002"; text-align:center; margin:64px 12px 20px; font-size:20px; font-weight:550; }\n.lp-conversation ._0cyzDW_root[data-phase="hero"] { flex:1; }\n.lp-conversation ._0cyzDW_root[data-phase="hero"] ._0cyzDW_composerHero { margin-top:auto; }\n';
 
 // client/index.jsx
 var import_logic = __toESM(require_logic(), 1);
@@ -44005,12 +44007,60 @@ function Editor({ file, onChange, onSelect, jump }) {
   handlers2.current = { onChange, onSelect };
   (0, import_react.useEffect)(() => {
     if (!file) return;
+    let selecting = false, pointerAnchor = null;
+    const reportSelection = (v2) => v2.requestMeasure({
+      read: () => {
+        const { from, to } = v2.state.selection.main;
+        const rect = from !== to ? v2.coordsAtPos(to) : null;
+        return rect ? { start: from, end: to, text: v2.state.sliceDoc(from, to), x: rect.left, y: rect.bottom } : null;
+      },
+      write: (value) => {
+        if (!selecting) handlers2.current.onSelect(value);
+      }
+    });
+    const finishSelection = () => {
+      selecting = false;
+      reportSelection(v);
+    };
     const v = new EditorView({
       parent: host.current,
       state: EditorState.create({
         doc: file.content,
         extensions: [
           lineNumbers(),
+          EditorView.contentAttributes.of({ "aria-label": "LaTeX \u6E90\u7801", spellcheck: "false" }),
+          EditorView.domEventHandlers({
+            pointerdown: (event, editor) => {
+              if (event.button !== 0 || event.pointerType === "touch" || !event.target.closest(".cm-content")) return false;
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY });
+              if (pos == null) return false;
+              selecting = true;
+              handlers2.current.onSelect(null);
+              pointerAnchor = event.shiftKey ? editor.state.selection.main.anchor : pos;
+              editor.focus();
+              editor.dispatch({ selection: { anchor: pointerAnchor, head: pos } });
+              editor.contentDOM.setPointerCapture(event.pointerId);
+              event.preventDefault();
+              return true;
+            },
+            pointermove: (event, editor) => {
+              if (!selecting || pointerAnchor == null) return false;
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY }, false);
+              if (pos != null) editor.dispatch({ selection: { anchor: pointerAnchor, head: pos }, scrollIntoView: true });
+              return true;
+            },
+            pointerup: (event, editor) => {
+              if (editor.contentDOM.hasPointerCapture(event.pointerId)) editor.contentDOM.releasePointerCapture(event.pointerId);
+              pointerAnchor = null;
+              return false;
+            },
+            dblclick: (event, editor) => {
+              const pos = editor.posAtCoords({ x: event.clientX, y: event.clientY });
+              const word = pos == null ? null : editor.state.wordAt(pos);
+              if (word) editor.dispatch({ selection: { anchor: word.from, head: word.to } });
+              return !!word;
+            }
+          }),
           history(),
           drawSelection(),
           highlightActiveLine(),
@@ -44054,27 +44104,18 @@ function Editor({ file, onChange, onSelect, jump }) {
           EditorView.updateListener.of((u) => {
             if (u.docChanged) handlers2.current.onChange(u.state.doc.toString());
             if (u.selectionSet || u.docChanged || u.viewportChanged) {
-              u.view.requestMeasure({
-                read: (v2) => {
-                  const { from, to } = v2.state.selection.main;
-                  const rect = from !== to ? v2.coordsAtPos(to) : null;
-                  return rect ? {
-                    start: from,
-                    end: to,
-                    text: v2.state.sliceDoc(from, to),
-                    x: rect.left,
-                    y: rect.bottom
-                  } : null;
-                },
-                write: (value) => handlers2.current.onSelect(value)
-              });
+              if (!selecting) reportSelection(u.view);
             }
           })
         ]
       })
     });
+    document.addEventListener("pointerup", finishSelection);
+    document.addEventListener("pointercancel", finishSelection);
     view.current = v;
     return () => {
+      document.removeEventListener("pointerup", finishSelection);
+      document.removeEventListener("pointercancel", finishSelection);
       v.destroy();
       view.current = null;
     };
@@ -44161,11 +44202,47 @@ function PDF({ base64, zoom = 1 }) {
 }
 function MindMap({ data, onLocate }) {
   const scroll = (0, import_react.useRef)(), canvas = (0, import_react.useRef)(), drag = (0, import_react.useRef)();
-  const [fold, setFold] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [scale, setScale] = (0, import_react.useState)(0.8);
+  const [fold, setFold] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [scale, setScale] = (0, import_react.useState)(0.8), [selected, setSelected] = (0, import_react.useState)(null), [edges, setEdges] = (0, import_react.useState)([]);
   const nodes = data?.nodes || [], root = nodes.find((n) => n.type === "paper"), children = (id) => nodes.filter((n) => n.parent === id);
+  (0, import_react.useLayoutEffect)(() => {
+    const plane = canvas.current;
+    const measure = () => {
+      const base2 = plane.getBoundingClientRect();
+      const visible = new Map([...plane.querySelectorAll("[data-node-id]")].map((el) => [el.dataset.nodeId, el.getBoundingClientRect()]));
+      setEdges(nodes.flatMap((n) => {
+        const a = visible.get(n.parent), b = visible.get(n.id);
+        if (!a || !b) return [];
+        const x1 = (a.right - base2.left) / scale, y1 = (a.top + a.height / 2 - base2.top) / scale;
+        const x2 = (b.left - base2.left) / scale, y2 = (b.top + b.height / 2 - base2.top) / scale;
+        const mid = (x1 + x2) / 2;
+        return [{ id: n.id, d: `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}` }];
+      }));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(plane);
+    return () => observer.disconnect();
+  }, [data, fold, scale]);
   const branch = (n, depth = 0) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-branch depth-" + depth, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-node-wrap", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-node", onClick: () => onLocate(n), children: n.label }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        "button",
+        {
+          "data-node-id": n.id,
+          className: "lp-node",
+          "aria-pressed": selected === n.id,
+          onClick: () => setSelected(n.id),
+          onDoubleClick: () => onLocate(n),
+          onKeyDown: (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              onLocate(n);
+            }
+          },
+          title: "\u53CC\u51FB\u5B9A\u4F4D\u539F\u6587",
+          children: n.label
+        }
+      ),
       children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         "button",
         {
@@ -44216,12 +44293,16 @@ function MindMap({ data, onLocate }) {
               (v) => Math.max(0.3, Math.min(1.6, v + (e.deltaY > 0 ? -0.05 : 0.05)))
             );
         },
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
           "div",
           {
             ref: canvas,
+            className: "lp-map-plane",
             style: { zoom: scale, padding: 40, width: "max-content" },
-            children: root ? branch(root) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u8BBA\u6587\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { className: "lp-map-edges", "aria-hidden": "true", children: edges.map((e) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: e.d }, e.id)) }),
+              root ? branch(root) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u8BBA\u6587\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
+            ]
           }
         )
       }
@@ -44318,11 +44399,12 @@ function apply(ctx) {
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {
       } };
+      const slot = "main.conversation";
       const entry = {
-        component: (props) => props.renderSlot("main.conversation", {}),
+        component: (props) => props.renderSlot(slot, {}),
         options: {},
         children: {
-          "main.conversation": { kind: "single", scope: "session-maybe" }
+          [slot]: { kind: "single", scope: "session-maybe" }
         }
       };
       const host = {
@@ -44342,7 +44424,7 @@ function apply(ctx) {
     return surface || /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
+    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
     ), [conflict, setConflict] = (0, import_react.useState)(null);
     const pRef = (0, import_react.useRef)(p), fileRef = (0, import_react.useRef)(file), serial = (0, import_react.useRef)(0), selectedAll = (0, import_react.useRef)(), jobHandled = (0, import_react.useRef)(""), chatPending = (0, import_react.useRef)(null), mounted = (0, import_react.useRef)(true);
@@ -44483,6 +44565,7 @@ function apply(ctx) {
       }
       await ctx.sessions.open(id);
       ctx.layout.selectPanel("latex-studio");
+      setView("source");
       setChatOpen(true);
       return id;
     }
@@ -44759,7 +44842,8 @@ function apply(ctx) {
         ] })
       ] });
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", { className: "lp-sidebar", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", { className: "lp-sidebar", hidden: sideHidden, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-collapse", "aria-label": "\u6536\u8D77\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(true), children: "\u25EB" }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-back", onClick: back, children: "\u2190 \u4E3B\u4F1A\u8BDD" }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
           "button",
@@ -44993,14 +45077,18 @@ function apply(ctx) {
           )
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : ""), style: { "--lp-split": split + "%" }, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
+          sideHidden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: "\u25EB" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: "\u25CC \u8BBA\u6587\u5BF9\u8BDD" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
             "button",
             {
-              "aria-pressed": view === "source",
-              onClick: () => setView("source"),
+              "aria-pressed": view === "source" && !chatOpen,
+              onClick: () => {
+                setView("source");
+                setChatOpen(false);
+              },
               children: [
                 "\u25A7 ",
                 file?.name || "\u6E90\u7801"
@@ -45008,7 +45096,6 @@ function apply(ctx) {
             }
           ),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-status", children: status }),
-          saveButton,
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
             "button",
             {
@@ -45030,6 +45117,7 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("details", { className: "lp-settings", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("summary", { children: "\u8BBE\u7F6E" }),
             /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
+              saveButton,
               /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
                 "\u4E3B\u6587\u4EF6",
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -45115,7 +45203,7 @@ function apply(ctx) {
           job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
         ] }),
-        view === "map" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        view === "map" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-map-toolbar", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setView("source"), children: "\u2190 \u6E90\u7801" }),
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -45128,9 +45216,10 @@ function apply(ctx) {
             )
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MindMap, { data: map, onLocate: safe(locate) })
-        ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split", children: [
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split", hidden: view === "map", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-source", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-tabs", children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-tabs", hidden: chatOpen || tabs.length < 2, children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                 "button",
                 {
@@ -45157,7 +45246,7 @@ function apply(ctx) {
                 }
               )
             ] }, t2)) }),
-            file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-source-body", hidden: chatOpen, children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
               Editor,
               {
                 file,
@@ -45165,8 +45254,41 @@ function apply(ctx) {
                 onSelect: setSelection,
                 jump
               }
-            ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" })
+            ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) }),
+            p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
           ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            "div",
+            {
+              className: "lp-splitter",
+              role: "separator",
+              tabIndex: 0,
+              "aria-label": "\u8C03\u6574\u6E90\u7801\u548C PDF \u5BBD\u5EA6",
+              "aria-orientation": "vertical",
+              "aria-valuenow": split,
+              "aria-valuemin": 35,
+              "aria-valuemax": 70,
+              onKeyDown: (e) => {
+                if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                  e.preventDefault();
+                  setSplit((v) => Math.max(35, Math.min(70, v + (e.key === "ArrowLeft" ? -2 : 2))));
+                }
+              },
+              onPointerDown: (e) => {
+                e.currentTarget.setPointerCapture(e.pointerId);
+                e.preventDefault();
+              },
+              onPointerMove: (e) => {
+                if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+                  const rect = e.currentTarget.parentElement.getBoundingClientRect();
+                  setSplit(Math.max(35, Math.min(70, 100 * (e.clientX - rect.left) / rect.width)));
+                }
+              },
+              onPointerUp: (e) => {
+                if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+              }
+            }
+          ),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-pdf", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "PDF" }),
@@ -45225,7 +45347,7 @@ function apply(ctx) {
         ] }),
         showLog && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-log", children: job?.result?.log || job?.error || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7" })
       ] }),
-      selection && !comment2 && view === "source" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      selection && !chatOpen && !comment2 && view === "source" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
         "div",
         {
           className: "lp-selection",
@@ -45283,14 +45405,7 @@ function apply(ctx) {
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !commentText.trim(), onClick: safe(addComment), children: "\u6DFB\u52A0\u8BC4\u8BBA" })
           ]
         }
-      ),
-      chatOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", { className: "lp-chat", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("b", { children: "\u8BBA\u6587\u5BF9\u8BDD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setChatOpen(false), children: "\u6536\u8D77 \xD7" })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-native", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat }) })
-      ] })
+      )
     ] });
   }
   ctx.effect(() => {
@@ -45319,7 +45434,7 @@ function apply(ctx) {
   );
   ctx.slots.inject(
     "shell.overlay",
-    () => ctx.slots.register({ name: "shell.overlay", id: name2 + "-entry" }, () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-launch", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Entry, {}) }))
+    () => ctx.slots.register({ name: "shell.overlay", id: name2 + "-home-entry" }, () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-home-entry", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Entry, {}) }))
   );
 }
 
