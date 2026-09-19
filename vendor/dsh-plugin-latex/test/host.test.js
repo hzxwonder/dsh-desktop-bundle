@@ -11,7 +11,9 @@ async function host(t) {
   const routes = new Map(),
     agents = new Map();
   let modelCalls = 0;
+  const skills = new Map(), prompts = [];
   const ctx = {
+    skills: { register: skill => skills.set(skill.name, skill) },
     systemPrompt: { variable: (name, fn) => variables.set(name, fn), section: value => sections.push(value) },
     connection: { fetch: { register: (r) => routes.set(r.path, r) } },
     agents: {
@@ -24,9 +26,10 @@ async function host(t) {
     subagents: {
       start: async (mode, args) => {
         modelCalls++;
-        const data = JSON.parse(
-          args.prompt[0].text.slice(args.prompt[0].text.indexOf("\n") + 1),
-        );
+        prompts.push(args.prompt);
+        assert.equal(args.prompt[0].text, skills.get("paper-mindmap-update").content);
+        const data = JSON.parse(args.prompt[1].text);
+        assert.ok(data.paragraphs.every(p => typeof p.section === "string"));
         return {
           result: Promise.resolve({
             stopReason: "completed",
@@ -200,6 +203,14 @@ test("multi-file analysis annotates source files and reuses all unchanged paragr
     second = await analyze();
   assert.equal(second.stats.analyzed, 0);
   assert.equal(h.calls(), calls);
+  const edited = (await h.request({action:"read",id:p.id,file:"body.tex"})).value;
+  await h.request({action:"save",id:p.id,file:"body.tex",hash:edited.hash,content:edited.content.replace("First sentence.","Revised first sentence.")});
+  const third = await analyze();
+  assert.equal(third.stats.analyzed, 1);
+  assert.equal(h.calls(), calls + 1);
+  const updated = (await h.request({action:"read",id:p.id,file:"body.tex"})).value;
+  assert.match(updated.content, /Revised first sentence/);
+  assert.match(updated.content, /% @s:Fixture sentence intent/);
 });
 
 test("paper system guidance is restricted to bound project sessions", async t => {

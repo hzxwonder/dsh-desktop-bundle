@@ -40,7 +40,7 @@ npm run build
 
 ## Agent 与数据
 
-聊天、模型选择、文件工具和权限审批沿用 Desktop 的 deepseek-harness。插件复用已有模型路由；论文会话绑定论文目录。语义分析调用同一路由的原生子代理，并禁用其文件工具，返回结构化结果后由插件检查并写入。
+聊天、模型选择、文件工具和权限审批沿用 Desktop 的 deepseek-harness。插件复用已有模型路由；论文会话绑定论文目录。语义分析调用同一路由的原生子代理，每次完整加载随插件提供的 [paper-mindmap-update Skill](skills/paper-mindmap-update/SKILL.md)。Agent 按技能概括章节、段落与逐句意图；插件校验结构化结果后写入原文注释，再解析注释生成导图。文件写入和备份由 Host 执行。技能版本改变后首次更新重新分析，后续继续复用未修改段落。
 
 论文工作台使用内部专属 `AGENTS.md`，存放在插件数据目录 `latex-studio/instructions/AGENTS.md`。插件启动时加载其中的写作、审阅和 Overleaf 同步规则，通过 Harness 系统提示词仅注入绑定当前论文目录的会话。文件由插件管理，论文文件栏保持源码与素材视图。
 
