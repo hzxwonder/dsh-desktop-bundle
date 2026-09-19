@@ -1488,6 +1488,9 @@ window.__ModuleLoader__.load({
         key: ID,
         locale: NS,
       }, props => React.createElement(BrowserPane, {...props, layout: ctx.layout}))), "dsh-plugin-browser: right Sidebar body");
+      ctx.effect(() => ctx.slots.inject("paper.browser", () => ctx.slots.register({
+        name: "paper.browser", key: "dsh-plugin-browser/paper", locale: NS,
+      }, props => React.createElement(BrowserSurface, {sessionId:props.sessionId,t,placement:"pane",visible:true}))), "dsh-plugin-browser: paper workbench browser");
       // The same browser as a main-area panel: the Sidebar pane hands the page
       // over to the whole window and takes it back, without a second page.
       const useSessions = () => React.useSyncExternalStore(ctx.sessions.list.subscribe, ctx.sessions.list.getSnapshot);

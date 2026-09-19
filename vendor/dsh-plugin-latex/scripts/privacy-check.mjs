@@ -3,6 +3,8 @@ import { join } from "node:path";
 const issues = [];
 const skip = new Set(["node_modules", ".git"]);
 const patterns = [
+  /\bolp_[A-Za-z0-9]{20,}/,
+  /git\.overleaf\.com\/[a-f0-9]{24}/i,
   /-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----/,
   /\bgh[pousr]_[A-Za-z0-9]{25,}/,
   /\bsk-[A-Za-z0-9_-]{24,}/,

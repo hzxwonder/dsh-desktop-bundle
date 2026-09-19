@@ -779,3 +779,41 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-settings-panel textarea { display:block; width:100%; height:260px; margin-top:10px; resize:vertical; line-height:1.6; }
 .lp-settings-panel footer { margin-top:24px; font-size:12px; }
 .lp-settings-panel footer button { background:var(--lp-hover); }
+
+.lp-right[hidden], .lp-right-page[hidden], .lp-splitter[hidden],.lp-editor-wrap[hidden] { display:none !important; }
+.lp-right-closed .lp-source { flex:1; width:100%; max-width:none; }
+.lp-right { display:flex; flex-direction:column; min-width:0; }
+.lp-right-tabs { display:flex; gap:6px; padding:8px; border-bottom:1px solid var(--lp-line); }
+.lp-right-tabs button:last-child { margin-left:auto; }
+.lp-right-page { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lp-right-page > header { display:flex; align-items:center; padding:8px; gap:4px; }
+.lp-right-page > header span { margin-right:auto; }
+.lp-log-page { flex:1; overflow:auto; padding:12px; min-height:0; }
+.lp-log-page header { display:flex; justify-content:space-between; }
+.lp-log-page pre { white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.7 ui-monospace,monospace; }
+.lp-editor-wrap { height:100%; min-height:0; display:flex; flex-direction:column; }
+.lp-change-review { overflow:auto; height:100%; padding:12px; }
+.lp-change-review > header { display:flex; align-items:center; gap:6px; position:sticky; top:0; background:var(--lp-bg); padding:8px; z-index:2; }
+.lp-change-review > header > span { margin-right:auto; }
+.lp-change-review h3 { font-size:12px; color:var(--lp-muted); font-weight:500; }
+.lp-change { border:1px solid var(--lp-line); border-radius:8px; margin:12px 0; overflow:hidden; }
+.lp-change-tools { display:flex; align-items:center; padding:4px 8px; }
+.lp-change-tools span { flex:1; color:var(--lp-muted); font-size:11px; }
+.lp-change pre { padding:10px 12px; margin:0; white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.7 ui-monospace,monospace; }
+.lp-before { background:color-mix(in srgb,#d65454 12%,var(--lp-bg)); border-left:3px solid #c75b5b; }
+.lp-after { background:color-mix(in srgb,#39a36b 12%,var(--lp-bg)); border-left:3px solid #409c70; }
+.lp-credential-row { display:flex; justify-content:flex-end; align-items:center; gap:12px; font-size:12px; }
+.lp-settings-panel input[type=password] { width:60%; }
+.lp-native, .lp-native > * { background:var(--lp-bg) !important; }
+.lp-composer { padding:8px 10px 4px; border-top:1px solid var(--lp-line); border-radius:0; }
+.lp-composer [class*="bg-"] { --dsw-alias-bg-base:var(--lp-bg); --dsw-alias-bg-layer-1:var(--lp-bg); --dsw-alias-bg-layer-2:var(--lp-hover); }
+.lp-native { --dsw-alias-bg-base:var(--lp-bg); --dsw-alias-bg-layer-1:var(--lp-bg); --dsw-alias-bg-layer-2:var(--lp-hover); --dsw-alias-label-primary:var(--lp-text); --dsw-alias-border-l2:var(--lp-line); }
+
+/* A shared toolbar keeps controls clear at narrow split widths. */
+.lp-toolbar { width:100%; gap:8px; flex-shrink:0; }
+.lp-right { margin-top:0; }
+.lp-composer { --lp-bg:var(--lp-editor); background:var(--lp-editor) !important; }
+.lp-right-tabs { min-height:42px; }
+.lp-right-page > header { min-height:38px; font-size:12px; }
+.lp-change-review { background:var(--lp-editor); }
+.lp-change-review > header { border-radius:8px; }

@@ -7,6 +7,7 @@ import { apply } from "../index.js";
 async function host(t, outputOverride) {
   const directory = await mkdtemp(join(tmpdir(), "latex-host-"));
   let hook, dispose;
+  const events=new Map();
   const variables = new Map(), sections = [];
   const routes = new Map(),
     agents = new Map();
@@ -55,13 +56,14 @@ async function host(t, outputOverride) {
       stateOf: () => ({ pending: { provider: "fixture", model: "fixture" } }),
     },
     on: (n, fn) => {
-      hook = fn;
+      events.set(n,fn);
+      if(n === "agent/pre-step") hook = fn;
     },
     effect: (fn) => {
       dispose = fn();
     },
   };
-  await apply(ctx, { directory });
+  await apply(ctx, { directory, automation:false, pipeline:false });
   t.after(async () => {
     await dispose();
     await rm(directory, { recursive: true, force: true });
@@ -75,7 +77,7 @@ async function host(t, outputOverride) {
     );
     return r.json();
   };
-  return { request, agents, hook, variables, sections, calls: () => modelCalls };
+  return { request, agents, hook, events, variables, sections, calls: () => modelCalls };
 }
 test("Host routes report errors and fence conversation roots", async (t) => {
   const h = await host(t),
@@ -182,6 +184,8 @@ test("multi-file analysis annotates source files and reuses all unchanged paragr
           ).value,
           { unchanged: true },
         );
+        const state=(await h.request({action:"status",id:p.id})).value;
+        if(state.review) assert.equal((await h.request({action:"decide",id:p.id,batchId:state.review.id,decision:"accept"})).ok,true);
         return job.result;
       }
       await new Promise((r) => setTimeout(r, 10));
@@ -286,9 +290,26 @@ test("global instructions persist and apply to subsequent paper prompts", async 
   const config=(await h.request({action:"settings"})).value;
   const updated=await h.request({action:"saveSettings",hash:config.hash,instructions:"# Paper guidance\nPreserve citations."});
   assert.equal(updated.ok,true);
-  assert.equal(h.variables.get("latex_paper_guidance")({agent}),"# Paper guidance\nPreserve citations.");
+  assert.match(h.variables.get("latex_paper_guidance")({agent}),/^# Paper guidance\nPreserve citations\./);
   assert.equal((await h.request({action:"settings"})).value.instructions,updated.value.instructions);
   assert.equal((await h.request({action:"saveSettings",hash:config.hash,instructions:"stale"})).ok,false);
   assert.equal((await h.request({action:"saveSettings",hash:updated.value.hash,instructions:"x".repeat(131073)})).ok,false);
   await assert.rejects(readFile(join(p.root,"AGENTS.md")),{code:"ENOENT"});
+});
+
+
+test("native Agent edits enter review and Git push is guarded",async t=>{
+ const h=await host(t),p=(await h.request({action:"create",name:"Native lifecycle"})).value;
+ const agent={session:{id:"native-test",header:{cwd:p.root}}};h.agents.set(agent.session.id,agent);
+ await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Paper"}}});
+ await h.hook({agent,messages:[]},async()=>({kind:"enter"}));
+ const {writeFile}=await import("node:fs/promises");await writeFile(join(p.root,"main.tex"),"Agent revised text.");
+ await h.events.get("tools/post-execute")({agent}, {},async()=>({kind:"accept"}));
+ let state=(await h.request({action:"status",id:p.id})).value;assert.ok(state.review.active);assert.ok(state.review.count>0);
+ assert.equal((await h.request({action:"save",id:p.id,file:"main.tex",hash:"ignored",content:"manual"})).ok,false);
+ const denied=await h.events.get("tools/pre-execute")({agent,arguments:{command:"git push origin HEAD"}},async()=>({kind:"allow"}));assert.equal(denied.kind,"deny");
+ h.events.get("session/event")(agent.session,{type:"turn/end"});
+ for(let i=0;i<50;i++){state=(await h.request({action:"status",id:p.id})).value;if(!state.review.active)break;await new Promise(r=>setTimeout(r,10));}
+ assert.equal(state.review.active,false);assert.equal((await h.request({action:"decide",id:p.id,batchId:state.review.id,decision:"reject"})).ok,true);
+ assert.match((await h.request({action:"read",id:p.id,file:"main.tex"})).value.content,/documentclass/);
 });

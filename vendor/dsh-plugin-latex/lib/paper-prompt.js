@@ -1,5 +1,6 @@
 import { mkdir, writeFile, readFile, lstat, rename } from "node:fs/promises";
 import { join } from "node:path";
+import { createHash, randomUUID } from "node:crypto";
 
 export const PAPER_AGENTS = `# 论文工作区
 
@@ -11,14 +12,10 @@ export const PAPER_AGENTS = `# 论文工作区
 审阅意见涉及多处时逐项核对原文，明确修改范围；事实、实验数据和参考文献需要有可核查依据。
 修改完成后说明修改内容及验证结果；需要验证排版时使用项目配置的本地编译工具。
 
-## Git 与 Overleaf 同步
+## 修改审阅与 Overleaf 同步
 
-开始操作前，先检查当前工作目录是否位于 Git 工作树中。
-如果是 Git 仓库，每次完成一轮论文文件修改后，都需要将本轮论文修改提交并 push 到对应的 Overleaf 仓库。
-先核实 Git 工作树根目录、当前分支和 remote；确认远端确实属于当前论文的 Overleaf 项目。不能仅凭 remote 名称为 origin 就认定它是 Overleaf。
-提交前检查差异，只纳入本轮论文相关修改，保留用户已有的其他修改。普通 push 后检查结果，只有成功才报告已同步。
-如果不是 Git 仓库，正常完成本地论文编辑并说明尚未配置 Git 同步。如果缺少 Overleaf remote、存在多个不明确的目标、凭据缺失、远端领先或合并冲突，保留本地成果并说明具体阻碍，请用户补充必要信息。
-不强制推送，不重写远端历史，不擅自创建或更换 remote，不推送到未经确认的其他仓库。不要在回复、日志或提交中泄露访问令牌、密码或含凭据的远端 URL。`;
+开始操作前检查当前目录与 Git 状态。所有 Agent 产生的文件修改（包括导图注释）由工作台记录为待审阅修改。修改完成后说明文件与验证结果，等待用户在界面接受或拒绝；不要自行执行 git commit、git push、pull、reset 或修改 Git 配置。只有全部修改处理完毕后，工作台才负责保存、编译并使用系统凭证同步绑定的 Overleaf 项目。
+不要读取、打印或索取 Overleaf token，不要把凭证写入文件或 Git remote。同步失败时读取工作台日志并向用户解释冲突文件与原因，保留原文和远端历史。`;
 
 export async function loadPaperInstructions(directory, projects = []) {
   const folder = join(directory, "instructions");
@@ -32,7 +29,14 @@ export async function loadPaperInstructions(directory, projects = []) {
   const stat = await lstat(file);
   if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 128 * 1024)
     throw new Error("论文工作台内部指令文件无效");
-  const text = await readFile(file, "utf8");
+  let text = await readFile(file, "utf8");
+  if (createHash("sha256").update(text.trimEnd()).digest("hex") === "82f4495b10c5a3b251bd5d0201f04b9e6bf7edfedf0ef49c8215e2c07e60b845") {
+    await writeFile(join(folder, "AGENTS.backup.md"), text, {mode:0o600});
+    const temporary = file + "." + randomUUID() + ".tmp";
+    text = PAPER_AGENTS + "\n";
+    await writeFile(temporary, text, {mode:0o600,flag:"wx"});
+    await rename(temporary,file);
+  }
   // Archive the exact template produced by the project-file migration.
   for (const project of projects) {
     const source = join(project.root, "AGENTS.md");

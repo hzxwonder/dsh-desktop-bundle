@@ -1,12 +1,16 @@
 import { join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
-import { readFile, realpath, mkdir, writeFile, rename } from "node:fs/promises";
-import { Store, fail, digest } from "./lib/store.js";
+import { readFile, realpath, mkdir, writeFile, rename, unlink } from "node:fs/promises";
+import { Store, fail, digest, inside, editable } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
 import { collectSources, mergeMaps } from "./lib/project-sources.js";
 import { loadPaperInstructions } from "./lib/paper-prompt.js";
+import {Credentials} from "./lib/credentials.js";
+import {Overleaf} from "./lib/overleaf.js";
+import {beginReview,captureReview,decideReview,reviewView,unresolved} from "./lib/revisions.js";
+import {automationServer} from "./lib/automation.js";
 export const name = "dsh-plugin-latex";
 export const inject = [
   "connection",
@@ -21,6 +25,11 @@ export async function apply(ctx, config = {}) {
     config.directory ||
       join(process.env.DSH_HOME || join(homedir(), ".dsh"), "latex-studio"),
   ).init();
+  const credentials=config.credentials || new Credentials();
+  const overleaf=new Overleaf(store,credentials);
+  for(const p of store.projects) if(p.revisionReview?.active) await captureReview(store,p.id,true);
+  const automationSkill=await readFile(new URL("./skills/paper-workbench/SKILL.md",import.meta.url),"utf8");
+  ctx.skills.register({name:"paper-workbench",description:"论文工作台读写提案、编译与日志接口",content:automationSkill,source:"bundled"});
   const mindmapSkill = await readFile(new URL("./skills/paper-mindmap-update/SKILL.md", import.meta.url), "utf8");
   const skillDigest = digest(mindmapSkill);
   ctx.skills.register({ name: "paper-mindmap-update", description: "更新 LaTeX 论文的语义注释与四级行文导图", content: mindmapSkill, source: "bundled" });
@@ -30,15 +39,15 @@ export async function apply(ctx, config = {}) {
     const project = store.projects.find(p =>
       p.chats.some(c => c.id === agent.session.id) &&
       p.root === resolve(agent.session.header.cwd));
-    return project ? paperInstructions : "";
+    return project ? paperInstructions + "\n\n工作台执行约束：所有 Agent 源码修改需由用户接受或拒绝后再同步；不执行 git commit/push/pull/reset，不读取凭证。工作台负责最终编译和 Overleaf 同步。" : "";
   });
   ctx.systemPrompt.section({ name: "latex-paper-workbench", order: 85, text: "{{latex_paper_guidance}}" });
   const jobs = new Map(),
     owned = new Map(),
     pending = new Set();
   const publicProject = (p) => {
-    const { snapshot, ...rest } = p;
-    return { ...rest, hasMap: !!snapshot };
+    const { snapshot, revisionReview, ...rest } = p;
+    return { ...rest, hasMap: !!snapshot, pendingChanges:unresolved(p), agentEditing:!!revisionReview?.active };
   };
   async function agentFor(id) {
     if (!id) fail("请先选择论文聊天与模型");
@@ -230,6 +239,17 @@ export async function apply(ctx, config = {}) {
       project: publicProject(p),
     };
   }
+  function idle(id) {if(store.get(id).revisionReview)fail("请先处理 Agent 修改","REVIEW_PENDING");if(jobs.get(id)?.status==="running")fail("当前论文任务正在运行","BUSY");}
+  async function savedPipeline(id,paths) {
+    const controller=new AbortController();
+    const job={version:randomUUID(),kind:"compile",status:"running",controller};jobs.set(id,job);
+    const work=(async()=>{try{
+      job.result=await compile(store,id,controller.signal);
+      job.result.sync=await overleaf.sync(id,paths);
+      store.get(id).lastLog=job.result.log;await store.persist();
+      job.status=job.result.ok===false?"failed":"completed";
+    }catch(e){job.status="failed";job.error=e.message;}finally{pending.delete(work);}})();pending.add(work);
+  }
   async function operation(a) {
     switch (a.action) {
       case "worker":
@@ -239,7 +259,7 @@ export async function apply(ctx, config = {}) {
         );
       case "settings": {
         paperInstructions = await loadPaperInstructions(store.directory);
-        return { instructions: paperInstructions, hash: digest(paperInstructions) };
+        return { instructions: paperInstructions, hash: digest(paperInstructions), credential:await credentials.status() };
       }
       case "saveSettings": {
         if (pending.has("settings")) fail("设置正在保存，请稍后重试");
@@ -254,8 +274,35 @@ export async function apply(ctx, config = {}) {
           await writeFile(temporary, a.instructions, { mode: 0o600, flag: "wx" });
           await rename(temporary, file);
           paperInstructions = a.instructions;
-          return { instructions: paperInstructions, hash: digest(paperInstructions) };
+          return { instructions: paperInstructions, hash: digest(paperInstructions), credential:await credentials.status() };
         } finally { pending.delete("settings"); }
+      }
+      case "credential": return a.token ? credentials.set(a.token) : a.remove ? credentials.remove() : credentials.status();
+      case "clone": return publicProject(await overleaf.clone(a.name,a.url));
+      case "status": {const p=store.get(a.id);return {review:reviewView(p),sync:p.sync||null,project:publicProject(p)};}
+      case "logs": {const p=store.get(a.id),j=jobs.get(a.id);return {compile:j?.result?.log||j?.error||p.lastLog||"",sync:p.sync||null};}
+      case "sync": idle(a.id);return overleaf.sync(a.id,store.get(a.id).syncPaths||[]);
+      case "propose": {
+        idle(a.id);const p=store.get(a.id),files=a.files || [{file:a.file,hash:a.hash,content:a.content}];
+        if(!Array.isArray(files)||!files.length||files.length>100)fail("提案文件数量须为 1 至 100");
+        const seen=new Set();
+        for(const f of files){
+          if(seen.has(f.file)||!editable(f.file)||f.content!==null && (typeof f.content!=="string"||Buffer.byteLength(f.content)>2*1024*1024))fail("无效的提案文件");seen.add(f.file);
+          await inside(p.root,f.file,true);
+          let current;try{current=await store.read(a.id,f.file);}catch(e){if(e.code!=="ENOENT")throw e;}
+          if((current?.hash??null)!==f.hash)fail("文件版本已变化："+f.file,"CONFLICT");
+        }
+        await beginReview(store,a.id,"external");
+        try {for(const f of files){
+          if(f.content===null)await unlink(await inside(p.root,f.file));
+          else {if(f.hash===null)await store.createFile(a.id,f.file);await store.save(a.id,f.file,f.content,f.hash??digest(""));}
+        }}finally{await captureReview(store,a.id,true);}
+        return reviewView(p);
+      }
+      case "decide": {
+        const result=await decideReview(store,a.id,a);
+        if(result.settled && config.pipeline!==false) await savedPipeline(a.id,result.paths);
+        return {review:reviewView(store.get(a.id)),...result};
       }
       case "list":
         return store.projects.map(publicProject);
@@ -268,10 +315,12 @@ export async function apply(ctx, config = {}) {
         };
       case "read":
         return store.read(a.id, a.file);
-      case "save":
-        return store.save(a.id, a.file, a.content, a.hash);
+      case "save": {
+        idle(a.id);const result=await store.save(a.id,a.file,a.content,a.hash);
+        if(config.pipeline!==false)await savedPipeline(a.id,[a.file]);return result;
+      }
       case "createFile":
-        return store.createFile(a.id, a.file);
+        idle(a.id);return store.createFile(a.id, a.file);
       case "update":
         if (a.patch?.chat) await validateChat(a.id, a.patch.chat.id);
         return publicProject(await store.update(a.id, a.patch || {}));
@@ -322,6 +371,7 @@ export async function apply(ctx, config = {}) {
         store.get(a.id);
         if (jobs.get(a.id)?.status === "running")
           fail("当前论文已有任务运行", "BUSY");
+        if(a.action === "analyze") await beginReview(store,a.id,"mindmap");
         const controller = new AbortController(),
           job = {
             version: randomUUID(),
@@ -339,15 +389,18 @@ export async function apply(ctx, config = {}) {
             ? compile(store, a.id, controller.signal)
             : analyze(a.id, a.sessionId, controller.signal)
         )
-          .then((result) => {
+          .then(async (result) => {
+            if(a.action === "analyze") await captureReview(store,a.id,true);
             job.result = result;
+            if(result.log){store.get(a.id).lastLog=result.log;void store.persist();}
             job.status = result.ok === false ? "failed" : "completed";
           })
-          .catch((e) => {
+          .catch(async (e) => {
+            if(a.action === "analyze") await captureReview(store,a.id,true);
             job.status = "failed";
             job.error = e.message;
           })
-          .finally(() => {
+          .finally(async () => {
             clearTimeout(timer);
             pending.delete(promise);
           });
@@ -363,6 +416,11 @@ export async function apply(ctx, config = {}) {
     }
   }
   ctx.on("agent/pre-step", async ({ agent, messages }, next) => {
+    const project=store.projects.find(p=>p.chats.some(c=>c.id===agent.session.id) && p.root===resolve(agent.session.header.cwd));
+    if(project) {
+      if(jobs.get(project.id)?.status === "running")return {kind:"reject"};
+      try {await beginReview(store,project.id,"chat:"+agent.session.id);} catch {return {kind:"reject"};}
+    }
     const decision = await next();
     if (decision.kind !== "enter") return decision;
     const source = decision.messages ?? messages;
@@ -398,6 +456,23 @@ export async function apply(ctx, config = {}) {
         : message.content,
     }));
     return changed ? { ...decision, messages: expanded } : decision;
+  });
+  const projectFor=agent=>store.projects.find(p=>agent?.session?.header?.cwd && p.root===resolve(agent.session.header.cwd) && p.revisionReview?.active && p.revisionReview.owner.startsWith("chat:"));
+  ctx.on("tools/pre-execute",async(exec,next)=>{
+    const p=projectFor(exec.agent);
+    if(p && /\bgit\b[\s\S]*\b(push|commit|reset|pull)\b/.test(JSON.stringify(exec.arguments?.cmd || exec.arguments?.command || exec.arguments?.code || exec.arguments?.script || "")))return {kind:"deny",reason:"论文 Git 同步由工作台在审阅结束后执行"};
+    return next();
+  });
+  ctx.on("tools/post-execute",async(exec,result,next)=>{const p=projectFor(exec.agent);if(p)await captureReview(store,p.id);return next();});
+  ctx.on("session/event",(session,event)=>{
+    if(event.type!=="turn/end")return;
+    const p=store.projects.find(p=>p.revisionReview?.active && p.revisionReview.owner==="chat:"+session.id);
+    if(p){const work=captureReview(store,p.id,true).finally(()=>pending.delete(work));pending.add(work);}
+  });
+  let closeAutomation;
+  if(config.automation!==false) closeAutomation=await automationServer(store.directory,async a=>{
+    if(!["list","open","read","propose","compile","job","logs","status","map","pdf"].includes(a.action))fail("外部接口不支持此操作","FORBIDDEN");
+    return operation(a);
   });
   ctx.connection.fetch.register({
     path: "/api/latex-studio",
@@ -436,6 +511,7 @@ export async function apply(ctx, config = {}) {
     },
   });
   ctx.effect(() => async () => {
+    if(closeAutomation)await closeAutomation();
     for (const j of jobs.values()) j.controller.abort();
     await Promise.allSettled([...pending]);
     for (const h of owned.values()) await h.dispose();

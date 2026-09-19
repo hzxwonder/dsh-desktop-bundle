@@ -443,7 +443,7 @@ export function apply(ctx) {
       </button>
     );
   }
-  function NativeChat({ sessionId }) {
+  function NativeChat({ sessionId, browser = false }) {
     const surface = useMemo(() => {
       const registry = ctx.slots;
       if (!registry.hostFace || !registry._renderer) return null;
@@ -452,7 +452,7 @@ export function apply(ctx) {
         binding = adapter?.resolve(sessionId);
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {} };
-      const slot = "main.conversation";
+      const slot = browser ? "paper.browser" : "main.conversation";
       const entry = {
         component: (props) => props.renderSlot(slot, {}),
         options: {},
@@ -475,7 +475,7 @@ export function apply(ctx) {
           value === entry ? undefined : base.storeOf(value, scope),
       };
       return registry._renderer.renderRoot(host, {});
-    }, [sessionId]);
+    }, [sessionId, browser]);
     return (
       surface || <p>当前 Harness 版本未提供嵌入聊天接口，请返回主会话继续。</p>
     );
@@ -506,6 +506,13 @@ export function apply(ctx) {
       [sideHidden, setSideHidden] = useState(false),
       [job, setJob] = useState(null),
       [showLog, setShowLog] = useState(false),
+      [rightOpen,setRightOpen]=useState(true),
+      [rightTab,setRightTab]=useState("pdf"),
+      [review,setReview]=useState(null),
+      [reviewOpen,setReviewOpen]=useState(true),
+      [logs,setLogs]=useState({}),
+      [token,setToken]=useState(""),
+      [credentialMessage,setCredentialMessage]=useState(""),
       [form, setForm] = useState(null),
       [title, setTitle] = useState(""),
       [path, setPath] = useState(""),
@@ -559,10 +566,10 @@ export function apply(ctx) {
           return null;
         }
       };
-    async function save() {
+    async function save(explicit = false) {
       const current = fileRef.current,
         project = pRef.current;
-      if (!current || !current.dirty) return current;
+      if (!current || !current.dirty || (!explicit && !project.autoSave)) return current;
       try {
         const saved = await api({
           action: "save",
@@ -581,7 +588,8 @@ export function apply(ctx) {
             setFile({ ...saved, loadKey: current.loadKey });
           else setFile((f) => ({ ...f, hash: saved.hash, dirty: true }));
         }
-        setStatus("已保存");
+        setStatus("已保存 · 正在编译");
+        setJob({kind:"compile",status:"running"});
         return saved;
       } catch (e) {
         if (e.code === "CONFLICT") setConflict(current);
@@ -622,6 +630,7 @@ export function apply(ctx) {
       setView("source");
       setStatus("");
       setConflict(null);
+      setReview(null);
       const data = await api({ action: "open", id: project.id });
       if (pRef.current?.id !== project.id) return;
       setP(data.project);
@@ -690,7 +699,9 @@ export function apply(ctx) {
       return id;
     }
     async function draft(text) {
+      const showChat=chatOpen;
       const sessionId = await ensureChat();
+      setChatOpen(showChat);
       pendingDraft = {
         sessionId,
         text:
@@ -736,8 +747,9 @@ export function apply(ctx) {
             jobHandled.current = p.id + ":" + j.version;
             if (j.kind === "compile") {
               setPdf(j.result.pdf);
+              if(j.result.sync?.status === "error"){setRightOpen(true);setRightTab("logs");}
               setStatus(
-                j.result.stale ? "PDF 已生成 · 源码有更新" : "编译完成",
+                j.result.sync?.status === "error" ? "已保存 · 同步失败" : j.result.sync?.status === "synced" ? "已同步 Overleaf" : j.result.stale ? "PDF 已生成 · 源码有更新" : "编译完成",
               );
             } else {
               setMap(j.result);
@@ -805,12 +817,29 @@ export function apply(ctx) {
       const handle = (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "s" && pRef.current) {
           e.preventDefault();
-          save().catch((e) => setError(e.message));
+          (fileRef.current?.dirty ? save(true) : start("compile")).catch((e) => setError(e.message));
         }
       };
       window.addEventListener("keydown", handle);
       return () => window.removeEventListener("keydown", handle);
     }, []);
+    useEffect(()=>{
+      if(!p?.autoSave || !file?.dirty || review || job?.status==="running")return;
+      const timer=setTimeout(()=>save(true).catch(e=>setError(e.message)),1000);
+      return ()=>clearTimeout(timer);
+    },[p?.autoSave,file?.content,file?.dirty,job?.status,review]);
+    useEffect(()=>{
+      if(!p)return;let stopped=false;
+      const poll=async()=>{try{const [state,log]=await Promise.all([api({action:"status",id:p.id}),api({action:"logs",id:p.id})]);if(stopped)return;setReview(state.review);setLogs(log);}catch{}};
+      poll();const timer=setInterval(poll,1800);return()=>{stopped=true;clearInterval(timer);};
+    },[p?.id]);
+    async function decide(decision,hunkId){
+      if(fileRef.current?.dirty)throw new Error("请先保留当前草稿，再处理 Agent 修改");
+      const result=await api({action:"decide",id:pRef.current.id,batchId:review.id,hunkId,decision});
+      setReview(result.review);
+      if(fileRef.current){try{const f=await api({action:"read",id:pRef.current.id,file:fileRef.current.name});fileRef.current={...f,loadKey:uid()};setFile(fileRef.current);}catch{setFile(null);fileRef.current=null;}}
+      if(result.settled){setMap(null);setStatus("修改已整合 · 正在编译");setJob({kind:"compile",status:"running"});}
+    }
     const changed = (text) => {
       const f = fileRef.current;
       if (!f) return;
@@ -822,7 +851,7 @@ export function apply(ctx) {
       setStatus("未保存");
     };
     async function start(kind) {
-      await save();
+      if(fileRef.current?.dirty){await save(true);if(kind==="compile")return;throw new Error("已保存并开始编译，请完成后更新导图");}
       let sessionId;
       if (kind === "analyze") sessionId = await ensureChat();
       setChatOpen(false);
@@ -897,6 +926,7 @@ export function apply(ctx) {
     );
     const gear = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg>;
     const openGlobal = safe(async () => {
+      setToken("");setCredentialMessage("");
       setGlobalConfig(await api({action:"settings"}));
       setSettingsMessage("");
       setSettings("global");
@@ -915,14 +945,16 @@ export function apply(ctx) {
         <header><h2>{settings === "global" ? "全局设置" : "论文设置"}</h2><button autoFocus aria-label="关闭设置" disabled={settingsBusy} onClick={()=>setSettings(null)}>×</button></header>
         {settings === "global" ? <>
           <label>工作台主题<select value={theme} onChange={e=>{setTheme(e.target.value);localStorage.setItem("dsh-latex-theme",e.target.value);}}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+          <label>Overleaf 凭证<input type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
+          <div className="lp-credential-row"><span role="status">{credentialMessage}</span><button disabled={!token || settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const credential=await api({action:"credential",token});setGlobalConfig(v=>({...v,credential}));setToken("");setCredentialMessage("凭证已存入系统钥匙串");}catch(e){setCredentialMessage(e.message);}finally{setSettingsBusy(false);}}}>保存凭证</button></div>
           <label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
           <p className="lp-muted">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p>
           <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{setGlobalConfig(await api({action:"saveSettings",...globalConfig}));setSettingsMessage("已保存");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存指令</button></footer>
         </> : <>
           <label>编译主文件<select value={p.main} disabled={job?.status === "running"} onChange={safe(e=>update({main:e.target.value}))}>{files.filter(f=>f.name.endsWith(".tex")).map(f=><option key={f.name}>{f.name}</option>)}</select></label>
           <label>编译器<select value={p.engine} disabled={job?.status === "running"} onChange={safe(e=>update({engine:e.target.value}))}>{["pdflatex","xelatex","lualatex"].map(x=><option key={x}>{x}</option>)}</select></label>
-          <div className="lp-row">{saveButton}<button onClick={()=>{setShowLog(v=>!v);setSettings(null);}}>编译日志</button><button onClick={safe(async()=>{await save();setFiles((await api({action:"open",id:p.id})).files);if(file)await load(file.name);})}>刷新文件</button></div>
-          <footer><span className="lp-muted">设置自动保存至当前论文</span><button onClick={openGlobal}>全局设置</button></footer>
+          <label className="lp-auto-save"><span>自动保存并编译</span><input type="checkbox" checked={!!p.autoSave} onChange={safe(e=>update({autoSave:e.target.checked}))}/></label>
+          <p className="lp-muted">关闭后使用 Ctrl / ⌘ + S 保存并编译。Overleaf 项目在修改整合后自动同步。</p>
         </>}
       </section>
     </div>;
@@ -964,6 +996,7 @@ export function apply(ctx) {
             <div className="lp-row">
               <button onClick={() => setForm("create")}>＋ 新建论文</button>
               <button onClick={() => setForm("import")}>打开本地项目</button>
+              <button onClick={() => {setForm("overleaf");setPath("");}}>从 Overleaf Git 创建</button>
             </div>
             {form && (
               <form
@@ -975,6 +1008,7 @@ export function apply(ctx) {
                       action: "create",
                       name: title,
                       ...(form === "import" ? { path } : {}),
+                      ...(form === "overleaf" ? { action:"clone",url:path } : {}),
                     });
                     setProjects((v) => [
                       ...v.filter((x) => x.id !== created.id),
@@ -994,12 +1028,12 @@ export function apply(ctx) {
                     onChange={(e) => setTitle(e.target.value)}
                   />
                 </label>
-                {form === "import" && (
+                {(form === "import" || form === "overleaf") && (
                   <label>
-                    本地目录
+                    {form === "overleaf" ? "Overleaf Git 链接" : "本地目录"}
                     <input
                       required
-                      placeholder="论文项目目录的完整路径"
+                      placeholder={form === "overleaf" ? "https://git@git.overleaf.com/项目ID" : "论文项目目录的完整路径"}
                       value={path}
                       onChange={(e) => setPath(e.target.value)}
                     />
@@ -1247,6 +1281,8 @@ export function apply(ctx) {
               ▧ {file?.name || "源码"}
             </button>
             <span className="lp-status">{status}</span>
+            {review && <button aria-pressed={reviewOpen} onClick={()=>setReviewOpen(v=>!v)}>变更 {review.count}</button>}
+            <button aria-label={rightOpen?"收起右侧面板":"展开右侧面板"} onClick={()=>setRightOpen(v=>!v)}>◨</button>
             <button
               disabled={job?.status === "running"}
               onClick={safe(() => start("compile"))}
@@ -1334,7 +1370,7 @@ export function apply(ctx) {
               <MindMap data={map} onLocate={safe(locate)} />
             </>
           )}
-            <div className="lp-split" hidden={view === "map"}>
+            <div className={"lp-split"+(rightOpen?"":" lp-right-closed")} hidden={view === "map"}>
               <section className="lp-source">
                 <div className="lp-tabs" hidden={chatOpen || tabs.length < 2}>
                   {tabs.map((t) => (
@@ -1364,6 +1400,11 @@ export function apply(ctx) {
                   ))}
                 </div>
                 <div className="lp-source-body" hidden={chatOpen}>
+                {review && reviewOpen && <div className="lp-change-review">
+                  <header><span>{review.active ? "Agent 正在修改…" : "待审阅修改"} · {review.count}</span><button disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></header>
+                  {review.files.map(f=><section key={f.name}><h3>{f.name}</h3>{f.parts.filter(h=>h.id).map(h=><article className="lp-change" key={h.id}><div className="lp-change-tools"><span>{h.decision ? h.decision==="accept"?"已接受":"已拒绝":"修改建议"}</span><button disabled={!!h.decision || review.active} onClick={safe(()=>decide("accept",h.id))}>接受</button><button disabled={!!h.decision || review.active} onClick={safe(()=>decide("reject",h.id))}>拒绝</button></div>{h.before && <pre className="lp-before">{h.before}</pre>}{h.after && <pre className="lp-after">{h.after}</pre>}</article>)}</section>)}
+                </div>}
+                <div hidden={!!review && reviewOpen} className="lp-editor-wrap">
                 {file ? (
                   <Editor
                     file={file}
@@ -1374,17 +1415,19 @@ export function apply(ctx) {
                 ) : (
                   <div className="lp-empty">选择文件开始编辑</div>
                 )}
-                </div>
+                </div></div>
                 {p.lastChat ? <div className={"lp-native " + (chatOpen ? "lp-conversation" : "lp-composer")}>
                   <NativeChat sessionId={p.lastChat} />
                 </div> : <button className="lp-start-chat" onClick={safe(() => ensureChat())}>继续讨论论文…</button>}
               </section>
-              <div className="lp-splitter" role="separator" tabIndex={0} aria-label="调整源码和 PDF 宽度" aria-orientation="vertical" aria-valuenow={split} aria-valuemin={35} aria-valuemax={70}
+              <div hidden={!rightOpen} className="lp-splitter" role="separator" tabIndex={0} aria-label="调整源码和 PDF 宽度" aria-orientation="vertical" aria-valuenow={split} aria-valuemin={35} aria-valuemax={70}
                 onKeyDown={e => { if (e.key === "ArrowLeft" || e.key === "ArrowRight") { e.preventDefault(); setSplit(v => Math.max(35, Math.min(70, v + (e.key === "ArrowLeft" ? -2 : 2)))); } }}
                 onPointerDown={e => { e.currentTarget.setPointerCapture(e.pointerId); e.preventDefault(); }}
                 onPointerMove={e => { if (e.currentTarget.hasPointerCapture(e.pointerId)) { const rect = e.currentTarget.parentElement.getBoundingClientRect(); setSplit(Math.max(35, Math.min(70, 100 * (e.clientX - rect.left) / rect.width))); } }}
                 onPointerUp={e => { if(e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }} />
-              <section className="lp-pdf">
+              <section className="lp-pdf lp-right" hidden={!rightOpen}>
+                <nav className="lp-right-tabs">{[["pdf","PDF"],["logs","日志"],["browser","浏览器"]].map(([key,label])=><button key={key} aria-pressed={rightTab===key} onClick={()=>setRightTab(key)}>{label}</button>)}<button aria-label="关闭右侧面板" onClick={()=>setRightOpen(false)}>×</button></nav>
+                <div className="lp-right-page" hidden={rightTab!=="pdf"}>
                 <header>
                   <span>PDF</span>
                   <button
@@ -1405,7 +1448,7 @@ export function apply(ctx) {
                   >
                     ＋
                   </button>
-                  <button onClick={() => setShowLog((v) => !v)}>日志</button>
+                  <button onClick={() => setRightTab("logs")}>日志</button>
                   {pdf && (
                     <button
                       onClick={() => {
@@ -1430,6 +1473,9 @@ export function apply(ctx) {
                   )}
                 </header>
                 <PDF base64={pdf} zoom={pdfZoom} />
+                </div>
+                {rightTab==="logs" && <div className="lp-log-page"><header><span>编译与同步</span><button onClick={safe(async()=>{await api({action:"sync",id:p.id});setLogs(await api({action:"logs",id:p.id}));})}>重试同步</button></header><pre>{logs.sync?.message || ""}{"\n\n"}{logs.compile || "暂无编译日志"}</pre></div>}
+                {rightTab==="browser" && rightOpen && !settings && (p.lastChat ? <NativeChat sessionId={p.lastChat} browser/> : <div className="lp-empty"><button onClick={safe(()=>ensureChat())}>连接论文会话浏览器</button></div>)}
               </section>
             </div>
           {showLog && (
@@ -1515,7 +1561,7 @@ export function apply(ctx) {
     return () => style.remove();
   });
   ctx.slots.inject("main", () =>
-    ctx.slots.register({ name: "main", key: "latex-studio" }, Panel),
+    ctx.slots.register({ name: "main", key: "latex-studio", children:{"paper.browser":{kind:"single",scope:"session-maybe"}} }, Panel),
   );
   ctx.slots.inject("conversation.input.left", () =>
     ctx.slots.register(

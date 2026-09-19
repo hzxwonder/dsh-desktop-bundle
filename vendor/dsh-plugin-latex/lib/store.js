@@ -78,6 +78,7 @@ export class Store {
     this.directory = directory;
     this.projects = [];
     this.queue = Promise.resolve();
+    this.diskQueue = Promise.resolve();
   }
   async init() {
     await mkdir(this.directory, { recursive: true, mode: 0o700 });
@@ -96,10 +97,10 @@ export class Store {
     return run;
   }
   async persist() {
-    await atomic(
-      join(this.directory, "projects.json"),
-      JSON.stringify(this.projects, null, 2),
-    );
+    const contents=JSON.stringify(this.projects,null,2);
+    const operation=this.diskQueue.then(()=>atomic(join(this.directory,"projects.json"),contents));
+    this.diskQueue=operation.catch(()=>{});
+    await operation;
   }
   get(id) {
     const p = this.projects.find((p) => p.id === id);
@@ -153,6 +154,7 @@ State the scope and limitations.
         root,
         main: "main.tex",
         engine: "pdflatex",
+        autoSave: false,
         revision: 0,
         reviews: [],
         chats: [],
@@ -232,6 +234,10 @@ State the scope and limitations.
   async update(id, patch) {
     return this.serial(async () => {
       const p = this.get(id);
+      if (patch.autoSave !== undefined) {
+        if(typeof patch.autoSave !== "boolean") fail("自动保存设置无效");
+        p.autoSave=patch.autoSave;
+      }
       if (patch.main !== undefined) {
         fileName(patch.main);
         if (!patch.main.endsWith(".tex")) fail("主文件必须是 .tex");

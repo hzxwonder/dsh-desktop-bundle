@@ -44756,6 +44756,44 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-settings-panel textarea { display:block; width:100%; height:260px; margin-top:10px; resize:vertical; line-height:1.6; }
 .lp-settings-panel footer { margin-top:24px; font-size:12px; }
 .lp-settings-panel footer button { background:var(--lp-hover); }
+
+.lp-right[hidden], .lp-right-page[hidden], .lp-splitter[hidden],.lp-editor-wrap[hidden] { display:none !important; }
+.lp-right-closed .lp-source { flex:1; width:100%; max-width:none; }
+.lp-right { display:flex; flex-direction:column; min-width:0; }
+.lp-right-tabs { display:flex; gap:6px; padding:8px; border-bottom:1px solid var(--lp-line); }
+.lp-right-tabs button:last-child { margin-left:auto; }
+.lp-right-page { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lp-right-page > header { display:flex; align-items:center; padding:8px; gap:4px; }
+.lp-right-page > header span { margin-right:auto; }
+.lp-log-page { flex:1; overflow:auto; padding:12px; min-height:0; }
+.lp-log-page header { display:flex; justify-content:space-between; }
+.lp-log-page pre { white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.7 ui-monospace,monospace; }
+.lp-editor-wrap { height:100%; min-height:0; display:flex; flex-direction:column; }
+.lp-change-review { overflow:auto; height:100%; padding:12px; }
+.lp-change-review > header { display:flex; align-items:center; gap:6px; position:sticky; top:0; background:var(--lp-bg); padding:8px; z-index:2; }
+.lp-change-review > header > span { margin-right:auto; }
+.lp-change-review h3 { font-size:12px; color:var(--lp-muted); font-weight:500; }
+.lp-change { border:1px solid var(--lp-line); border-radius:8px; margin:12px 0; overflow:hidden; }
+.lp-change-tools { display:flex; align-items:center; padding:4px 8px; }
+.lp-change-tools span { flex:1; color:var(--lp-muted); font-size:11px; }
+.lp-change pre { padding:10px 12px; margin:0; white-space:pre-wrap; overflow-wrap:anywhere; font:12px/1.7 ui-monospace,monospace; }
+.lp-before { background:color-mix(in srgb,#d65454 12%,var(--lp-bg)); border-left:3px solid #c75b5b; }
+.lp-after { background:color-mix(in srgb,#39a36b 12%,var(--lp-bg)); border-left:3px solid #409c70; }
+.lp-credential-row { display:flex; justify-content:flex-end; align-items:center; gap:12px; font-size:12px; }
+.lp-settings-panel input[type=password] { width:60%; }
+.lp-native, .lp-native > * { background:var(--lp-bg) !important; }
+.lp-composer { padding:8px 10px 4px; border-top:1px solid var(--lp-line); border-radius:0; }
+.lp-composer [class*="bg-"] { --dsw-alias-bg-base:var(--lp-bg); --dsw-alias-bg-layer-1:var(--lp-bg); --dsw-alias-bg-layer-2:var(--lp-hover); }
+.lp-native { --dsw-alias-bg-base:var(--lp-bg); --dsw-alias-bg-layer-1:var(--lp-bg); --dsw-alias-bg-layer-2:var(--lp-hover); --dsw-alias-label-primary:var(--lp-text); --dsw-alias-border-l2:var(--lp-line); }
+
+/* A shared toolbar keeps controls clear at narrow split widths. */
+.lp-toolbar { width:100%; gap:8px; flex-shrink:0; }
+.lp-right { margin-top:0; }
+.lp-composer { --lp-bg:var(--lp-editor); background:var(--lp-editor) !important; }
+.lp-right-tabs { min-height:42px; }
+.lp-right-page > header { min-height:38px; font-size:12px; }
+.lp-change-review { background:var(--lp-editor); }
+.lp-change-review > header { border-radius:8px; }
 `;
 
 // client/index.jsx
@@ -45178,7 +45216,7 @@ function apply(ctx) {
       }
     );
   }
-  function NativeChat({ sessionId }) {
+  function NativeChat({ sessionId, browser: browser2 = false }) {
     const surface = (0, import_react.useMemo)(() => {
       const registry = ctx.slots;
       if (!registry.hostFace || !registry._renderer) return null;
@@ -45186,7 +45224,7 @@ function apply(ctx) {
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {
       } };
-      const slot = "main.conversation";
+      const slot = browser2 ? "paper.browser" : "main.conversation";
       const entry = {
         component: (props) => props.renderSlot(slot, {}),
         options: {},
@@ -45207,11 +45245,11 @@ function apply(ctx) {
         storeOf: (value, scope) => value === entry ? void 0 : base2.storeOf(value, scope)
       };
       return registry._renderer.renderRoot(host, {});
-    }, [sessionId]);
+    }, [sessionId, browser2]);
     return surface || /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
+    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [rightOpen, setRightOpen] = (0, import_react.useState)(true), [rightTab, setRightTab] = (0, import_react.useState)("pdf"), [review, setReview] = (0, import_react.useState)(null), [reviewOpen, setReviewOpen] = (0, import_react.useState)(true), [logs, setLogs] = (0, import_react.useState)({}), [token, setToken] = (0, import_react.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react.useState)(""), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
     ), [settings, setSettings] = (0, import_react.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react.useState)(""), [conflict, setConflict] = (0, import_react.useState)(null);
     const pRef = (0, import_react.useRef)(p), fileRef = (0, import_react.useRef)(file), serial = (0, import_react.useRef)(0), selectedAll = (0, import_react.useRef)(), jobHandled = (0, import_react.useRef)(""), chatPending = (0, import_react.useRef)(null), mounted = (0, import_react.useRef)(true);
@@ -45244,9 +45282,9 @@ function apply(ctx) {
         return null;
       }
     };
-    async function save() {
+    async function save(explicit = false) {
       const current = fileRef.current, project = pRef.current;
-      if (!current || !current.dirty) return current;
+      if (!current || !current.dirty || !explicit && !project.autoSave) return current;
       try {
         const saved = await api({
           action: "save",
@@ -45262,7 +45300,8 @@ function apply(ctx) {
             setFile({ ...saved, loadKey: current.loadKey });
           else setFile((f) => ({ ...f, hash: saved.hash, dirty: true }));
         }
-        setStatus("\u5DF2\u4FDD\u5B58");
+        setStatus("\u5DF2\u4FDD\u5B58 \xB7 \u6B63\u5728\u7F16\u8BD1");
+        setJob({ kind: "compile", status: "running" });
         return saved;
       } catch (e) {
         if (e.code === "CONFLICT") setConflict(current);
@@ -45272,8 +45311,8 @@ function apply(ctx) {
     async function load(name3, project = pRef.current) {
       if (!project || !name3) return;
       await save();
-      const token = ++serial.current, cache = drafts.get(project.id + ":" + name3), loaded = cache || await api({ action: "read", id: project.id, file: name3 });
-      if (token !== serial.current || pRef.current?.id !== project.id) return;
+      const token2 = ++serial.current, cache = drafts.get(project.id + ":" + name3), loaded = cache || await api({ action: "read", id: project.id, file: name3 });
+      if (token2 !== serial.current || pRef.current?.id !== project.id) return;
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
       setFile(next);
@@ -45300,6 +45339,7 @@ function apply(ctx) {
       setView("source");
       setStatus("");
       setConflict(null);
+      setReview(null);
       const data = await api({ action: "open", id: project.id });
       if (pRef.current?.id !== project.id) return;
       setP(data.project);
@@ -45359,7 +45399,9 @@ function apply(ctx) {
       return id;
     }
     async function draft(text) {
+      const showChat = chatOpen;
       const sessionId = await ensureChat();
+      setChatOpen(showChat);
       pendingDraft = {
         sessionId,
         text: pendingDraft?.sessionId === sessionId ? pendingDraft.text + "\n\n" + text : text
@@ -45390,8 +45432,12 @@ function apply(ctx) {
             jobHandled.current = p.id + ":" + j.version;
             if (j.kind === "compile") {
               setPdf(j.result.pdf);
+              if (j.result.sync?.status === "error") {
+                setRightOpen(true);
+                setRightTab("logs");
+              }
               setStatus(
-                j.result.stale ? "PDF \u5DF2\u751F\u6210 \xB7 \u6E90\u7801\u6709\u66F4\u65B0" : "\u7F16\u8BD1\u5B8C\u6210"
+                j.result.sync?.status === "error" ? "\u5DF2\u4FDD\u5B58 \xB7 \u540C\u6B65\u5931\u8D25" : j.result.sync?.status === "synced" ? "\u5DF2\u540C\u6B65 Overleaf" : j.result.stale ? "PDF \u5DF2\u751F\u6210 \xB7 \u6E90\u7801\u6709\u66F4\u65B0" : "\u7F16\u8BD1\u5B8C\u6210"
               );
             } else {
               setMap(j.result);
@@ -45455,12 +45501,56 @@ function apply(ctx) {
       const handle = (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "s" && pRef.current) {
           e.preventDefault();
-          save().catch((e2) => setError(e2.message));
+          (fileRef.current?.dirty ? save(true) : start("compile")).catch((e2) => setError(e2.message));
         }
       };
       window.addEventListener("keydown", handle);
       return () => window.removeEventListener("keydown", handle);
     }, []);
+    (0, import_react.useEffect)(() => {
+      if (!p?.autoSave || !file?.dirty || review || job?.status === "running") return;
+      const timer = setTimeout(() => save(true).catch((e) => setError(e.message)), 1e3);
+      return () => clearTimeout(timer);
+    }, [p?.autoSave, file?.content, file?.dirty, job?.status, review]);
+    (0, import_react.useEffect)(() => {
+      if (!p) return;
+      let stopped = false;
+      const poll = async () => {
+        try {
+          const [state, log] = await Promise.all([api({ action: "status", id: p.id }), api({ action: "logs", id: p.id })]);
+          if (stopped) return;
+          setReview(state.review);
+          setLogs(log);
+        } catch {
+        }
+      };
+      poll();
+      const timer = setInterval(poll, 1800);
+      return () => {
+        stopped = true;
+        clearInterval(timer);
+      };
+    }, [p?.id]);
+    async function decide(decision, hunkId) {
+      if (fileRef.current?.dirty) throw new Error("\u8BF7\u5148\u4FDD\u7559\u5F53\u524D\u8349\u7A3F\uFF0C\u518D\u5904\u7406 Agent \u4FEE\u6539");
+      const result = await api({ action: "decide", id: pRef.current.id, batchId: review.id, hunkId, decision });
+      setReview(result.review);
+      if (fileRef.current) {
+        try {
+          const f = await api({ action: "read", id: pRef.current.id, file: fileRef.current.name });
+          fileRef.current = { ...f, loadKey: uid() };
+          setFile(fileRef.current);
+        } catch {
+          setFile(null);
+          fileRef.current = null;
+        }
+      }
+      if (result.settled) {
+        setMap(null);
+        setStatus("\u4FEE\u6539\u5DF2\u6574\u5408 \xB7 \u6B63\u5728\u7F16\u8BD1");
+        setJob({ kind: "compile", status: "running" });
+      }
+    }
     const changed = (text) => {
       const f = fileRef.current;
       if (!f) return;
@@ -45472,7 +45562,11 @@ function apply(ctx) {
       setStatus("\u672A\u4FDD\u5B58");
     };
     async function start(kind) {
-      await save();
+      if (fileRef.current?.dirty) {
+        await save(true);
+        if (kind === "compile") return;
+        throw new Error("\u5DF2\u4FDD\u5B58\u5E76\u5F00\u59CB\u7F16\u8BD1\uFF0C\u8BF7\u5B8C\u6210\u540E\u66F4\u65B0\u5BFC\u56FE");
+      }
       let sessionId;
       if (kind === "analyze") sessionId = await ensureChat();
       setChatOpen(false);
@@ -45545,6 +45639,8 @@ function apply(ctx) {
       /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: "11", cy: "12", r: "3" })
     ] });
     const openGlobal = safe(async () => {
+      setToken("");
+      setCredentialMessage("");
       setGlobalConfig(await api({ action: "settings" }));
       setSettingsMessage("");
       setSettings("global");
@@ -45580,6 +45676,26 @@ function apply(ctx) {
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
           ] })
         ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+          "Overleaf \u51ED\u8BC1",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "password", "aria-label": "Overleaf \u51ED\u8BC1", autoComplete: "off", placeholder: globalConfig?.credential?.configured ? "\u5DF2\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32" : "Overleaf Git token", value: token, onChange: (e) => setToken(e.target.value) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-credential-row", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { role: "status", children: credentialMessage }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !token || settingsBusy, onClick: async () => {
+            setSettingsBusy(true);
+            try {
+              const credential = await api({ action: "credential", token });
+              setGlobalConfig((v) => ({ ...v, credential }));
+              setToken("");
+              setCredentialMessage("\u51ED\u8BC1\u5DF2\u5B58\u5165\u7CFB\u7EDF\u94A5\u5319\u4E32");
+            } catch (e) {
+              setCredentialMessage(e.message);
+            } finally {
+              setSettingsBusy(false);
+            }
+          }, children: "\u4FDD\u5B58\u51ED\u8BC1" })
+        ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: "lp-instructions", children: [
           "AGENTS.md",
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", { "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
@@ -45611,22 +45727,11 @@ function apply(ctx) {
           "\u7F16\u8BD1\u5668",
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { value: p.engine, disabled: job?.status === "running", onChange: safe((e) => update({ engine: e.target.value })), children: ["pdflatex", "xelatex", "lualatex"].map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: x }, x)) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-row", children: [
-          saveButton,
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
-            setShowLog((v) => !v);
-            setSettings(null);
-          }, children: "\u7F16\u8BD1\u65E5\u5FD7" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(async () => {
-            await save();
-            setFiles((await api({ action: "open", id: p.id })).files);
-            if (file) await load(file.name);
-          }), children: "\u5237\u65B0\u6587\u4EF6" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: "lp-auto-save", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u81EA\u52A8\u4FDD\u5B58\u5E76\u7F16\u8BD1" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "checkbox", checked: !!p.autoSave, onChange: safe((e) => update({ autoSave: e.target.checked })) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-muted", children: "\u8BBE\u7F6E\u81EA\u52A8\u4FDD\u5B58\u81F3\u5F53\u524D\u8BBA\u6587" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: openGlobal, children: "\u5168\u5C40\u8BBE\u7F6E" })
-        ] })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u5173\u95ED\u540E\u4F7F\u7528 Ctrl / \u2318 + S \u4FDD\u5B58\u5E76\u7F16\u8BD1\u3002Overleaf \u9879\u76EE\u5728\u4FEE\u6539\u6574\u5408\u540E\u81EA\u52A8\u540C\u6B65\u3002" })
       ] })
     ] }) });
     if (!p)
@@ -45670,7 +45775,11 @@ function apply(ctx) {
           )),
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-row", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setForm("create"), children: "\uFF0B \u65B0\u5EFA\u8BBA\u6587" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setForm("import"), children: "\u6253\u5F00\u672C\u5730\u9879\u76EE" })
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setForm("import"), children: "\u6253\u5F00\u672C\u5730\u9879\u76EE" }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
+              setForm("overleaf");
+              setPath("");
+            }, children: "\u4ECE Overleaf Git \u521B\u5EFA" })
           ] }),
           form && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
             "form",
@@ -45682,7 +45791,8 @@ function apply(ctx) {
                   const created = await api({
                     action: "create",
                     name: title,
-                    ...form === "import" ? { path } : {}
+                    ...form === "import" ? { path } : {},
+                    ...form === "overleaf" ? { action: "clone", url: path } : {}
                   });
                   setProjects((v) => [
                     ...v.filter((x) => x.id !== created.id),
@@ -45705,13 +45815,13 @@ function apply(ctx) {
                     }
                   )
                 ] }),
-                form === "import" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-                  "\u672C\u5730\u76EE\u5F55",
+                (form === "import" || form === "overleaf") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+                  form === "overleaf" ? "Overleaf Git \u94FE\u63A5" : "\u672C\u5730\u76EE\u5F55",
                   /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                     "input",
                     {
                       required: true,
-                      placeholder: "\u8BBA\u6587\u9879\u76EE\u76EE\u5F55\u7684\u5B8C\u6574\u8DEF\u5F84",
+                      placeholder: form === "overleaf" ? "https://git@git.overleaf.com/\u9879\u76EEID" : "\u8BBA\u6587\u9879\u76EE\u76EE\u5F55\u7684\u5B8C\u6574\u8DEF\u5F84",
                       value: path,
                       onChange: (e) => setPath(e.target.value)
                     }
@@ -45962,6 +46072,11 @@ function apply(ctx) {
             }
           ),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-status", children: status }),
+          review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { "aria-pressed": reviewOpen, onClick: () => setReviewOpen((v) => !v), children: [
+            "\u53D8\u66F4 ",
+            review.count
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": rightOpen ? "\u6536\u8D77\u53F3\u4FA7\u9762\u677F" : "\u5C55\u5F00\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen((v) => !v), children: "\u25E8" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
             "button",
             {
@@ -46043,7 +46158,7 @@ function apply(ctx) {
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MindMap, { data: map, onLocate: safe(locate) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split", hidden: view === "map", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split" + (rightOpen ? "" : " lp-right-closed"), hidden: view === "map", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-source", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-tabs", hidden: chatOpen || tabs.length < 2, children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -46072,20 +46187,46 @@ function apply(ctx) {
                 }
               )
             ] }, t2)) }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-source-body", hidden: chatOpen, children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-              Editor,
-              {
-                file,
-                onChange: changed,
-                onSelect: setSelection,
-                jump
-              }
-            ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-source-body", hidden: chatOpen, children: [
+              review && reviewOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-change-review", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+                    review.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : "\u5F85\u5BA1\u9605\u4FEE\u6539",
+                    " \xB7 ",
+                    review.count
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
+                ] }),
+                review.files.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: f.name }),
+                  f.parts.filter((h) => h.id).map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { className: "lp-change", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-change-tools", children: [
+                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: h.decision ? h.decision === "accept" ? "\u5DF2\u63A5\u53D7" : "\u5DF2\u62D2\u7EDD" : "\u4FEE\u6539\u5EFA\u8BAE" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !!h.decision || review.active, onClick: safe(() => decide("accept", h.id)), children: "\u63A5\u53D7" }),
+                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !!h.decision || review.active, onClick: safe(() => decide("reject", h.id)), children: "\u62D2\u7EDD" })
+                    ] }),
+                    h.before && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-before", children: h.before }),
+                    h.after && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-after", children: h.after })
+                  ] }, h.id))
+                ] }, f.name))
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { hidden: !!review && reviewOpen, className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                Editor,
+                {
+                  file,
+                  onChange: changed,
+                  onSelect: setSelection,
+                  jump
+                }
+              ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
+            ] }),
             p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
             "div",
             {
+              hidden: !rightOpen,
               className: "lp-splitter",
               role: "separator",
               tabIndex: 0,
@@ -46115,60 +46256,81 @@ function apply(ctx) {
               }
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-pdf", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "PDF" }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                "button",
-                {
-                  "aria-label": "\u7F29\u5C0F PDF",
-                  onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)),
-                  children: "\u2212"
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-                "button",
-                {
-                  "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6",
-                  onClick: () => setPdfZoom(1),
-                  children: [
-                    Math.round(pdfZoom * 100),
-                    "%"
-                  ]
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                "button",
-                {
-                  "aria-label": "\u653E\u5927 PDF",
-                  onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)),
-                  children: "\uFF0B"
-                }
-              ),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setShowLog((v) => !v), children: "\u65E5\u5FD7" }),
-              pdf && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                "button",
-                {
-                  onClick: () => {
-                    const blob = new Blob(
-                      [
-                        Uint8Array.from(
-                          atob(pdf),
-                          (x) => x.charCodeAt(0)
-                        )
-                      ],
-                      { type: "application/pdf" }
-                    ), url = URL.createObjectURL(blob), a = document.createElement("a");
-                    a.href = url;
-                    a.download = p.name + ".pdf";
-                    a.click();
-                    setTimeout(() => URL.revokeObjectURL(url), 1e3);
-                  },
-                  children: "\u4E0B\u8F7D"
-                }
-              )
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-pdf lp-right", hidden: !rightOpen, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("nav", { className: "lp-right-tabs", children: [
+              [["pdf", "PDF"], ["logs", "\u65E5\u5FD7"], ["browser", "\u6D4F\u89C8\u5668"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": rightTab === key, onClick: () => setRightTab(key), children: label }, key)),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen(false), children: "\xD7" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDF, { base64: pdf, zoom: pdfZoom })
+            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-right-page", hidden: rightTab !== "pdf", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "PDF" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  "button",
+                  {
+                    "aria-label": "\u7F29\u5C0F PDF",
+                    onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)),
+                    children: "\u2212"
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+                  "button",
+                  {
+                    "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6",
+                    onClick: () => setPdfZoom(1),
+                    children: [
+                      Math.round(pdfZoom * 100),
+                      "%"
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  "button",
+                  {
+                    "aria-label": "\u653E\u5927 PDF",
+                    onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)),
+                    children: "\uFF0B"
+                  }
+                ),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setRightTab("logs"), children: "\u65E5\u5FD7" }),
+                pdf && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  "button",
+                  {
+                    onClick: () => {
+                      const blob = new Blob(
+                        [
+                          Uint8Array.from(
+                            atob(pdf),
+                            (x) => x.charCodeAt(0)
+                          )
+                        ],
+                        { type: "application/pdf" }
+                      ), url = URL.createObjectURL(blob), a = document.createElement("a");
+                      a.href = url;
+                      a.download = p.name + ".pdf";
+                      a.click();
+                      setTimeout(() => URL.revokeObjectURL(url), 1e3);
+                    },
+                    children: "\u4E0B\u8F7D"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDF, { base64: pdf, zoom: pdfZoom })
+            ] }),
+            rightTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-log-page", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u7F16\u8BD1\u4E0E\u540C\u6B65" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(async () => {
+                  await api({ action: "sync", id: p.id });
+                  setLogs(await api({ action: "logs", id: p.id }));
+                }), children: "\u91CD\u8BD5\u540C\u6B65" })
+              ] }),
+              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("pre", { children: [
+                logs.sync?.message || "",
+                "\n\n",
+                logs.compile || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7"
+              ] })
+            ] }),
+            rightTab === "browser" && rightOpen && !settings && (p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat, browser: true }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => ensureChat()), children: "\u8FDE\u63A5\u8BBA\u6587\u4F1A\u8BDD\u6D4F\u89C8\u5668" }) }))
           ] })
         ] }),
         showLog && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-log", children: job?.result?.log || job?.error || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7" })
@@ -46242,7 +46404,7 @@ function apply(ctx) {
   });
   ctx.slots.inject(
     "main",
-    () => ctx.slots.register({ name: "main", key: "latex-studio" }, Panel)
+    () => ctx.slots.register({ name: "main", key: "latex-studio", children: { "paper.browser": { kind: "single", scope: "session-maybe" } } }, Panel)
   );
   ctx.slots.inject(
     "conversation.input.left",
