@@ -127,7 +127,15 @@ export async function apply(ctx, config = {}) {
             .join("\n");
           let data;
           try {
-            data = JSON.parse(raw.replace(/^```(?:json)?\s*|\s*```$/g, ""));
+            try {
+              data = JSON.parse(raw.trim());
+            } catch {
+              // Accept one explicit JSON block when the model adds a preface.
+              const blocks = [...raw.matchAll(/^```(?:json)?[ \t]*\r?\n([\s\S]*?)^```[ \t]*$/gm)];
+              if (blocks.length !== 1) throw new Error("Ambiguous semantic output");
+              data = JSON.parse(blocks[0][1]);
+            }
+            if (!data || !Array.isArray(data.paragraphs)) throw new Error("Missing paragraphs");
           } catch {
             fail("模型未返回有效结构，请重试");
           }

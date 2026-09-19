@@ -4,7 +4,7 @@ import { mkdtemp, rm, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { apply } from "../index.js";
-async function host(t) {
+async function host(t, outputOverride) {
   const directory = await mkdtemp(join(tmpdir(), "latex-host-"));
   let hook, dispose;
   const variables = new Map(), sections = [];
@@ -36,7 +36,7 @@ async function host(t) {
             output: [
               {
                 type: "text",
-                text: JSON.stringify({
+                text: typeof outputOverride === "function" ? outputOverride(data) : outputOverride ?? JSON.stringify({
                   paragraphs: data.paragraphs.map((p) => ({
                     hash: p.hash,
                     label: "Fixture paragraph intent",
@@ -235,4 +235,44 @@ test("paper instructions stay outside project files", async t => {
   const opened = (await h.request({action:"open",id:p.id})).value;
   assert.ok(!opened.files.some(file => file.name === "AGENTS.md"));
   await assert.rejects(readFile(join(p.root,"AGENTS.md")), {code:"ENOENT"});
+});
+
+test("invalid semantic output leaves paper source and map unchanged", async t => {
+  for (const output of ['not-json', 'null', '```json\n{}\n```\n```json\n{}\n```', JSON.stringify({paragraphs:[],sections:{}})]) {
+    const h = await host(t, output);
+    const p = (await h.request({action:"create",name:"Invalid analysis"})).value;
+    const agent = {session:{id:"analysis",header:{cwd:p.root}}};
+    h.agents.set(agent.session.id, agent);
+    await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Analysis"}}});
+    const before = (await h.request({action:"read",id:p.id,file:"main.tex"})).value;
+    await h.request({action:"analyze",id:p.id,sessionId:agent.session.id});
+    let job;
+    for(let i=0;i<100;i++) {
+      job=(await h.request({action:"job",id:p.id})).value;
+      if(job.status!=="running") break;
+      await new Promise(r=>setTimeout(r,10));
+    }
+    assert.equal(job.status,"failed");
+    assert.match(job.error,/模型/);
+    assert.equal((await h.request({action:"read",id:p.id,file:"main.tex"})).value.hash,before.hash);
+    assert.equal((await h.request({action:"open",id:p.id})).value.project.hasMap,false);
+  }
+});
+
+
+test("semantic JSON block accepts a model preface", async t => {
+  const h = await host(t, data => "Analysis complete.\n\n```json\n" + JSON.stringify({paragraphs:data.paragraphs.map(p=>({hash:p.hash,label:"Paragraph intent",sentences:p.sentences.map(()=>"Sentence intent")})),sections:{}}) + "\n```");
+  const p=(await h.request({action:"create",name:"Model format fixture"})).value;
+  const agent={session:{id:"analysis",header:{cwd:p.root}}};
+  h.agents.set(agent.session.id,agent);
+  await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Analysis"}}});
+  await h.request({action:"analyze",id:p.id,sessionId:agent.session.id});
+  let job;
+  for(let i=0;i<100;i++) {
+    job=(await h.request({action:"job",id:p.id})).value;
+    if(job.status!=="running") break;
+    await new Promise(r=>setTimeout(r,10));
+  }
+  assert.equal(job.status,"completed");
+  assert.equal((await h.request({action:"open",id:p.id})).value.project.hasMap,true);
 });

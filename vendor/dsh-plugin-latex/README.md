@@ -84,3 +84,5 @@ npm run check:privacy
 | `test/` | 文件、编译、Host 和语义回归测试 |
 
 MIT License。CodeMirror、PDF.js 等依赖遵循各自许可证。
+
+行文导图已通过 Desktop 真实模型全量与增量验证：首次分析 6 段，未修改复用 6 段，单段修改仅重算 1 段。详细证据与测试范围见[验收报告](docs/ACCEPTANCE.md)。
