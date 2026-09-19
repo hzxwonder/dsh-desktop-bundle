@@ -1,4 +1,4 @@
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
 import { readFile, realpath, mkdir, writeFile } from "node:fs/promises";
@@ -6,18 +6,28 @@ import { Store, fail, digest } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
 import { collectSources, mergeMaps } from "./lib/project-sources.js";
+import { PAPER_GUIDANCE } from "./lib/paper-prompt.js";
 export const name = "dsh-plugin-latex";
 export const inject = [
   "connection",
   "agents",
   "subagents",
   "sessionProjections",
+  "systemPrompt",
 ];
 export async function apply(ctx, config = {}) {
   const store = await new Store(
     config.directory ||
       join(process.env.DSH_HOME || join(homedir(), ".dsh"), "latex-studio"),
   ).init();
+  ctx.systemPrompt.variable("latex_paper_guidance", ({ agent }) => {
+    if (!agent?.session?.header?.cwd) return "";
+    const project = store.projects.find(p =>
+      p.chats.some(c => c.id === agent.session.id) &&
+      p.root === resolve(agent.session.header.cwd));
+    return project ? PAPER_GUIDANCE : "";
+  });
+  ctx.systemPrompt.section({ name: "latex-paper-workbench", order: 85, text: "{{latex_paper_guidance}}" });
   const jobs = new Map(),
     owned = new Map(),
     pending = new Set();

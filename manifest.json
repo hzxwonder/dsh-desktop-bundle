@@ -91,8 +91,8 @@
     },
     {
       "name": "dsh-plugin-latex",
-      "version": "0.1.1",
-      "commit": "e172555ca5629c4c5f695f732a4338900c42efbf",
+      "version": "0.1.2",
+      "commit": "9d2e7249904d96829f13950743b5728cf97a2573",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex.git"
     }
   ]

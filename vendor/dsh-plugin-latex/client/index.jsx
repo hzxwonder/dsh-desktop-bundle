@@ -431,15 +431,15 @@ export function apply(ctx) {
     if (!activeId) returnSession = ctx.sessions.list.getSnapshot().current;
     ctx.layout.selectPanel("latex-studio");
   };
-  function Entry() {
+  function Entry({ wide = true }) {
     return (
       <button
-        className="lp-entry"
+        className={"lp-entry lp-sidebar-entry" + (wide ? "" : " is-rail")}
         title="论文工作台"
         aria-label="论文工作台"
         onClick={open}
       >
-        ▧ 论文工作台
+        <span aria-hidden="true">▧</span>{wide && <span>论文工作台</span>}
       </button>
     );
   }
@@ -595,6 +595,8 @@ export function apply(ctx) {
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
       setFile(next);
+      setChatOpen(false);
+      setView("source");
       setTabs((v) => (v.includes(name) ? v : [...v, name]));
       setSelection(null);
       setStatus(cache?.dirty ? "未保存" : "已保存");
@@ -992,7 +994,7 @@ export function apply(ctx) {
               setProjects(await api({ action: "list" }));
             })}
           >
-            {p.name} ⌄
+            <span>{p.name}</span><span className="lp-project-chevron" aria-hidden="true">⌄</span>
           </button>
           <div className="lp-nav">
             {[
@@ -1530,21 +1532,27 @@ export function apply(ctx) {
   ctx.slots.inject("main", () =>
     ctx.slots.register({ name: "main", key: "latex-studio" }, Panel),
   );
-  ctx.slots.inject("conversation.session.header.utilities", () =>
-    ctx.slots.register(
-      { name: "conversation.session.header.utilities", id: name },
-      Entry,
-    ),
-  );
   ctx.slots.inject("conversation.input.left", () =>
     ctx.slots.register(
       { name: "conversation.input.left", id: name + "-input" },
       InputBridge,
     ),
   );
-  ctx.slots.inject("shell.overlay", () =>
-    ctx.slots.register({ name: "shell.overlay", id: name + "-home-entry" }, () => (
-      <div className="lp-home-entry"><Entry /></div>
-    )),
-  );
+  ctx.slots.inject("sidebar.workspaces", () => {
+    const native = ctx.slots.entriesOfSlot("sidebar.workspaces")[0];
+    if (!native?.component) return;
+    const Native = native.component;
+    let active = true;
+    const listeners = new Set();
+    const Wrapped = props => {
+      const enabled = useSyncExternalStore(fn => { listeners.add(fn); return () => listeners.delete(fn); }, () => active);
+      return enabled ? <div className="lp-workspaces-host"><Native {...props} /><Entry wide={props.wide} /></div> : <Native {...props} />;
+    };
+    native.component = Wrapped;
+    return () => {
+      active = false;
+      if (native.component === Wrapped) native.component = Native;
+      listeners.forEach(fn => fn());
+    };
+  });
 }

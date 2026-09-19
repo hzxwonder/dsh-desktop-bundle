@@ -733,3 +733,28 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-conversation:has([data-phase="hero"])::before { content:"你准备好了，我就开始。"; text-align:center; margin:64px 12px 20px; font-size:20px; font-weight:550; }
 .lp-conversation ._0cyzDW_root[data-phase="hero"] { flex:1; }
 .lp-conversation ._0cyzDW_root[data-phase="hero"] ._0cyzDW_composerHero { margin-top:auto; }
+
+/* Paper-scoped native surfaces preserve the host's navigation preferences. */
+.qNbT7G_frame:has(.lp) { grid-template-columns:0 minmax(0,1fr) 0 !important; }
+.qNbT7G_frame:has(.lp) > .qNbT7G_sidebarCol,
+.qNbT7G_frame:has(.lp) > .qNbT7G_rightbarCol,
+.qNbT7G_frame:has(.lp) > .qNbT7G_handle { display:none !important; }
+.lp-composer [data-slot="conversation.session"],
+.lp-native [data-slot="conversation.session.header"] { display:none !important; }
+.lp-project-title { display:flex; align-items:center; gap:12px; width:100%; }
+.lp-project-title > span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lp-project-chevron { margin-left:auto; flex:none; color:var(--lp-muted); }
+.lp-workspaces-host { display:flex; flex-direction:column; flex:1; min-height:0; }
+.lp-workspaces-host > :first-child { order:1; }
+.lp-workspaces-host > .wf-workspace-wrapper { display:contents; }
+.lp-workspaces-host .wf-workspace-wrapper > .wf-tree { order:-1; }
+.lp-workspaces-host .wf-workspace-wrapper > :not(.wf-tree) { order:1; }
+.lp-sidebar-entry { display:flex; align-items:center; gap:8px; flex:none; order:0; margin:0 6px 8px; padding:8px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:500 13px/1.5 system-ui; text-align:left; }
+.lp-sidebar-entry:hover { background:var(--dsw-alias-interactive-bg-hover); }
+.lp-sidebar-entry.is-rail { justify-content:center; margin-inline:0; }
+.dshDesktopFrame:has(.lp) { grid-template-columns:0 minmax(0,1fr) 0 !important; }
+.dshDesktopFrame:has(.lp) > .dshDesktopSidebarSurface,
+.dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface,
+.dshDesktopFrame:has(.lp) > .dshDesktopResizeHandle { display:none !important; }
+.dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface { grid-column:2; }
+.qNbT7G_frame:has(.lp) > .qNbT7G_centerCol { grid-column:2; }

@@ -7,10 +7,12 @@ import { apply } from "../index.js";
 async function host(t) {
   const directory = await mkdtemp(join(tmpdir(), "latex-host-"));
   let hook, dispose;
+  const variables = new Map(), sections = [];
   const routes = new Map(),
     agents = new Map();
   let modelCalls = 0;
   const ctx = {
+    systemPrompt: { variable: (name, fn) => variables.set(name, fn), section: value => sections.push(value) },
     connection: { fetch: { register: (r) => routes.set(r.path, r) } },
     agents: {
       withInitiator: async (a, fn) => fn(),
@@ -70,7 +72,7 @@ async function host(t) {
     );
     return r.json();
   };
-  return { request, agents, hook, calls: () => modelCalls };
+  return { request, agents, hook, variables, sections, calls: () => modelCalls };
 }
 test("Host routes report errors and fence conversation roots", async (t) => {
   const h = await host(t),
@@ -198,4 +200,20 @@ test("multi-file analysis annotates source files and reuses all unchanged paragr
     second = await analyze();
   assert.equal(second.stats.analyzed, 0);
   assert.equal(h.calls(), calls);
+});
+
+test("paper system guidance is restricted to bound project sessions", async t => {
+  const h = await host(t);
+  const p = (await h.request({ action: "create", name: "Paper prompt fixture" })).value;
+  const agent = { session: { id: "paper-guidance", header: { cwd: p.root } } };
+  h.agents.set(agent.session.id, agent);
+  const render = h.variables.get("latex_paper_guidance");
+  assert.equal(render({agent}), "");
+  await h.request({ action: "update", id: p.id, patch: { chat: { id: agent.session.id, title: "Paper" } } });
+  assert.match(render({agent}), /Overleaf/);
+  assert.match(render({agent}), /push/);
+  assert.equal(render({}), "");
+  assert.equal(render({agent: {session: {id: "other", header: {cwd: p.root}}}}), "");
+  assert.equal(render({agent: {session: {id: agent.session.id, header: {cwd: tmpdir()}}}}), "");
+  assert.equal(h.sections.find(s => s.name === "latex-paper-workbench").text, "{{latex_paper_guidance}}");
 });
