@@ -513,6 +513,10 @@ export function apply(ctx) {
       [theme, setTheme] = useState(
         () => localStorage.getItem("dsh-latex-theme") || "system",
       ),
+      [settings, setSettings] = useState(null),
+      [globalConfig, setGlobalConfig] = useState(null),
+      [settingsBusy, setSettingsBusy] = useState(false),
+      [settingsMessage, setSettingsMessage] = useState(""),
       [conflict, setConflict] = useState(null);
     const pRef = useRef(p),
       fileRef = useRef(file),
@@ -891,18 +895,51 @@ export function apply(ctx) {
         保存
       </button>
     );
+    const gear = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg>;
+    const openGlobal = safe(async () => {
+      setGlobalConfig(await api({action:"settings"}));
+      setSettingsMessage("");
+      setSettings("global");
+    });
+    const settingsPanel = settings && <div className="lp-settings-overlay">
+      <section className="lp-settings-panel" role="dialog" aria-modal="true" aria-label={settings === "global" ? "全局设置" : "论文设置"} onKeyDown={e => {
+        if(e.key === "Escape" && !settingsBusy) setSettings(null);
+        if(e.key === "Tab") {
+          const items=[...e.currentTarget.querySelectorAll('button:not(:disabled),select:not(:disabled),textarea')];
+          const first=items[0],last=items.at(-1);
+          if(e.shiftKey && document.activeElement===first){e.preventDefault();last?.focus();}
+          else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first?.focus();}
+        }
+      }}>
+        {error && <p role="alert" className="lp-error">{error}</p>}
+        <header><h2>{settings === "global" ? "全局设置" : "论文设置"}</h2><button autoFocus aria-label="关闭设置" disabled={settingsBusy} onClick={()=>setSettings(null)}>×</button></header>
+        {settings === "global" ? <>
+          <label>工作台主题<select value={theme} onChange={e=>{setTheme(e.target.value);localStorage.setItem("dsh-latex-theme",e.target.value);}}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+          <label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
+          <p className="lp-muted">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p>
+          <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{setGlobalConfig(await api({action:"saveSettings",...globalConfig}));setSettingsMessage("已保存");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存指令</button></footer>
+        </> : <>
+          <label>编译主文件<select value={p.main} disabled={job?.status === "running"} onChange={safe(e=>update({main:e.target.value}))}>{files.filter(f=>f.name.endsWith(".tex")).map(f=><option key={f.name}>{f.name}</option>)}</select></label>
+          <label>编译器<select value={p.engine} disabled={job?.status === "running"} onChange={safe(e=>update({engine:e.target.value}))}>{["pdflatex","xelatex","lualatex"].map(x=><option key={x}>{x}</option>)}</select></label>
+          <div className="lp-row">{saveButton}<button onClick={()=>{setShowLog(v=>!v);setSettings(null);}}>编译日志</button><button onClick={safe(async()=>{await save();setFiles((await api({action:"open",id:p.id})).files);if(file)await load(file.name);})}>刷新文件</button></div>
+          <footer><span className="lp-muted">设置自动保存至当前论文</span><button onClick={openGlobal}>全局设置</button></footer>
+        </>}
+      </section>
+    </div>;
     if (!p)
       return (
         <div className={"lp lp-theme-" + theme}>
           <header className="lp-picker-head">
             <button onClick={back}>← 主会话</button>
             <h2>论文工作台</h2>
+            <button className="lp-global-settings" onClick={openGlobal}>{gear} 全局设置</button>
           </header>
           {error && (
             <p className="lp-error" role="alert">
               {error}
             </p>
           )}
+          {settingsPanel}
           <div className="lp-picker">
             <h1>继续你的论文</h1>
             <input
@@ -979,6 +1016,7 @@ export function apply(ctx) {
       );
     return (
       <div className={"lp lp-theme-" + theme}>
+        {settingsPanel}
         <aside className="lp-sidebar" hidden={sideHidden}>
           <button className="lp-collapse" aria-label="收起论文侧栏" onClick={() => setSideHidden(true)}>◫</button>
           <button className="lp-back" onClick={back}>
@@ -1194,21 +1232,7 @@ export function apply(ctx) {
               </>
             )}
           </div>
-          <footer className="lp-side-footer">
-            <small>本地论文</small>
-            <select
-              aria-label="工作台主题"
-              value={theme}
-              onChange={(e) => {
-                setTheme(e.target.value);
-                localStorage.setItem("dsh-latex-theme", e.target.value);
-              }}
-            >
-              <option value="system">跟随 Desktop</option>
-              <option value="light">浅色</option>
-              <option value="dark">深色</option>
-            </select>
-          </footer>
+          <footer className="lp-side-footer"><button className="lp-gear" aria-label="论文设置" title="论文设置" onClick={()=>setSettings("project")}>{gear}</button></footer>
         </aside>
         <main className={"lp-main " + (view === "map" ? "lp-mapping" : "")} style={{"--lp-split": split + "%"}}>
           <header className="lp-toolbar">
@@ -1237,46 +1261,7 @@ export function apply(ctx) {
             >
               ⌘ 行文导图
             </button>
-            <details className="lp-settings">
-              <summary>设置</summary>
-              <div>
-                {saveButton}
-                <label>
-                  主文件
-                  <select
-                    value={p.main}
-                    onChange={safe((e) => update({ main: e.target.value }))}
-                  >
-                    {files
-                      .filter((f) => f.name.endsWith(".tex"))
-                      .map((f) => (
-                        <option key={f.name}>{f.name}</option>
-                      ))}
-                  </select>
-                </label>
-                <label>
-                  编译器
-                  <select
-                    value={p.engine}
-                    onChange={safe((e) => update({ engine: e.target.value }))}
-                  >
-                    {["pdflatex", "xelatex", "lualatex"].map((x) => (
-                      <option key={x}>{x}</option>
-                    ))}
-                  </select>
-                </label>
-                <button onClick={() => setShowLog((v) => !v)}>编译日志</button>
-                <button
-                  onClick={safe(async () => {
-                    await save();
-                    setFiles((await api({ action: "open", id: p.id })).files);
-                    if (file) await load(file.name);
-                  })}
-                >
-                  刷新文件
-                </button>
-              </div>
-            </details>
+
           </header>
           {error && (
             <div className="lp-error" role="alert">

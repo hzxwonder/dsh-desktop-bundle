@@ -44739,6 +44739,23 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-sidebar-entry svg { flex:none; display:block; }
 .lp-sidebar-entry > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .lp-sidebar-entry.is-rail { padding:6px 0; }
+
+.lp-picker-head { right:20px; }
+.lp-picker-head .lp-global-settings { margin-left:auto; display:flex; align-items:center; gap:8px; }
+.lp-side-footer { justify-content:flex-start; }
+.lp .lp-gear { width:34px; height:34px; display:grid; place-items:center; padding:7px; }
+.lp-toolbar { gap:12px; }
+.lp-toolbar .lp-status { margin-left:8px; padding-left:12px; border-left:1px solid var(--lp-line); min-width:60px; }
+.lp-settings-overlay { position:absolute; inset:0; z-index:100; background:#0005; display:flex; align-items:center; justify-content:center; padding:24px; }
+.lp-settings-panel { width:640px; max-width:100%; max-height:100%; overflow:auto; background:var(--lp-bg); border:1px solid var(--lp-line); border-radius:14px; padding:24px; box-shadow:0 16px 60px #0003; }
+.lp-settings-panel header,.lp-settings-panel footer { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.lp-settings-panel h2 { font-size:18px; font-weight:600; margin:0; }
+.lp-settings-panel label { display:flex; justify-content:space-between; align-items:center; gap:20px; margin-top:24px; }
+.lp-settings-panel select { min-width:190px; max-width:65%; }
+.lp-settings-panel .lp-instructions { display:block; }
+.lp-settings-panel textarea { display:block; width:100%; height:260px; margin-top:10px; resize:vertical; line-height:1.6; }
+.lp-settings-panel footer { margin-top:24px; font-size:12px; }
+.lp-settings-panel footer button { background:var(--lp-hover); }
 `;
 
 // client/index.jsx
@@ -45196,7 +45213,7 @@ function apply(ctx) {
   function Panel() {
     const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
-    ), [conflict, setConflict] = (0, import_react.useState)(null);
+    ), [settings, setSettings] = (0, import_react.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react.useState)(""), [conflict, setConflict] = (0, import_react.useState)(null);
     const pRef = (0, import_react.useRef)(p), fileRef = (0, import_react.useRef)(file), serial = (0, import_react.useRef)(0), selectedAll = (0, import_react.useRef)(), jobHandled = (0, import_react.useRef)(""), chatPending = (0, import_react.useRef)(null), mounted = (0, import_react.useRef)(true);
     pRef.current = p;
     fileRef.current = file;
@@ -45523,13 +45540,107 @@ function apply(ctx) {
       ctx.layout.selectPanel(null);
     });
     const saveButton = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(save), disabled: !file?.dirty, children: "\u4FDD\u5B58" });
+    const gear = /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.6", "aria-hidden": "true", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z" }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: "11", cy: "12", r: "3" })
+    ] });
+    const openGlobal = safe(async () => {
+      setGlobalConfig(await api({ action: "settings" }));
+      setSettingsMessage("");
+      setSettings("global");
+    });
+    const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-settings-panel", role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
+      if (e.key === "Escape" && !settingsBusy) setSettings(null);
+      if (e.key === "Tab") {
+        const items = [...e.currentTarget.querySelectorAll("button:not(:disabled),select:not(:disabled),textarea")];
+        const first = items[0], last = items.at(-1);
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    }, children: [
+      error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { role: "alert", className: "lp-error", children: error }),
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { autoFocus: true, "aria-label": "\u5173\u95ED\u8BBE\u7F6E", disabled: settingsBusy, onClick: () => setSettings(null), children: "\xD7" })
+      ] }),
+      settings === "global" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+          "\u5DE5\u4F5C\u53F0\u4E3B\u9898",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", { value: theme2, onChange: (e) => {
+            setTheme(e.target.value);
+            localStorage.setItem("dsh-latex-theme", e.target.value);
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "system", children: "\u8DDF\u968F Desktop" }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "light", children: "\u6D45\u8272" }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
+          ] })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: "lp-instructions", children: [
+          "AGENTS.md",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", { "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
+            setGlobalConfig((v) => ({ ...v, instructions: e.target.value }));
+            setSettingsMessage("");
+          }, spellCheck: false })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u9002\u7528\u4E8E\u6240\u6709\u8BBA\u6587\u4F1A\u8BDD\uFF0C\u4FDD\u5B58\u5728\u5DE5\u4F5C\u53F0\u5185\u90E8\u3002\u4FDD\u5B58\u540E\u7528\u4E8E\u540E\u7EED Agent \u8C03\u7528\u3002" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { role: "status", children: settingsMessage }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: settingsBusy, onClick: async () => {
+            setSettingsBusy(true);
+            try {
+              setGlobalConfig(await api({ action: "saveSettings", ...globalConfig }));
+              setSettingsMessage("\u5DF2\u4FDD\u5B58");
+            } catch (e) {
+              setSettingsMessage(e.message);
+            } finally {
+              setSettingsBusy(false);
+            }
+          }, children: "\u4FDD\u5B58\u6307\u4EE4" })
+        ] })
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+          "\u7F16\u8BD1\u4E3B\u6587\u4EF6",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { value: p.main, disabled: job?.status === "running", onChange: safe((e) => update({ main: e.target.value })), children: files.filter((f) => f.name.endsWith(".tex")).map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: f.name }, f.name)) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+          "\u7F16\u8BD1\u5668",
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { value: p.engine, disabled: job?.status === "running", onChange: safe((e) => update({ engine: e.target.value })), children: ["pdflatex", "xelatex", "lualatex"].map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: x }, x)) })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-row", children: [
+          saveButton,
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
+            setShowLog((v) => !v);
+            setSettings(null);
+          }, children: "\u7F16\u8BD1\u65E5\u5FD7" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(async () => {
+            await save();
+            setFiles((await api({ action: "open", id: p.id })).files);
+            if (file) await load(file.name);
+          }), children: "\u5237\u65B0\u6587\u4EF6" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-muted", children: "\u8BBE\u7F6E\u81EA\u52A8\u4FDD\u5B58\u81F3\u5F53\u524D\u8BBA\u6587" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: openGlobal, children: "\u5168\u5C40\u8BBE\u7F6E" })
+        ] })
+      ] })
+    ] }) });
     if (!p)
       return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-picker-head", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: back, children: "\u2190 \u4E3B\u4F1A\u8BDD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" })
+          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" }),
+          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "lp-global-settings", onClick: openGlobal, children: [
+            gear,
+            " \u5168\u5C40\u8BBE\u7F6E"
+          ] })
         ] }),
         error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-error", role: "alert", children: error }),
+        settingsPanel,
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-picker", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", { children: "\u7EE7\u7EED\u4F60\u7684\u8BBA\u6587" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
@@ -45614,6 +45725,7 @@ function apply(ctx) {
         ] })
       ] });
     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
+      settingsPanel,
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", { className: "lp-sidebar", hidden: sideHidden, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-collapse", "aria-label": "\u6536\u8D77\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(true), children: "\u25EB" }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-back", onClick: back, children: "\u2190 \u4E3B\u4F1A\u8BDD" }),
@@ -45829,25 +45941,7 @@ function apply(ctx) {
             !p.reviews.length && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u9009\u4E2D\u6587\u5B57\u5E76\u6DFB\u52A0\u8BC4\u8BBA\u3002" })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { className: "lp-side-footer", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: "\u672C\u5730\u8BBA\u6587" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-            "select",
-            {
-              "aria-label": "\u5DE5\u4F5C\u53F0\u4E3B\u9898",
-              value: theme2,
-              onChange: (e) => {
-                setTheme(e.target.value);
-                localStorage.setItem("dsh-latex-theme", e.target.value);
-              },
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "system", children: "\u8DDF\u968F Desktop" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "light", children: "\u6D45\u8272" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
-              ]
-            }
-          )
-        ] })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", { className: "lp-side-footer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-gear", "aria-label": "\u8BBA\u6587\u8BBE\u7F6E", title: "\u8BBA\u6587\u8BBE\u7F6E", onClick: () => setSettings("project"), children: gear }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : ""), style: { "--lp-split": split + "%" }, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
@@ -45885,47 +45979,7 @@ function apply(ctx) {
               }),
               children: "\u2318 \u884C\u6587\u5BFC\u56FE"
             }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("details", { className: "lp-settings", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("summary", { children: "\u8BBE\u7F6E" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-              saveButton,
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-                "\u4E3B\u6587\u4EF6",
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                  "select",
-                  {
-                    value: p.main,
-                    onChange: safe((e) => update({ main: e.target.value })),
-                    children: files.filter((f) => f.name.endsWith(".tex")).map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: f.name }, f.name))
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-                "\u7F16\u8BD1\u5668",
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                  "select",
-                  {
-                    value: p.engine,
-                    onChange: safe((e) => update({ engine: e.target.value })),
-                    children: ["pdflatex", "xelatex", "lualatex"].map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: x }, x))
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setShowLog((v) => !v), children: "\u7F16\u8BD1\u65E5\u5FD7" }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                "button",
-                {
-                  onClick: safe(async () => {
-                    await save();
-                    setFiles((await api({ action: "open", id: p.id })).files);
-                    if (file) await load(file.name);
-                  }),
-                  children: "\u5237\u65B0\u6587\u4EF6"
-                }
-              )
-            ] })
-          ] })
+          )
         ] }),
         error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-error", role: "alert", children: [
           error,

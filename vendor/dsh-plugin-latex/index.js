@@ -1,7 +1,7 @@
 import { join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
-import { readFile, realpath, mkdir, writeFile } from "node:fs/promises";
+import { readFile, realpath, mkdir, writeFile, rename } from "node:fs/promises";
 import { Store, fail, digest } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
@@ -24,7 +24,7 @@ export async function apply(ctx, config = {}) {
   const mindmapSkill = await readFile(new URL("./skills/paper-mindmap-update/SKILL.md", import.meta.url), "utf8");
   const skillDigest = digest(mindmapSkill);
   ctx.skills.register({ name: "paper-mindmap-update", description: "更新 LaTeX 论文的语义注释与四级行文导图", content: mindmapSkill, source: "bundled" });
-  const paperInstructions = await loadPaperInstructions(store.directory, store.projects);
+  let paperInstructions = await loadPaperInstructions(store.directory, store.projects);
   ctx.systemPrompt.variable("latex_paper_guidance", ({ agent }) => {
     if (!agent?.session?.header?.cwd) return "";
     const project = store.projects.find(p =>
@@ -237,6 +237,26 @@ export async function apply(ctx, config = {}) {
           new URL("./dist/pdf.worker.mjs", import.meta.url),
           "utf8",
         );
+      case "settings": {
+        paperInstructions = await loadPaperInstructions(store.directory);
+        return { instructions: paperInstructions, hash: digest(paperInstructions) };
+      }
+      case "saveSettings": {
+        if (pending.has("settings")) fail("设置正在保存，请稍后重试");
+        pending.add("settings");
+        try {
+          if (typeof a.instructions !== "string" || Buffer.byteLength(a.instructions) > 128 * 1024)
+            fail("指令内容须在 128 KB 以内");
+          const current = await loadPaperInstructions(store.directory);
+          if (a.hash !== digest(current)) fail("设置已更新，请重新打开后编辑");
+          const file = join(store.directory, "instructions", "AGENTS.md");
+          const temporary = file + "." + randomUUID() + ".tmp";
+          await writeFile(temporary, a.instructions, { mode: 0o600, flag: "wx" });
+          await rename(temporary, file);
+          paperInstructions = a.instructions;
+          return { instructions: paperInstructions, hash: digest(paperInstructions) };
+        } finally { pending.delete("settings"); }
+      }
       case "list":
         return store.projects.map(publicProject);
       case "create":

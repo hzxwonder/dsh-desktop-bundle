@@ -276,3 +276,19 @@ test("semantic JSON block accepts a model preface", async t => {
   assert.equal(job.status,"completed");
   assert.equal((await h.request({action:"open",id:p.id})).value.project.hasMap,true);
 });
+
+test("global instructions persist and apply to subsequent paper prompts", async t => {
+  const h=await host(t);
+  const p=(await h.request({action:"create",name:"Settings fixture"})).value;
+  const agent={session:{id:"settings-chat",header:{cwd:p.root}}};
+  h.agents.set(agent.session.id,agent);
+  await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Paper"}}});
+  const config=(await h.request({action:"settings"})).value;
+  const updated=await h.request({action:"saveSettings",hash:config.hash,instructions:"# Paper guidance\nPreserve citations."});
+  assert.equal(updated.ok,true);
+  assert.equal(h.variables.get("latex_paper_guidance")({agent}),"# Paper guidance\nPreserve citations.");
+  assert.equal((await h.request({action:"settings"})).value.instructions,updated.value.instructions);
+  assert.equal((await h.request({action:"saveSettings",hash:config.hash,instructions:"stale"})).ok,false);
+  assert.equal((await h.request({action:"saveSettings",hash:updated.value.hash,instructions:"x".repeat(131073)})).ok,false);
+  await assert.rejects(readFile(join(p.root,"AGENTS.md")),{code:"ENOENT"});
+});
