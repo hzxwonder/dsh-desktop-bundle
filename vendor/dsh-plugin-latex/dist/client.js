@@ -44794,6 +44794,54 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-right-page > header { min-height:38px; font-size:12px; }
 .lp-change-review { background:var(--lp-editor); }
 .lp-change-review > header { border-radius:8px; }
+
+/* Paper mode occupies the full Desktop content surface. The native macOS
+ * drag row is useful in the regular conversation but becomes a distracting
+ * light strip above this dedicated workspace. */
+body:has(.lp) { background:var(--lp-bg, #202020) !important; }
+.dshDesktopFrame:has(.lp) { grid-template-rows:0 minmax(0,1fr) !important; }
+.dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface,
+.dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface { grid-row:1 !important; }
+.lp { position:absolute; inset:0; width:100%; height:100%; }
+.lp-sidebar { padding-top:0; }
+.lp-main { margin-top:0; }
+.lp-toolbar { padding-top:6px; }
+
+/* Keep the native Harness composer legible in both paper themes. Harness
+ * utility classes carry light-mode fills, so the workbench owns these tokens
+ * at the composer boundary. */
+.lp-composer, .lp-composer > *, .lp-composer [data-composer-seat],
+.lp-composer [data-conversation-scroll], .lp-composer [class*="_0cyzDW"] {
+  color:var(--lp-text) !important;
+  --dsw-alias-bg-base:var(--lp-editor) !important;
+  --dsw-alias-bg-layer-1:var(--lp-editor) !important;
+  --dsw-alias-bg-layer-2:var(--lp-hover) !important;
+  --dsw-alias-label-primary:var(--lp-text) !important;
+  --dsw-alias-label-secondary:var(--lp-muted) !important;
+  --dsw-alias-border-l2:var(--lp-line) !important;
+}
+.lp-composer [class*="bg-white"], .lp-composer [class*="bg-neutral-50"],
+.lp-composer [class*="bg-static-neutral"] { background:var(--lp-hover) !important; }
+.lp-composer button { color:var(--lp-text) !important; border-color:var(--lp-line) !important; }
+.lp-composer button:hover { background:var(--lp-hover) !important; }
+.lp-composer button[type="submit"], .lp-composer [aria-label*="\u53D1\u9001"],
+.lp-composer [aria-label*="Send"] { background:var(--lp-accent) !important; color:var(--lp-bg) !important; border-color:transparent !important; }
+.lp-composer input, .lp-composer textarea, .lp-composer [contenteditable="true"] {
+  color:var(--lp-text) !important; caret-color:var(--lp-text) !important;
+}
+
+/* PDF controls share the top browser-like row with the tab switcher. */
+.lp-pdf-actions { display:flex; align-items:center; gap:2px; margin-left:auto; }
+.lp-pdf-actions button { min-width:30px; padding:5px 8px !important; }
+.lp-pdf-actions button[aria-label="PDF \u9002\u5408\u5BBD\u5EA6"] { min-width:48px; }
+.lp-right-tabs > button:last-child { margin-left:8px; }
+.lp-right-page > header { display:none; }
+
+/* The paper browser is the BrowserSurface supplied by dsh-plugin-browser;
+ * give it the same flush, full-height frame as the PDF and logs pages. */
+.lp-right-page:has(.dsh-browser-body) { padding:0; }
+.lp-right-page:has(.dsh-browser-body) .dsh-browser-body { height:100%; min-height:0; border:0; border-radius:0; }
+.lp-right-page:has(.dsh-browser-body) .dsh-browser-toolbar { flex:none; }
 `;
 
 // client/index.jsx
@@ -46259,63 +46307,26 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-pdf lp-right", hidden: !rightOpen, children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("nav", { className: "lp-right-tabs", children: [
               [["pdf", "PDF"], ["logs", "\u65E5\u5FD7"], ["browser", "\u6D4F\u89C8\u5668"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": rightTab === key, onClick: () => setRightTab(key), children: label }, key)),
+              rightTab === "pdf" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-pdf-actions", "aria-label": "PDF \u5DE5\u5177", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u7F29\u5C0F PDF", onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)), children: "\u2212" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6", onClick: () => setPdfZoom(1), children: [
+                  Math.round(pdfZoom * 100),
+                  "%"
+                ] }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u653E\u5927 PDF", onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)), children: "\uFF0B" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setRightTab("logs"), children: "\u65E5\u5FD7" }),
+                pdf && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
+                  const blob = new Blob([Uint8Array.from(atob(pdf), (x) => x.charCodeAt(0))], { type: "application/pdf" });
+                  const url = URL.createObjectURL(blob), a = document.createElement("a");
+                  a.href = url;
+                  a.download = p.name + ".pdf";
+                  a.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1e3);
+                }, children: "\u4E0B\u8F7D" })
+              ] }),
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen(false), children: "\xD7" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-right-page", hidden: rightTab !== "pdf", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "PDF" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                  "button",
-                  {
-                    "aria-label": "\u7F29\u5C0F PDF",
-                    onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)),
-                    children: "\u2212"
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-                  "button",
-                  {
-                    "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6",
-                    onClick: () => setPdfZoom(1),
-                    children: [
-                      Math.round(pdfZoom * 100),
-                      "%"
-                    ]
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                  "button",
-                  {
-                    "aria-label": "\u653E\u5927 PDF",
-                    onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)),
-                    children: "\uFF0B"
-                  }
-                ),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setRightTab("logs"), children: "\u65E5\u5FD7" }),
-                pdf && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-                  "button",
-                  {
-                    onClick: () => {
-                      const blob = new Blob(
-                        [
-                          Uint8Array.from(
-                            atob(pdf),
-                            (x) => x.charCodeAt(0)
-                          )
-                        ],
-                        { type: "application/pdf" }
-                      ), url = URL.createObjectURL(blob), a = document.createElement("a");
-                      a.href = url;
-                      a.download = p.name + ".pdf";
-                      a.click();
-                      setTimeout(() => URL.revokeObjectURL(url), 1e3);
-                    },
-                    children: "\u4E0B\u8F7D"
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDF, { base64: pdf, zoom: pdfZoom })
-            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-right-page", hidden: rightTab !== "pdf", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDF, { base64: pdf, zoom: pdfZoom }) }),
             rightTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-log-page", children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
                 /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u7F16\u8BD1\u4E0E\u540C\u6B65" }),

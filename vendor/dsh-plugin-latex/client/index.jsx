@@ -1426,52 +1426,21 @@ export function apply(ctx) {
                 onPointerMove={e => { if (e.currentTarget.hasPointerCapture(e.pointerId)) { const rect = e.currentTarget.parentElement.getBoundingClientRect(); setSplit(Math.max(35, Math.min(70, 100 * (e.clientX - rect.left) / rect.width))); } }}
                 onPointerUp={e => { if(e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }} />
               <section className="lp-pdf lp-right" hidden={!rightOpen}>
-                <nav className="lp-right-tabs">{[["pdf","PDF"],["logs","日志"],["browser","浏览器"]].map(([key,label])=><button key={key} aria-pressed={rightTab===key} onClick={()=>setRightTab(key)}>{label}</button>)}<button aria-label="关闭右侧面板" onClick={()=>setRightOpen(false)}>×</button></nav>
+                <nav className="lp-right-tabs">{[["pdf","PDF"],["logs","日志"],["browser","浏览器"]].map(([key,label])=><button key={key} aria-pressed={rightTab===key} onClick={()=>setRightTab(key)}>{label}</button>)}
+                  {rightTab === "pdf" && <div className="lp-pdf-actions" aria-label="PDF 工具">
+                    <button aria-label="缩小 PDF" onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}>−</button>
+                    <button aria-label="PDF 适合宽度" onClick={() => setPdfZoom(1)}>{Math.round(pdfZoom * 100)}%</button>
+                    <button aria-label="放大 PDF" onClick={() => setPdfZoom((z) => Math.min(3, z + 0.25))}>＋</button>
+                    <button onClick={() => setRightTab("logs")}>日志</button>
+                    {pdf && <button onClick={() => {
+                      const blob = new Blob([Uint8Array.from(atob(pdf), (x) => x.charCodeAt(0))], { type: "application/pdf" });
+                      const url = URL.createObjectURL(blob), a = document.createElement("a");
+                      a.href = url; a.download = p.name + ".pdf"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    }}>下载</button>}
+                  </div>}
+                  <button aria-label="关闭右侧面板" onClick={()=>setRightOpen(false)}>×</button>
+                </nav>
                 <div className="lp-right-page" hidden={rightTab!=="pdf"}>
-                <header>
-                  <span>PDF</span>
-                  <button
-                    aria-label="缩小 PDF"
-                    onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}
-                  >
-                    −
-                  </button>
-                  <button
-                    aria-label="PDF 适合宽度"
-                    onClick={() => setPdfZoom(1)}
-                  >
-                    {Math.round(pdfZoom * 100)}%
-                  </button>
-                  <button
-                    aria-label="放大 PDF"
-                    onClick={() => setPdfZoom((z) => Math.min(3, z + 0.25))}
-                  >
-                    ＋
-                  </button>
-                  <button onClick={() => setRightTab("logs")}>日志</button>
-                  {pdf && (
-                    <button
-                      onClick={() => {
-                        const blob = new Blob(
-                            [
-                              Uint8Array.from(atob(pdf), (x) =>
-                                x.charCodeAt(0),
-                              ),
-                            ],
-                            { type: "application/pdf" },
-                          ),
-                          url = URL.createObjectURL(blob),
-                          a = document.createElement("a");
-                        a.href = url;
-                        a.download = p.name + ".pdf";
-                        a.click();
-                        setTimeout(() => URL.revokeObjectURL(url), 1000);
-                      }}
-                    >
-                      下载
-                    </button>
-                  )}
-                </header>
                 <PDF base64={pdf} zoom={pdfZoom} />
                 </div>
                 {rightTab==="logs" && <div className="lp-log-page"><header><span>编译与同步</span><button onClick={safe(async()=>{await api({action:"sync",id:p.id});setLogs(await api({action:"logs",id:p.id}));})}>重试同步</button></header><pre>{logs.sync?.message || ""}{"\n\n"}{logs.compile || "暂无编译日志"}</pre></div>}
