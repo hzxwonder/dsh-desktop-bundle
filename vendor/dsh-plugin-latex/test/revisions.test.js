@@ -40,3 +40,22 @@ test('review diffs exclude unchanged LaTeX preamble and section commands',()=>{
  const before='\\documentclass{article}\n\\begin{document}\n\\section{Introduction}\nOriginal sentence.\n\\end{document}\n';const after=before.replace('Original sentence.','Revised sentence.');
  const parts=changes(before,after),h=parts.filter(p=>p.id);assert.equal(h.length,1);assert.equal(h[0].before,'Original sentence.');assert.equal(h[0].after,'Revised sentence.');assert.equal(materialize({parts}),after);
 });
+
+
+test('review view classifies added modified and deleted files with unchanged context',async t=>{
+ const {store,p}=await setup(t);
+ await writeFile(join(p.root,'removed.tex'),'Old appendix.');
+ await beginReview(store,p.id,'external');
+ const original=(await store.read(p.id,'main.tex')).content;
+ await writeFile(join(p.root,'main.tex'),original+'\n% Revision\n');
+ await unlink(join(p.root,'removed.tex'));
+ await writeFile(join(p.root,'added.tex'),'New appendix.');
+ await captureReview(store,p.id,true);
+ const view=reviewView(p);
+ assert.deepEqual(Object.fromEntries(view.files.map(f=>[f.name,f.kind])),{'main.tex':'modified','removed.tex':'deleted','added.tex':'added'});
+ assert.ok(view.files.find(f=>f.name==='main.tex').parts.some(h=>h.equal));
+ for(const file of view.files)assert.equal('expected' in file,false);
+ await decideReview(store,p.id,{batchId:view.id,decision:'reject'});
+ assert.equal((await store.read(p.id,'main.tex')).content,original);
+ assert.equal(await readFile(join(p.root,'removed.tex'),'utf8'),'Old appendix.');
+});

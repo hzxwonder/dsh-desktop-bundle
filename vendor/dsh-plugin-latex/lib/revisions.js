@@ -83,5 +83,5 @@ export async function decideReview(store,id,{batchId,hunkId,decision}) {
 }
 export function reviewView(p) {
   const r=p.revisionReview;
-  return r?{id:r.id,active:r.active,count:unresolved(p),files:r.files.map(({name,parts})=>({name,parts}))}:null;
+  return r?{id:r.id,active:r.active,count:unresolved(p),files:r.files.map(({name,parts,before,after})=>({name,parts,kind:before===null?"added":after===null?"deleted":"modified"}))}:null;
 }

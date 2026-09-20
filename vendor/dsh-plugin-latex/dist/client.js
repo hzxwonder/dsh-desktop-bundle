@@ -44819,6 +44819,38 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-right .dshDesktopBrowserPanelToolbar { flex-wrap:nowrap; padding:6px 4px; gap:1px; }
 .lp-right .dshDesktopBrowserPanelButton { width:24px; flex-shrink:0; }
 .lp-right .dshDesktopBrowserPanelAddress { min-width:40px; }
+
+/* Source and preview own matching toolbar rows. */
+.lp-toolbar,.lp-mapping .lp-toolbar { width:100%; min-height:53px; height:53px; }
+.lp-right { margin-top:0; }
+.lp-source > .lp-toolbar { flex:none; }
+.lp-editor-wrap { flex:1; height:auto; overflow:hidden; }
+.lp-review-summary { display:flex; align-items:center; gap:6px; padding:6px 12px; border-bottom:1px solid var(--lp-line); font-size:12px; flex:none; }
+.lp-review-summary > span { margin-right:auto; color:var(--lp-muted); }
+.lp-inline-change { display:block; white-space:normal; margin:5px 0 0; border-top:1px solid var(--lp-line); font-family:inherit; }
+.lp-inline-change .lp-change-tools { padding:2px 8px; background:var(--lp-side); }
+.lp-inline-change button { font:11px/1.5 system-ui; padding:3px 8px !important; }
+.lp-inline-change .lp-before { margin:0; padding:3px 8px; white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; color:var(--lp-text); border-left-width:2px; }
+.lp-inline-added { background:color-mix(in srgb,#39a36b 17%,var(--lp-editor)); text-decoration:underline; text-decoration-color:#409c70; text-underline-offset:4px; }
+.lp-file { display:flex; align-items:center; gap:8px; }
+.lp-file > span:first-child { overflow:hidden; text-overflow:ellipsis; }
+.lp-file-badge { margin-left:auto; font:600 11px ui-monospace,monospace; flex:none; }
+.lp-file-badge.added { color:#46a578; }
+.lp-file-badge.modified { color:var(--lp-accent); }
+.lp-file-badge.deleted { color:#d77373; }
+.lp-project-settings { width:440px; padding:22px; border-radius:16px; }
+.lp-project-settings header { margin-bottom:24px; }
+.lp-project-settings h2 { font-size:16px; }
+.lp-project-settings label:not(.lp-auto-save) { display:grid; grid-template-columns:1fr; gap:8px; margin-top:18px; font-size:12px; color:var(--lp-muted); }
+.lp-project-settings select { width:100%; max-width:100%; min-width:0; padding:9px 12px; color:var(--lp-text); background:var(--lp-editor); border:1px solid var(--lp-line); border-radius:8px; }
+.lp-project-settings .lp-auto-save { flex-direction:row-reverse; justify-content:flex-end; gap:10px; border-top:1px solid var(--lp-line); padding-top:20px; font-size:13px; }
+.lp-project-settings input[type=checkbox] { width:16px; height:16px; margin:0; accent-color:var(--lp-accent); }
+.lp-project-settings .lp-muted { margin:10px 0 0 26px; font-size:12px; line-height:1.7; }
+.lp-source > .lp-error { margin:8px 12px; padding:8px 10px; border-radius:8px; border:1px solid var(--lp-line); background:var(--lp-side); color:var(--lp-text); font-size:12px; }
+.lp-composer { padding:10px 12px; }
+.lp-composer [data-composer-seat] { width:100%; max-width:none; margin:0; }
+
+.lp-composer ._0cyzDW_root { --dsh-composer-side-clearance:0px; --dsh-composer-card-max-width:100%; }
 `;
 
 // client/index.jsx
@@ -44846,8 +44878,44 @@ var api = async (args) => {
   return data.value;
 };
 var uid = () => crypto.randomUUID();
-function Editor({ file, onChange, onSelect, jump }) {
-  const host = (0, import_react.useRef)(), view = (0, import_react.useRef)(), handlers2 = (0, import_react.useRef)({ onChange, onSelect });
+var RevisionWidget = class extends WidgetType {
+  constructor(hunk, active, decide) {
+    super();
+    this.hunk = hunk;
+    this.active = active;
+    this.decide = decide;
+  }
+  toDOM() {
+    const root = document.createElement("div");
+    root.className = "lp-inline-change";
+    const tools = document.createElement("div");
+    tools.className = "lp-change-tools";
+    const label = document.createElement("span");
+    label.textContent = this.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : "\u4FEE\u6539\u5EFA\u8BAE";
+    tools.append(label);
+    for (const [decision, text] of [["accept", "\u63A5\u53D7"], ["reject", "\u62D2\u7EDD"]]) {
+      const button = document.createElement("button");
+      button.textContent = text;
+      button.disabled = this.active;
+      button.setAttribute("aria-label", text + "\u5F53\u524D\u4FEE\u6539");
+      button.onclick = () => this.decide(decision, this.hunk.id);
+      tools.append(button);
+    }
+    root.append(tools);
+    if (this.hunk.before) {
+      const before = document.createElement("pre");
+      before.className = "lp-before";
+      before.textContent = this.hunk.before;
+      root.append(before);
+    }
+    return root;
+  }
+  ignoreEvent() {
+    return true;
+  }
+};
+function Editor({ file, onChange, onSelect, jump, revision, active, onDecide }) {
+  const host = (0, import_react.useRef)(), view = (0, import_react.useRef)(), viewport = (0, import_react.useRef)(null), handlers2 = (0, import_react.useRef)({ onChange, onSelect });
   handlers2.current = { onChange, onSelect };
   (0, import_react.useEffect)(() => {
     if (!file) return;
@@ -44866,12 +44934,26 @@ function Editor({ file, onChange, onSelect, jump }) {
       selecting = false;
       reportSelection(v);
     };
+    const doc2 = revision ? revision.parts.map((h) => h.equal ?? (h.decision === "reject" ? h.before : h.after)).join("") : file.content;
+    const decorations2 = [];
+    let offset = 0;
+    for (const h of revision?.parts || []) {
+      const text = h.equal ?? (h.decision === "reject" ? h.before : h.after);
+      if (h.id && !h.decision) {
+        decorations2.push(Decoration.widget({ widget: new RevisionWidget(h, active, onDecide), side: -1 }).range(offset));
+        if (text.length) decorations2.push(Decoration.mark({ class: "lp-inline-added" }).range(offset, offset + text.length));
+      }
+      offset += text.length;
+    }
     const v = new EditorView({
       parent: host.current,
       state: EditorState.create({
-        doc: file.content,
+        doc: doc2,
         extensions: [
           lineNumbers(),
+          EditorState.readOnly.of(!!revision || !!active),
+          EditorView.editable.of(!revision && !active),
+          EditorView.decorations.of(Decoration.set(decorations2, true)),
           EditorView.contentAttributes.of({ "aria-label": "LaTeX \u6E90\u7801", spellcheck: "false" }),
           EditorView.domEventHandlers({
             pointerdown: (event, editor) => {
@@ -44957,13 +45039,15 @@ function Editor({ file, onChange, onSelect, jump }) {
     document.addEventListener("pointerup", finishSelection);
     document.addEventListener("pointercancel", finishSelection);
     view.current = v;
+    if (viewport.current?.name === file.name) v.scrollDOM.scrollTop = viewport.current.top;
     return () => {
       document.removeEventListener("pointerup", finishSelection);
       document.removeEventListener("pointercancel", finishSelection);
+      viewport.current = { name: file.name, top: v.scrollDOM.scrollTop };
       v.destroy();
       view.current = null;
     };
-  }, [file?.name, file?.loadKey]);
+  }, [file?.name, file?.loadKey, JSON.stringify(revision), active]);
   (0, import_react.useEffect)(() => {
     if (!jump || !view.current) return;
     const v = view.current;
@@ -45274,7 +45358,7 @@ function apply(ctx) {
     return surface || /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [rightOpen, setRightOpen] = (0, import_react.useState)(true), [rightTab, setRightTab] = (0, import_react.useState)("pdf"), [review, setReview] = (0, import_react.useState)(null), [reviewOpen, setReviewOpen] = (0, import_react.useState)(true), [logs, setLogs] = (0, import_react.useState)({}), [token, setToken] = (0, import_react.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react.useState)(""), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
+    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [rightOpen, setRightOpen] = (0, import_react.useState)(true), [rightTab, setRightTab] = (0, import_react.useState)("pdf"), [review, setReview] = (0, import_react.useState)(null), [logs, setLogs] = (0, import_react.useState)({}), [token, setToken] = (0, import_react.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react.useState)(""), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
     ), [settings, setSettings] = (0, import_react.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react.useState)(""), [conflict, setConflict] = (0, import_react.useState)(null);
     const pRef = (0, import_react.useRef)(p), fileRef = (0, import_react.useRef)(file), serial = (0, import_react.useRef)(0), selectedAll = (0, import_react.useRef)(), jobHandled = (0, import_react.useRef)(""), chatPending = (0, import_react.useRef)(null), mounted = (0, import_react.useRef)(true);
@@ -45336,7 +45420,7 @@ function apply(ctx) {
     async function load(name3, project = pRef.current) {
       if (!project || !name3) return;
       await save();
-      const token2 = ++serial.current, cache = drafts.get(project.id + ":" + name3), loaded = cache || await api({ action: "read", id: project.id, file: name3 });
+      const token2 = ++serial.current, cache = drafts.get(project.id + ":" + name3), loaded = cache || (review?.files.find((f) => f.name === name3 && f.kind === "deleted") ? { name: name3, content: "", hash: null } : await api({ action: "read", id: project.id, file: name3 }));
       if (token2 !== serial.current || pRef.current?.id !== project.id) return;
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
@@ -45542,10 +45626,11 @@ function apply(ctx) {
       let stopped = false;
       const poll = async () => {
         try {
-          const [state, log] = await Promise.all([api({ action: "status", id: p.id }), api({ action: "logs", id: p.id })]);
+          const [state, log, opened] = await Promise.all([api({ action: "status", id: p.id }), api({ action: "logs", id: p.id }), api({ action: "open", id: p.id })]);
           if (stopped) return;
           setReview(state.review);
           setLogs(log);
+          setFiles(opened.files);
         } catch {
         }
       };
@@ -45560,6 +45645,9 @@ function apply(ctx) {
       if (fileRef.current?.dirty) throw new Error("\u8BF7\u5148\u4FDD\u7559\u5F53\u524D\u8349\u7A3F\uFF0C\u518D\u5904\u7406 Agent \u4FEE\u6539");
       const result = await api({ action: "decide", id: pRef.current.id, batchId: review.id, hunkId, decision });
       setReview(result.review);
+      const liveFiles = (await api({ action: "open", id: pRef.current.id })).files;
+      setFiles(liveFiles);
+      setTabs((v) => v.filter((name3) => liveFiles.some((f) => f.name === name3) || result.review?.files.some((f) => f.name === name3 && f.parts.some((h) => h.id && !h.decision))));
       if (fileRef.current) {
         try {
           const f = await api({ action: "read", id: pRef.current.id, file: fileRef.current.name });
@@ -45589,8 +45677,8 @@ function apply(ctx) {
     async function start(kind) {
       if (fileRef.current?.dirty) {
         await save(true);
-        if (kind === "compile") return;
-        throw new Error("\u5DF2\u4FDD\u5B58\u5E76\u5F00\u59CB\u7F16\u8BD1\uFF0C\u8BF7\u5B8C\u6210\u540E\u66F4\u65B0\u5BFC\u56FE");
+        if (kind !== "compile") setStatus("\u5DF2\u4FDD\u5B58 \xB7 \u7F16\u8BD1\u5B8C\u6210\u540E\u53EF\u66F4\u65B0\u5BFC\u56FE");
+        return;
       }
       let sessionId;
       if (kind === "analyze") sessionId = await ensureChat();
@@ -45670,10 +45758,106 @@ function apply(ctx) {
       setSettingsMessage("");
       setSettings("global");
     });
-    const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-settings-panel", role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
+    const workspaceChrome = /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
+        sideHidden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: "\u25EB" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: "\u25CC \u8BBA\u6587\u5BF9\u8BDD" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          "button",
+          {
+            "aria-pressed": view === "source" && !chatOpen,
+            onClick: () => {
+              setView("source");
+              setChatOpen(false);
+            },
+            children: [
+              "\u25A7 ",
+              file?.name || "\u6E90\u7801"
+            ]
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-status", children: status }),
+        review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: safe(async () => {
+          setNav("files");
+          const first = review.files.find((f) => f.parts.some((h) => h.id && !h.decision));
+          if (first) await load(first.name);
+        }), children: [
+          "\u53D8\u66F4 ",
+          review.count
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": rightOpen ? "\u6536\u8D77\u53F3\u4FA7\u9762\u677F" : "\u5C55\u5F00\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen((v) => !v), children: "\u25E8" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          "button",
+          {
+            disabled: job?.status === "running",
+            onClick: safe(() => start("compile")),
+            children: "\u21BB \u7F16\u8BD1"
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          "button",
+          {
+            onClick: safe(async () => {
+              setView(view === "map" ? "source" : "map");
+              if (!map && view !== "map") await start("analyze");
+            }),
+            children: "\u2318 \u884C\u6587\u5BFC\u56FE"
+          }
+        )
+      ] }),
+      error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-error", role: "alert", children: [
+        error,
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u9519\u8BEF\u63D0\u793A", onClick: () => setError(""), children: "\xD7" })
+      ] }),
+      conflict && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-conflict", children: [
+        "\u78C1\u76D8\u5185\u5BB9\u5DF2\u66F4\u65B0\u3002\u8349\u7A3F\u4ECD\u4FDD\u7559\uFF0C\u8BF7\u590D\u5236\u8349\u7A3F\u6216\u53E6\u5B58\u6587\u4EF6\u540E\u91CD\u65B0\u8BFB\u53D6\u3002",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          "button",
+          {
+            onClick: () => {
+              navigator.clipboard.writeText(fileRef.current.content).catch((e) => setError(e.message));
+            },
+            children: "\u590D\u5236\u8349\u7A3F"
+          }
+        ),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          "button",
+          {
+            onClick: safe(async () => {
+              const disk = await api({
+                action: "read",
+                id: p.id,
+                file: conflict.name
+              });
+              const recovery = fileRef.current;
+              const url = URL.createObjectURL(
+                new Blob([recovery.content], { type: "text/plain" })
+              );
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = recovery.name.split("/").at(-1) + ".draft.txt";
+              link.click();
+              setTimeout(() => URL.revokeObjectURL(url), 1e3);
+              drafts.delete(p.id + ":" + recovery.name);
+              persistDrafts();
+              setFile({ ...disk, loadKey: uid() });
+              fileRef.current = disk;
+              setConflict(null);
+              setStatus("\u5DF2\u8BFB\u53D6\u78C1\u76D8\u7248\u672C");
+            }),
+            children: "\u5BFC\u51FA\u8349\u7A3F\u5E76\u91CD\u65B0\u8BFB\u53D6"
+          }
+        )
+      ] }),
+      job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-progress", children: [
+        job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
+      ] })
+    ] });
+    const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-settings-panel" + (settings === "project" ? " lp-project-settings" : ""), role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
       if (e.key === "Escape" && !settingsBusy) setSettings(null);
       if (e.key === "Tab") {
-        const items = [...e.currentTarget.querySelectorAll("button:not(:disabled),select:not(:disabled),textarea")];
+        const items = [...e.currentTarget.querySelectorAll("button:not(:disabled),select:not(:disabled),input:not(:disabled),textarea")];
         const first = items[0], last = items.at(-1);
         if (e.shiftKey && document.activeElement === first) {
           e.preventDefault();
@@ -45955,14 +46139,20 @@ function apply(ctx) {
                 ]
               }
             ),
-            files.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            [...files, ...(review?.files || []).filter((r) => !files.some((f) => f.name === r.name)).map((r) => ({ name: r.name, editable: true }))].map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
               "button",
               {
                 className: "lp-file " + (file?.name === f.name ? "active" : ""),
                 disabled: !f.editable,
                 title: f.name,
                 onClick: safe(() => load(f.name)),
-                children: f.name
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: f.name }),
+                  review?.files.find((r) => r.name === f.name && r.parts.some((h) => h.id && !h.decision)) && (() => {
+                    const kind = review.files.find((r) => r.name === f.name).kind;
+                    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-file-badge " + kind, title: { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], "aria-label": { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], children: { added: "A", modified: "M", deleted: "D" }[kind] });
+                  })()
+                ]
               },
               f.name
             ))
@@ -46079,96 +46269,7 @@ function apply(ctx) {
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", { className: "lp-side-footer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-gear", "aria-label": "\u8BBA\u6587\u8BBE\u7F6E", title: "\u8BBA\u6587\u8BBE\u7F6E", onClick: () => setSettings("project"), children: gear }) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : ""), style: { "--lp-split": split + "%" }, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
-          sideHidden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: "\u25EB" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: "\u25CC \u8BBA\u6587\u5BF9\u8BDD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
-            "button",
-            {
-              "aria-pressed": view === "source" && !chatOpen,
-              onClick: () => {
-                setView("source");
-                setChatOpen(false);
-              },
-              children: [
-                "\u25A7 ",
-                file?.name || "\u6E90\u7801"
-              ]
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-status", children: status }),
-          review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { "aria-pressed": reviewOpen, onClick: () => setReviewOpen((v) => !v), children: [
-            "\u53D8\u66F4 ",
-            review.count
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": rightOpen ? "\u6536\u8D77\u53F3\u4FA7\u9762\u677F" : "\u5C55\u5F00\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen((v) => !v), children: "\u25E8" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "button",
-            {
-              disabled: job?.status === "running",
-              onClick: safe(() => start("compile")),
-              children: "\u21BB \u7F16\u8BD1"
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "button",
-            {
-              onClick: safe(async () => {
-                setView(view === "map" ? "source" : "map");
-                if (!map && view !== "map") await start("analyze");
-              }),
-              children: "\u2318 \u884C\u6587\u5BFC\u56FE"
-            }
-          )
-        ] }),
-        error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-error", role: "alert", children: [
-          error,
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u9519\u8BEF\u63D0\u793A", onClick: () => setError(""), children: "\xD7" })
-        ] }),
-        conflict && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-conflict", children: [
-          "\u78C1\u76D8\u5185\u5BB9\u5DF2\u66F4\u65B0\u3002\u8349\u7A3F\u4ECD\u4FDD\u7559\uFF0C\u8BF7\u590D\u5236\u8349\u7A3F\u6216\u53E6\u5B58\u6587\u4EF6\u540E\u91CD\u65B0\u8BFB\u53D6\u3002",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "button",
-            {
-              onClick: () => {
-                navigator.clipboard.writeText(fileRef.current.content).catch((e) => setError(e.message));
-              },
-              children: "\u590D\u5236\u8349\u7A3F"
-            }
-          ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
-            "button",
-            {
-              onClick: safe(async () => {
-                const disk = await api({
-                  action: "read",
-                  id: p.id,
-                  file: conflict.name
-                });
-                const recovery = fileRef.current;
-                const url = URL.createObjectURL(
-                  new Blob([recovery.content], { type: "text/plain" })
-                );
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = recovery.name.split("/").at(-1) + ".draft.txt";
-                link.click();
-                setTimeout(() => URL.revokeObjectURL(url), 1e3);
-                drafts.delete(p.id + ":" + recovery.name);
-                persistDrafts();
-                setFile({ ...disk, loadKey: uid() });
-                fileRef.current = disk;
-                setConflict(null);
-                setStatus("\u5DF2\u8BFB\u53D6\u78C1\u76D8\u7248\u672C");
-              }),
-              children: "\u5BFC\u51FA\u8349\u7A3F\u5E76\u91CD\u65B0\u8BFB\u53D6"
-            }
-          )
-        ] }),
-        job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-progress", children: [
-          job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
-        ] }),
+        view === "map" && workspaceChrome,
         view === "map" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-map-toolbar", children: [
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setView("source"), children: "\u2190 \u6E90\u7801" }),
@@ -46185,6 +46286,7 @@ function apply(ctx) {
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split" + (rightOpen ? "" : " lp-right-closed"), hidden: view === "map", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-source", children: [
+            workspaceChrome,
             /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-tabs", hidden: chatOpen || tabs.length < 2, children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
               /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                 "button",
@@ -46213,36 +46315,21 @@ function apply(ctx) {
               )
             ] }, t2)) }),
             /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-source-body", hidden: chatOpen, children: [
-              review && reviewOpen && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-change-review", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-                    review.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : "\u5F85\u5BA1\u9605\u4FEE\u6539",
-                    " \xB7 ",
-                    review.count
-                  ] }),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
-                ] }),
-                review.files.map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h3", { children: f.name }),
-                  f.parts.filter((h) => h.id).map((h) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { className: "lp-change", children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-change-tools", children: [
-                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: h.decision ? h.decision === "accept" ? "\u5DF2\u63A5\u53D7" : "\u5DF2\u62D2\u7EDD" : "\u4FEE\u6539\u5EFA\u8BAE" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !!h.decision || review.active, onClick: safe(() => decide("accept", h.id)), children: "\u63A5\u53D7" }),
-                      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !!h.decision || review.active, onClick: safe(() => decide("reject", h.id)), children: "\u62D2\u7EDD" })
-                    ] }),
-                    h.before && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-before", children: h.before }),
-                    h.after && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-after", children: h.after })
-                  ] }, h.id))
-                ] }, f.name))
+              review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-review-summary", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: review.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : `\u5F85\u5BA1\u9605 \xB7 ${review.count} \u5904` }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
+                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { hidden: !!review && reviewOpen, className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
                 Editor,
                 {
                   file,
                   onChange: changed,
                   onSelect: setSelection,
-                  jump
+                  jump,
+                  revision: review?.files.find((r) => r.name === file.name),
+                  active: !!review?.active,
+                  onDecide: (decision, id) => safe(() => decide(decision, id))()
                 }
               ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
             ] }),

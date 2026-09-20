@@ -9,6 +9,8 @@ import React, {
 import { EditorState } from "@codemirror/state";
 import {
   EditorView,
+  Decoration,
+  WidgetType,
   keymap,
   lineNumbers,
   highlightActiveLine,
@@ -47,9 +49,26 @@ const api = async (args) => {
   return data.value;
 };
 const uid = () => crypto.randomUUID();
-export function Editor({ file, onChange, onSelect, jump }) {
+class RevisionWidget extends WidgetType {
+  constructor(hunk, active, decide) { super(); this.hunk=hunk; this.active=active; this.decide=decide; }
+  toDOM() {
+    const root=document.createElement("div"); root.className="lp-inline-change";
+    const tools=document.createElement("div"); tools.className="lp-change-tools";
+    const label=document.createElement("span"); label.textContent=this.active ? "Agent 正在修改…" : "修改建议"; tools.append(label);
+    for(const [decision,text] of [["accept","接受"],["reject","拒绝"]]) {
+      const button=document.createElement("button"); button.textContent=text; button.disabled=this.active;
+      button.setAttribute("aria-label",text+"当前修改"); button.onclick=()=>this.decide(decision,this.hunk.id); tools.append(button);
+    }
+    root.append(tools);
+    if(this.hunk.before) { const before=document.createElement("pre"); before.className="lp-before"; before.textContent=this.hunk.before; root.append(before); }
+    return root;
+  }
+  ignoreEvent() { return true; }
+}
+export function Editor({ file, onChange, onSelect, jump, revision, active, onDecide }) {
   const host = useRef(),
     view = useRef(),
+    viewport = useRef(null),
     handlers = useRef({ onChange, onSelect });
   handlers.current = { onChange, onSelect };
   useEffect(() => {
@@ -64,12 +83,25 @@ export function Editor({ file, onChange, onSelect, jump }) {
       write: (value) => { if (!selecting) handlers.current.onSelect(value); },
     });
     const finishSelection = () => { selecting = false; reportSelection(v); };
+    const doc = revision ? revision.parts.map(h=>h.equal ?? (h.decision==="reject"?h.before:h.after)).join("") : file.content;
+    const decorations=[]; let offset=0;
+    for(const h of revision?.parts || []) {
+      const text=h.equal ?? (h.decision==="reject"?h.before:h.after);
+      if(h.id && !h.decision) {
+        decorations.push(Decoration.widget({widget:new RevisionWidget(h,active,onDecide),side:-1}).range(offset));
+        if(text.length) decorations.push(Decoration.mark({class:"lp-inline-added"}).range(offset,offset+text.length));
+      }
+      offset+=text.length;
+    }
     const v = new EditorView({
       parent: host.current,
       state: EditorState.create({
-        doc: file.content,
+        doc,
         extensions: [
           lineNumbers(),
+          EditorState.readOnly.of(!!revision || !!active),
+          EditorView.editable.of(!revision && !active),
+          EditorView.decorations.of(Decoration.set(decorations,true)),
           EditorView.contentAttributes.of({ "aria-label": "LaTeX 源码", spellcheck: "false" }),
           EditorView.domEventHandlers({
             pointerdown: (event, editor) => {
@@ -155,13 +187,15 @@ export function Editor({ file, onChange, onSelect, jump }) {
     document.addEventListener("pointerup", finishSelection);
     document.addEventListener("pointercancel", finishSelection);
     view.current = v;
+    if(viewport.current?.name===file.name) v.scrollDOM.scrollTop=viewport.current.top;
     return () => {
       document.removeEventListener("pointerup", finishSelection);
       document.removeEventListener("pointercancel", finishSelection);
+      viewport.current={name:file.name,top:v.scrollDOM.scrollTop};
       v.destroy();
       view.current = null;
     };
-  }, [file?.name, file?.loadKey]);
+  }, [file?.name, file?.loadKey, JSON.stringify(revision), active]);
   useEffect(() => {
     if (!jump || !view.current) return;
     const v = view.current;
@@ -509,7 +543,6 @@ export function apply(ctx) {
       [rightOpen,setRightOpen]=useState(true),
       [rightTab,setRightTab]=useState("pdf"),
       [review,setReview]=useState(null),
-      [reviewOpen,setReviewOpen]=useState(true),
       [logs,setLogs]=useState({}),
       [token,setToken]=useState(""),
       [credentialMessage,setCredentialMessage]=useState(""),
@@ -602,7 +635,8 @@ export function apply(ctx) {
       const token = ++serial.current,
         cache = drafts.get(project.id + ":" + name),
         loaded =
-          cache || (await api({ action: "read", id: project.id, file: name }));
+          cache || (review?.files.find(f=>f.name===name && f.kind==="deleted")
+            ? {name,content:"",hash:null} : await api({ action: "read", id: project.id, file: name }));
       if (token !== serial.current || pRef.current?.id !== project.id) return;
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
@@ -830,13 +864,16 @@ export function apply(ctx) {
     },[p?.autoSave,file?.content,file?.dirty,job?.status,review]);
     useEffect(()=>{
       if(!p)return;let stopped=false;
-      const poll=async()=>{try{const [state,log]=await Promise.all([api({action:"status",id:p.id}),api({action:"logs",id:p.id})]);if(stopped)return;setReview(state.review);setLogs(log);}catch{}};
+      const poll=async()=>{try{const [state,log,opened]=await Promise.all([api({action:"status",id:p.id}),api({action:"logs",id:p.id}),api({action:"open",id:p.id})]);if(stopped)return;setReview(state.review);setLogs(log);setFiles(opened.files);}catch{}};
       poll();const timer=setInterval(poll,1800);return()=>{stopped=true;clearInterval(timer);};
     },[p?.id]);
     async function decide(decision,hunkId){
       if(fileRef.current?.dirty)throw new Error("请先保留当前草稿，再处理 Agent 修改");
       const result=await api({action:"decide",id:pRef.current.id,batchId:review.id,hunkId,decision});
       setReview(result.review);
+      const liveFiles=(await api({action:"open",id:pRef.current.id})).files;
+      setFiles(liveFiles);
+      setTabs(v=>v.filter(name=>liveFiles.some(f=>f.name===name)||result.review?.files.some(f=>f.name===name&&f.parts.some(h=>h.id&&!h.decision))));
       if(fileRef.current){try{const f=await api({action:"read",id:pRef.current.id,file:fileRef.current.name});fileRef.current={...f,loadKey:uid()};setFile(fileRef.current);}catch{setFile(null);fileRef.current=null;}}
       if(result.settled){setMap(null);setStatus("修改已整合 · 正在编译");setJob({kind:"compile",status:"running"});}
     }
@@ -851,7 +888,7 @@ export function apply(ctx) {
       setStatus("未保存");
     };
     async function start(kind) {
-      if(fileRef.current?.dirty){await save(true);if(kind==="compile")return;throw new Error("已保存并开始编译，请完成后更新导图");}
+      if(fileRef.current?.dirty){await save(true);if(kind!=="compile")setStatus("已保存 · 编译完成后可更新导图");return;}
       let sessionId;
       if (kind === "analyze") sessionId = await ensureChat();
       setChatOpen(false);
@@ -931,11 +968,100 @@ export function apply(ctx) {
       setSettingsMessage("");
       setSettings("global");
     });
+    const workspaceChrome = <>
+          <header className="lp-toolbar">
+            {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}>◫</button>}
+            <button aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
+              ◌ 论文对话
+            </button>
+            <button
+              aria-pressed={view === "source" && !chatOpen}
+              onClick={() => { setView("source"); setChatOpen(false); }}
+            >
+              ▧ {file?.name || "源码"}
+            </button>
+            <span className="lp-status">{status}</span>
+            {review && <button onClick={safe(async()=>{setNav("files");const first=review.files.find(f=>f.parts.some(h=>h.id&&!h.decision));if(first)await load(first.name);})}>变更 {review.count}</button>}
+            <button aria-label={rightOpen?"收起右侧面板":"展开右侧面板"} onClick={()=>setRightOpen(v=>!v)}>◨</button>
+            <button
+              disabled={job?.status === "running"}
+              onClick={safe(() => start("compile"))}
+            >
+              ↻ 编译
+            </button>
+            <button
+              onClick={safe(async () => {
+                setView(view === "map" ? "source" : "map");
+                if (!map && view !== "map") await start("analyze");
+              })}
+            >
+              ⌘ 行文导图
+            </button>
+
+          </header>
+          {error && (
+            <div className="lp-error" role="alert">
+              {error}
+              <button aria-label="关闭错误提示" onClick={() => setError("")}>
+                ×
+              </button>
+            </div>
+          )}
+          {conflict && (
+            <div className="lp-conflict">
+              磁盘内容已更新。草稿仍保留，请复制草稿或另存文件后重新读取。
+              <button
+                onClick={() => {
+                  navigator.clipboard
+                    .writeText(fileRef.current.content)
+                    .catch((e) => setError(e.message));
+                }}
+              >
+                复制草稿
+              </button>
+              <button
+                onClick={safe(async () => {
+                  const disk = await api({
+                    action: "read",
+                    id: p.id,
+                    file: conflict.name,
+                  });
+                  const recovery = fileRef.current;
+                  const url = URL.createObjectURL(
+                    new Blob([recovery.content], { type: "text/plain" }),
+                  );
+                  const link = document.createElement("a");
+                  link.href = url;
+                  link.download =
+                    recovery.name.split("/").at(-1) + ".draft.txt";
+                  link.click();
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                  drafts.delete(p.id + ":" + recovery.name);
+                  persistDrafts();
+                  setFile({ ...disk, loadKey: uid() });
+                  fileRef.current = disk;
+                  setConflict(null);
+                  setStatus("已读取磁盘版本");
+                })}
+              >
+                导出草稿并重新读取
+              </button>
+            </div>
+          )}
+          {job?.status === "running" && (
+            <div className="lp-progress">
+              {job.kind === "compile" ? "正在编译…" : "Agent 正在分析行文结构…"}
+              <button onClick={safe(() => api({ action: "cancel", id: p.id }))}>
+                取消
+              </button>
+            </div>
+          )}
+    </>;
     const settingsPanel = settings && <div className="lp-settings-overlay">
-      <section className="lp-settings-panel" role="dialog" aria-modal="true" aria-label={settings === "global" ? "全局设置" : "论文设置"} onKeyDown={e => {
+      <section className={"lp-settings-panel"+(settings==="project"?" lp-project-settings":"")} role="dialog" aria-modal="true" aria-label={settings === "global" ? "全局设置" : "论文设置"} onKeyDown={e => {
         if(e.key === "Escape" && !settingsBusy) setSettings(null);
         if(e.key === "Tab") {
-          const items=[...e.currentTarget.querySelectorAll('button:not(:disabled),select:not(:disabled),textarea')];
+          const items=[...e.currentTarget.querySelectorAll('button:not(:disabled),select:not(:disabled),input:not(:disabled),textarea')];
           const first=items[0],last=items.at(-1);
           if(e.shiftKey && document.activeElement===first){e.preventDefault();last?.focus();}
           else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first?.focus();}
@@ -1146,7 +1272,7 @@ export function apply(ctx) {
                     )}
                   </form>
                 )}
-                {files.map((f) => (
+                {[...files, ...(review?.files || []).filter(r=>!files.some(f=>f.name===r.name)).map(r=>({name:r.name,editable:true}))].map((f) => (
                   <button
                     key={f.name}
                     className={
@@ -1156,7 +1282,8 @@ export function apply(ctx) {
                     title={f.name}
                     onClick={safe(() => load(f.name))}
                   >
-                    {f.name}
+                    <span>{f.name}</span>
+                    {review?.files.find(r=>r.name===f.name && r.parts.some(h=>h.id&&!h.decision)) && (()=>{const kind=review.files.find(r=>r.name===f.name).kind;return <span className={"lp-file-badge "+kind} title={{added:"新增",modified:"修改",deleted:"删除"}[kind]} aria-label={{added:"新增",modified:"修改",deleted:"删除"}[kind]}>{{added:"A",modified:"M",deleted:"D"}[kind]}</span>;})()}
                   </button>
                 ))}
               </>
@@ -1269,93 +1396,7 @@ export function apply(ctx) {
           <footer className="lp-side-footer"><button className="lp-gear" aria-label="论文设置" title="论文设置" onClick={()=>setSettings("project")}>{gear}</button></footer>
         </aside>
         <main className={"lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : "")} style={{"--lp-split": split + "%"}}>
-          <header className="lp-toolbar">
-            {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}>◫</button>}
-            <button aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
-              ◌ 论文对话
-            </button>
-            <button
-              aria-pressed={view === "source" && !chatOpen}
-              onClick={() => { setView("source"); setChatOpen(false); }}
-            >
-              ▧ {file?.name || "源码"}
-            </button>
-            <span className="lp-status">{status}</span>
-            {review && <button aria-pressed={reviewOpen} onClick={()=>setReviewOpen(v=>!v)}>变更 {review.count}</button>}
-            <button aria-label={rightOpen?"收起右侧面板":"展开右侧面板"} onClick={()=>setRightOpen(v=>!v)}>◨</button>
-            <button
-              disabled={job?.status === "running"}
-              onClick={safe(() => start("compile"))}
-            >
-              ↻ 编译
-            </button>
-            <button
-              onClick={safe(async () => {
-                setView(view === "map" ? "source" : "map");
-                if (!map && view !== "map") await start("analyze");
-              })}
-            >
-              ⌘ 行文导图
-            </button>
-
-          </header>
-          {error && (
-            <div className="lp-error" role="alert">
-              {error}
-              <button aria-label="关闭错误提示" onClick={() => setError("")}>
-                ×
-              </button>
-            </div>
-          )}
-          {conflict && (
-            <div className="lp-conflict">
-              磁盘内容已更新。草稿仍保留，请复制草稿或另存文件后重新读取。
-              <button
-                onClick={() => {
-                  navigator.clipboard
-                    .writeText(fileRef.current.content)
-                    .catch((e) => setError(e.message));
-                }}
-              >
-                复制草稿
-              </button>
-              <button
-                onClick={safe(async () => {
-                  const disk = await api({
-                    action: "read",
-                    id: p.id,
-                    file: conflict.name,
-                  });
-                  const recovery = fileRef.current;
-                  const url = URL.createObjectURL(
-                    new Blob([recovery.content], { type: "text/plain" }),
-                  );
-                  const link = document.createElement("a");
-                  link.href = url;
-                  link.download =
-                    recovery.name.split("/").at(-1) + ".draft.txt";
-                  link.click();
-                  setTimeout(() => URL.revokeObjectURL(url), 1000);
-                  drafts.delete(p.id + ":" + recovery.name);
-                  persistDrafts();
-                  setFile({ ...disk, loadKey: uid() });
-                  fileRef.current = disk;
-                  setConflict(null);
-                  setStatus("已读取磁盘版本");
-                })}
-              >
-                导出草稿并重新读取
-              </button>
-            </div>
-          )}
-          {job?.status === "running" && (
-            <div className="lp-progress">
-              {job.kind === "compile" ? "正在编译…" : "Agent 正在分析行文结构…"}
-              <button onClick={safe(() => api({ action: "cancel", id: p.id }))}>
-                取消
-              </button>
-            </div>
-          )}
+          {view === "map" && workspaceChrome}
           {view === "map" && (
             <>
               <div className="lp-map-toolbar">
@@ -1372,6 +1413,7 @@ export function apply(ctx) {
           )}
             <div className={"lp-split"+(rightOpen?"":" lp-right-closed")} hidden={view === "map"}>
               <section className="lp-source">
+                {workspaceChrome}
                 <div className="lp-tabs" hidden={chatOpen || tabs.length < 2}>
                   {tabs.map((t) => (
                     <span key={t}>
@@ -1400,17 +1442,17 @@ export function apply(ctx) {
                   ))}
                 </div>
                 <div className="lp-source-body" hidden={chatOpen}>
-                {review && reviewOpen && <div className="lp-change-review">
-                  <header><span>{review.active ? "Agent 正在修改…" : "待审阅修改"} · {review.count}</span><button disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></header>
-                  {review.files.map(f=><section key={f.name}><h3>{f.name}</h3>{f.parts.filter(h=>h.id).map(h=><article className="lp-change" key={h.id}><div className="lp-change-tools"><span>{h.decision ? h.decision==="accept"?"已接受":"已拒绝":"修改建议"}</span><button disabled={!!h.decision || review.active} onClick={safe(()=>decide("accept",h.id))}>接受</button><button disabled={!!h.decision || review.active} onClick={safe(()=>decide("reject",h.id))}>拒绝</button></div>{h.before && <pre className="lp-before">{h.before}</pre>}{h.after && <pre className="lp-after">{h.after}</pre>}</article>)}</section>)}
-                </div>}
-                <div hidden={!!review && reviewOpen} className="lp-editor-wrap">
+                {review && <div className="lp-review-summary"><span>{review.active ? "Agent 正在修改…" : `待审阅 · ${review.count} 处`}</span><button disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></div>}
+                <div className="lp-editor-wrap">
                 {file ? (
                   <Editor
                     file={file}
                     onChange={changed}
                     onSelect={setSelection}
                     jump={jump}
+                    revision={review?.files.find(r=>r.name===file.name)}
+                    active={!!review?.active}
+                    onDecide={(decision,id)=>safe(()=>decide(decision,id))()}
                   />
                 ) : (
                   <div className="lp-empty">选择文件开始编辑</div>

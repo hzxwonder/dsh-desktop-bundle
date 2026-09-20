@@ -842,3 +842,35 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-right .dshDesktopBrowserPanelToolbar { flex-wrap:nowrap; padding:6px 4px; gap:1px; }
 .lp-right .dshDesktopBrowserPanelButton { width:24px; flex-shrink:0; }
 .lp-right .dshDesktopBrowserPanelAddress { min-width:40px; }
+
+/* Source and preview own matching toolbar rows. */
+.lp-toolbar,.lp-mapping .lp-toolbar { width:100%; min-height:53px; height:53px; }
+.lp-right { margin-top:0; }
+.lp-source > .lp-toolbar { flex:none; }
+.lp-editor-wrap { flex:1; height:auto; overflow:hidden; }
+.lp-review-summary { display:flex; align-items:center; gap:6px; padding:6px 12px; border-bottom:1px solid var(--lp-line); font-size:12px; flex:none; }
+.lp-review-summary > span { margin-right:auto; color:var(--lp-muted); }
+.lp-inline-change { display:block; white-space:normal; margin:5px 0 0; border-top:1px solid var(--lp-line); font-family:inherit; }
+.lp-inline-change .lp-change-tools { padding:2px 8px; background:var(--lp-side); }
+.lp-inline-change button { font:11px/1.5 system-ui; padding:3px 8px !important; }
+.lp-inline-change .lp-before { margin:0; padding:3px 8px; white-space:pre-wrap; overflow-wrap:anywhere; font:inherit; color:var(--lp-text); border-left-width:2px; }
+.lp-inline-added { background:color-mix(in srgb,#39a36b 17%,var(--lp-editor)); text-decoration:underline; text-decoration-color:#409c70; text-underline-offset:4px; }
+.lp-file { display:flex; align-items:center; gap:8px; }
+.lp-file > span:first-child { overflow:hidden; text-overflow:ellipsis; }
+.lp-file-badge { margin-left:auto; font:600 11px ui-monospace,monospace; flex:none; }
+.lp-file-badge.added { color:#46a578; }
+.lp-file-badge.modified { color:var(--lp-accent); }
+.lp-file-badge.deleted { color:#d77373; }
+.lp-project-settings { width:440px; padding:22px; border-radius:16px; }
+.lp-project-settings header { margin-bottom:24px; }
+.lp-project-settings h2 { font-size:16px; }
+.lp-project-settings label:not(.lp-auto-save) { display:grid; grid-template-columns:1fr; gap:8px; margin-top:18px; font-size:12px; color:var(--lp-muted); }
+.lp-project-settings select { width:100%; max-width:100%; min-width:0; padding:9px 12px; color:var(--lp-text); background:var(--lp-editor); border:1px solid var(--lp-line); border-radius:8px; }
+.lp-project-settings .lp-auto-save { flex-direction:row-reverse; justify-content:flex-end; gap:10px; border-top:1px solid var(--lp-line); padding-top:20px; font-size:13px; }
+.lp-project-settings input[type=checkbox] { width:16px; height:16px; margin:0; accent-color:var(--lp-accent); }
+.lp-project-settings .lp-muted { margin:10px 0 0 26px; font-size:12px; line-height:1.7; }
+.lp-source > .lp-error { margin:8px 12px; padding:8px 10px; border-radius:8px; border:1px solid var(--lp-line); background:var(--lp-side); color:var(--lp-text); font-size:12px; }
+.lp-composer { padding:10px 12px; }
+.lp-composer [data-composer-seat] { width:100%; max-width:none; margin:0; }
+
+.lp-composer ._0cyzDW_root { --dsh-composer-side-clearance:0px; --dsh-composer-card-max-width:100%; }
