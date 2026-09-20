@@ -44802,6 +44802,7 @@ body:has(.lp) { background:var(--lp-bg, #202020) !important; }
 .dshDesktopFrame:has(.lp) { grid-template-rows:0 minmax(0,1fr) !important; }
 .dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface,
 .dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface { grid-row:1 !important; }
+.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { display:none !important; }
 .lp { position:absolute; inset:0; width:100%; height:100%; }
 .lp-sidebar { padding-top:0; }
 .lp-main { margin-top:0; }
@@ -44824,6 +44825,11 @@ body:has(.lp) { background:var(--lp-bg, #202020) !important; }
 .lp-composer [class*="bg-static-neutral"] { background:var(--lp-hover) !important; }
 .lp-composer button { color:var(--lp-text) !important; border-color:var(--lp-line) !important; }
 .lp-composer button:hover { background:var(--lp-hover) !important; }
+.lp-composer button[aria-label="\u6DFB\u52A0\u9644\u4EF6"], .lp-composer button[title*="\u9644\u4EF6"],
+.lp-composer [data-testid*="attachment"], .lp-composer [data-testid*="attach"] {
+  background:var(--lp-hover) !important; color:var(--lp-text) !important;
+  border:1px solid var(--lp-line) !important; border-radius:999px !important;
+}
 .lp-composer button[type="submit"], .lp-composer [aria-label*="\u53D1\u9001"],
 .lp-composer [aria-label*="Send"] { background:var(--lp-accent) !important; color:var(--lp-bg) !important; border-color:transparent !important; }
 .lp-composer input, .lp-composer textarea, .lp-composer [contenteditable="true"] {
