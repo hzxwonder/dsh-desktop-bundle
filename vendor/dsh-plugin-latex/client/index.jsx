@@ -546,7 +546,8 @@ export function apply(ctx) {
       [review,setReview]=useState(null),
       [logs,setLogs]=useState({}),
       [token,setToken]=useState(""),
-      [credentialMessage,setCredentialMessage]=useState(""),
+      [draftTheme,setDraftTheme]=useState("system"),
+      [formError,setFormError]=useState(""),
       [form, setForm] = useState(null),
       [title, setTitle] = useState(""),
       [path, setPath] = useState(""),
@@ -559,6 +560,9 @@ export function apply(ctx) {
       [settingsBusy, setSettingsBusy] = useState(false),
       [settingsMessage, setSettingsMessage] = useState(""),
       [conflict, setConflict] = useState(null);
+    const formTrigger = useRef(null);
+    const openForm = kind => {formTrigger.current=document.activeElement;setTitle("");setPath("");setFormError("");setForm(kind);};
+    const closeForm = () => {setForm(null);requestAnimationFrame(()=>formTrigger.current?.focus());};
     const settingsTrigger = useRef(null);
     const closeSettings = () => { setSettings(null); requestAnimationFrame(()=>settingsTrigger.current?.focus()); };
     const pRef = useRef(p),
@@ -967,7 +971,7 @@ export function apply(ctx) {
     const gear = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg>;
     const openGlobal = safe(async () => {
       settingsTrigger.current=document.activeElement;
-      setToken("");setCredentialMessage("");
+      setToken("");setDraftTheme(theme);
       setGlobalConfig(await api({action:"settings"}));
       setSettingsMessage("");
       setSettings("global");
@@ -1075,12 +1079,12 @@ export function apply(ctx) {
         {error && <p role="alert" className="lp-error">{error}</p>}
         <header><h2>{settings === "global" ? "全局设置" : "论文设置"}</h2><button autoFocus aria-label="关闭设置" disabled={settingsBusy} onClick={()=>closeSettings()}><Icon name="close"/></button></header>
         {settings === "global" ? <div className="lp-global-fields">
-          <section className="lp-setting-section"><h3>外观</h3><label>工作台主题<select value={theme} onChange={e=>{setTheme(e.target.value);localStorage.setItem("dsh-latex-theme",e.target.value);}}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label></section>
-          <section className="lp-setting-section"><h3>Overleaf 同步</h3><label>访问凭证<input type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
-          <div className="lp-credential-row"><span role="status">{credentialMessage}</span><button disabled={!token || settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const credential=await api({action:"credential",token});setGlobalConfig(v=>({...v,credential}));setToken("");setCredentialMessage("凭证已存入系统钥匙串");}catch(e){setCredentialMessage(e.message);}finally{setSettingsBusy(false);}}}>保存凭证</button></div><p className="lp-help">凭证保存在系统钥匙串，供所有论文项目使用。</p></section>
-          <section className="lp-setting-section"><h3>Agent 协作</h3><label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
+          <section className="lp-setting-section"><h3>外观</h3><label>工作台主题<select disabled={settingsBusy} value={draftTheme} onChange={e=>setDraftTheme(e.target.value)}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label></section>
+          <section className="lp-setting-section"><h3>Overleaf 同步</h3><label>访问凭证<input disabled={settingsBusy} type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
+          </section>
+          <section className="lp-setting-section"><h3>Agent 协作</h3><label className="lp-instructions">AGENTS.md<textarea disabled={settingsBusy} aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
           <p className="lp-help">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p></section>
-          <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{setGlobalConfig(await api({action:"saveSettings",...globalConfig}));setSettingsMessage("已保存");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存指令</button></footer>
+          <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const saved=await api({action:"saveSettings",instructions:globalConfig.instructions,hash:globalConfig.hash});setGlobalConfig(saved);if(token.trim()){try{const credential=await api({action:"credential",token:token.trim()});setGlobalConfig(v=>({...v,credential}));setToken("");}catch(e){setSettingsMessage("指令已保存；凭证保存失败："+e.message);return;}}setTheme(draftTheme);localStorage.setItem("dsh-latex-theme",draftTheme);setSettingsMessage("已保存设置");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存设置</button></footer>
         </div> : <>
           <label>编译主文件<select value={p.main} disabled={job?.status === "running"} onChange={safe(e=>update({main:e.target.value}))}>{files.filter(f=>f.name.endsWith(".tex")).map(f=><option key={f.name}>{f.name}</option>)}</select></label>
           <label>编译器<select value={p.engine} disabled={job?.status === "running"} onChange={safe(e=>update({engine:e.target.value}))}>{["pdflatex","xelatex","lualatex"].map(x=><option key={x}>{x}</option>)}</select></label>
@@ -1126,57 +1130,29 @@ export function apply(ctx) {
               ))}
             {!projects.some(x=>x.name.toLowerCase().includes(query.toLowerCase())) && <div className="lp-picker-empty"><Icon name="file" size={28}/><strong>{query ? "没有找到匹配的论文" : "开始你的第一篇论文"}</strong><p className="lp-help">{query ? "换一个关键词，或打开新的论文项目。" : "新建论文，或从本地目录与 Overleaf 导入。"}</p>{query && <button onClick={()=>setQuery("")}>清空搜索</button>}</div>}
             <div className="lp-row">
-              <button className="lp-primary" onClick={() => setForm("create")}><Icon name="plus"/>新建论文</button>
-              <button onClick={() => setForm("import")}><Icon name="folder"/>打开本地项目</button>
-              <button onClick={() => {setForm("overleaf");setPath("");}}><Icon name="git"/>从 Overleaf Git 创建</button>
+              <button className="lp-primary" onClick={() => openForm("create")}><Icon name="plus"/>新建论文</button>
+              <button onClick={() => openForm("import")}><Icon name="folder"/>打开本地项目</button>
+              <button onClick={() => openForm("overleaf")}><Icon name="git"/>从 Overleaf Git 创建</button>
             </div>
-            {form && (
-              <form
-                onSubmit={safe(async (e) => {
-                  e.preventDefault();
-                  setBusy(true);
-                  try {
-                    const created = await api({
-                      action: "create",
-                      name: title,
-                      ...(form === "import" ? { path } : {}),
-                      ...(form === "overleaf" ? { action:"clone",url:path } : {}),
-                    });
-                    setProjects((v) => [
-                      ...v.filter((x) => x.id !== created.id),
-                      created,
-                    ]);
-                    await choose(created);
-                  } finally {
-                    setBusy(false);
-                  }
-                })}
-              >
-                <label>
-                  论文名称
-                  <input
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </label>
-                {(form === "import" || form === "overleaf") && (
-                  <label>
-                    {form === "overleaf" ? "Overleaf Git 链接" : "本地目录"}
-                    <input
-                      required
-                      placeholder={form === "overleaf" ? "https://git@git.overleaf.com/项目ID" : "论文项目目录的完整路径"}
-                      value={path}
-                      onChange={(e) => setPath(e.target.value)}
-                    />
-                  </label>
-                )}
-                <button disabled={busy}>打开工作台</button>
-                <button type="button" onClick={() => setForm(null)}>
-                  取消
-                </button>
-              </form>
-            )}
+            {form && <div className="lp-settings-overlay">
+              <section className="lp-settings-panel lp-create-dialog" role="dialog" aria-modal="true" aria-label={form === "overleaf" ? "从 Overleaf Git 创建" : form === "import" ? "打开本地项目" : "新建论文"} onKeyDown={e=>{
+                if(e.key==="Escape"&&!busy){e.stopPropagation();closeForm();}
+                if(e.key==="Tab"){const items=[...e.currentTarget.querySelectorAll('button:not(:disabled),input:not(:disabled)')];const first=items[0],last=items.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}
+              }}>
+                <header><h2>{form === "overleaf" ? "从 Overleaf Git 创建" : form === "import" ? "打开本地项目" : "新建论文"}</h2><button aria-label="关闭创建窗口" disabled={busy} onClick={closeForm}><Icon name="close"/></button></header>
+                <form onSubmit={async e=>{
+                  e.preventDefault();if(busy)return;setBusy(true);setFormError("");
+                  try{const created=await api(form==="overleaf"?{action:"clone",url:path.trim()}:{action:"create",name:title.trim(),...(form==="import"?{path:path.trim()}:{})});setProjects(v=>[...v.filter(x=>x.id!==created.id),created]);await choose(created);}
+                  catch(e){setFormError(e.message);}finally{setBusy(false);}
+                }}>
+                  {form!=="overleaf"&&<label>论文名称<input autoFocus required maxLength={120} disabled={busy} value={title} onChange={e=>setTitle(e.target.value)}/></label>}
+                  {form!=="create"&&<label>{form==="overleaf"?"Overleaf Git 链接":"本地目录"}<input autoFocus={form==="overleaf"} required disabled={busy} placeholder={form==="overleaf"?"https://git@git.overleaf.com/项目ID":"论文项目目录的完整路径"} value={path} onChange={e=>setPath(e.target.value)}/></label>}
+                  {formError&&<p role="alert" className="lp-error">{formError}</p>}
+                  <footer><button type="button" disabled={busy} onClick={closeForm}>取消</button><button className="lp-primary" disabled={busy}>{busy?"正在打开…":"打开工作台"}</button></footer>
+                </form>
+              </section>
+            </div>}
+
           </div>
         </div>
       );

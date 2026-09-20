@@ -23,7 +23,7 @@ export class Overleaf {
   async auth(fn){const token=await this.credentials.get();if(!token)fail('尚未配置 Overleaf 凭证','CREDENTIAL_REQUIRED');const dir=await mkdtemp(join(tmpdir(),'dsh-git-auth-'));try{const askpass=join(dir,'askpass');await writeFile(askpass,'#!/bin/sh\ncase "$1" in *sername*) printf "%s" git;; *) printf "%s" "$DSH_OVERLEAF_TOKEN";; esac\n',{mode:0o700});return await fn({token,askpass});}finally{await rm(dir,{recursive:true,force:true});}}
   async clone(name,url){url=overleafURL(url);const dest=join(this.store.directory,'papers',randomUUID());await mkdir(join(this.store.directory,'papers'),{recursive:true});try{
     await this.auth(async auth=>{const r=await this.runGit(['clone','--',url,dest],auth);if(r.code!==0)fail('Overleaf 克隆失败：'+r.output,'GIT_ERROR');});
-    const p=await this.store.add({name,path:dest});p.overleaf={remote:'origin',url};const files=await this.store.listFiles(p.id);p.main=files.find(f=>f.name==='main.tex')?.name||files.find(f=>f.name.endsWith('.tex'))?.name||'main.tex';await this.store.persist();return p;
+    const p=await this.store.add({name:name?.trim() || "Overleaf · "+url.split("/").at(-1).slice(-6),path:dest});p.overleaf={remote:'origin',url};const files=await this.store.listFiles(p.id);p.main=files.find(f=>f.name==='main.tex')?.name||files.find(f=>f.name.endsWith('.tex'))?.name||'main.tex';await this.store.persist();return p;
   }catch(e){await rm(dest,{recursive:true,force:true});throw e;}}
   async sync(id,paths){const p=this.store.get(id);if(!p.overleaf)return {status:'local',message:'本地论文'};
     if(p.revisionReview) return {status:'pending',message:'待处理 Agent 修改，暂不推送'};

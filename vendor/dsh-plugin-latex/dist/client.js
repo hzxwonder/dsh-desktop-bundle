@@ -44940,6 +44940,14 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
   .lp .lp-settings-panel textarea { height:130px; }
   .lp-global-fields footer { padding-top:10px; }
 }
+
+/* Project dialogs share the workbench settings surface. */
+.lp .lp-create-dialog { width: 460px; }
+.lp .lp-picker .lp-create-dialog form { padding: 0; margin: 0; border: 0; border-radius: 0; display: flex; flex-direction: column; gap: 20px; }
+.lp .lp-create-dialog footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.lp .lp-create-dialog .lp-error { margin: 0; overflow-wrap: anywhere; }
+.lp .lp-picker .lp-create-dialog form { background: transparent; text-align: left; }
+.lp .lp-picker .lp-create-dialog form label { align-items: stretch; margin: 0; gap: 8px; text-align: left; }
 `;
 
 // client/icons.jsx
@@ -45473,9 +45481,21 @@ function apply(ctx) {
     return surface || /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react2.useState)([]), [p, setP] = (0, import_react2.useState)(null), [files, setFiles] = (0, import_react2.useState)([]), [file, setFile] = (0, import_react2.useState)(null), [tabs, setTabs] = (0, import_react2.useState)([]), [nav2, setNav] = (0, import_react2.useState)("files"), [chatOpen, setChatOpen] = (0, import_react2.useState)(false), [newName, setNewName] = (0, import_react2.useState)(null), [newError, setNewError] = (0, import_react2.useState)(""), [selected, setSelected] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react2.useState)(null), [comment2, setComment] = (0, import_react2.useState)(null), [commentText, setCommentText] = (0, import_react2.useState)(""), [jump, setJump] = (0, import_react2.useState)(null), [busy, setBusy] = (0, import_react2.useState)(false), [status, setStatus] = (0, import_react2.useState)(""), [error, setError] = (0, import_react2.useState)(""), [pdf, setPdf] = (0, import_react2.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react2.useState)(1), [map, setMap] = (0, import_react2.useState)(null), [view, setView] = (0, import_react2.useState)("source"), [split, setSplit] = (0, import_react2.useState)(55), [sideHidden, setSideHidden] = (0, import_react2.useState)(false), [job, setJob] = (0, import_react2.useState)(null), [showLog, setShowLog] = (0, import_react2.useState)(false), [rightOpen, setRightOpen] = (0, import_react2.useState)(true), [rightTab, setRightTab] = (0, import_react2.useState)("pdf"), [review, setReview] = (0, import_react2.useState)(null), [logs, setLogs] = (0, import_react2.useState)({}), [token, setToken] = (0, import_react2.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react2.useState)(""), [form, setForm] = (0, import_react2.useState)(null), [title, setTitle] = (0, import_react2.useState)(""), [path, setPath] = (0, import_react2.useState)(""), [query, setQuery] = (0, import_react2.useState)(""), [theme2, setTheme] = (0, import_react2.useState)(
+    const [projects, setProjects] = (0, import_react2.useState)([]), [p, setP] = (0, import_react2.useState)(null), [files, setFiles] = (0, import_react2.useState)([]), [file, setFile] = (0, import_react2.useState)(null), [tabs, setTabs] = (0, import_react2.useState)([]), [nav2, setNav] = (0, import_react2.useState)("files"), [chatOpen, setChatOpen] = (0, import_react2.useState)(false), [newName, setNewName] = (0, import_react2.useState)(null), [newError, setNewError] = (0, import_react2.useState)(""), [selected, setSelected] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react2.useState)(null), [comment2, setComment] = (0, import_react2.useState)(null), [commentText, setCommentText] = (0, import_react2.useState)(""), [jump, setJump] = (0, import_react2.useState)(null), [busy, setBusy] = (0, import_react2.useState)(false), [status, setStatus] = (0, import_react2.useState)(""), [error, setError] = (0, import_react2.useState)(""), [pdf, setPdf] = (0, import_react2.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react2.useState)(1), [map, setMap] = (0, import_react2.useState)(null), [view, setView] = (0, import_react2.useState)("source"), [split, setSplit] = (0, import_react2.useState)(55), [sideHidden, setSideHidden] = (0, import_react2.useState)(false), [job, setJob] = (0, import_react2.useState)(null), [showLog, setShowLog] = (0, import_react2.useState)(false), [rightOpen, setRightOpen] = (0, import_react2.useState)(true), [rightTab, setRightTab] = (0, import_react2.useState)("pdf"), [review, setReview] = (0, import_react2.useState)(null), [logs, setLogs] = (0, import_react2.useState)({}), [token, setToken] = (0, import_react2.useState)(""), [draftTheme, setDraftTheme] = (0, import_react2.useState)("system"), [formError, setFormError] = (0, import_react2.useState)(""), [form, setForm] = (0, import_react2.useState)(null), [title, setTitle] = (0, import_react2.useState)(""), [path, setPath] = (0, import_react2.useState)(""), [query, setQuery] = (0, import_react2.useState)(""), [theme2, setTheme] = (0, import_react2.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
     ), [settings, setSettings] = (0, import_react2.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react2.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react2.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react2.useState)(""), [conflict, setConflict] = (0, import_react2.useState)(null);
+    const formTrigger = (0, import_react2.useRef)(null);
+    const openForm = (kind) => {
+      formTrigger.current = document.activeElement;
+      setTitle("");
+      setPath("");
+      setFormError("");
+      setForm(kind);
+    };
+    const closeForm = () => {
+      setForm(null);
+      requestAnimationFrame(() => formTrigger.current?.focus());
+    };
     const settingsTrigger = (0, import_react2.useRef)(null);
     const closeSettings = () => {
       setSettings(null);
@@ -45874,7 +45894,7 @@ function apply(ctx) {
     const openGlobal = safe(async () => {
       settingsTrigger.current = document.activeElement;
       setToken("");
-      setCredentialMessage("");
+      setDraftTheme(theme2);
       setGlobalConfig(await api({ action: "settings" }));
       setSettingsMessage("");
       setSettings("global");
@@ -46016,10 +46036,7 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "\u5916\u89C2" }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
             "\u5DE5\u4F5C\u53F0\u4E3B\u9898",
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("select", { value: theme2, onChange: (e) => {
-              setTheme(e.target.value);
-              localStorage.setItem("dsh-latex-theme", e.target.value);
-            }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("select", { disabled: settingsBusy, value: draftTheme, onChange: (e) => setDraftTheme(e.target.value), children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "system", children: "\u8DDF\u968F Desktop" }),
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "light", children: "\u6D45\u8272" }),
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
@@ -46030,31 +46047,14 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "Overleaf \u540C\u6B65" }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
             "\u8BBF\u95EE\u51ED\u8BC1",
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { type: "password", "aria-label": "Overleaf \u51ED\u8BC1", autoComplete: "off", placeholder: globalConfig?.credential?.configured ? "\u5DF2\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32" : "Overleaf Git token", value: token, onChange: (e) => setToken(e.target.value) })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-credential-row", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { role: "status", children: credentialMessage }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !token || settingsBusy, onClick: async () => {
-              setSettingsBusy(true);
-              try {
-                const credential = await api({ action: "credential", token });
-                setGlobalConfig((v) => ({ ...v, credential }));
-                setToken("");
-                setCredentialMessage("\u51ED\u8BC1\u5DF2\u5B58\u5165\u7CFB\u7EDF\u94A5\u5319\u4E32");
-              } catch (e) {
-                setCredentialMessage(e.message);
-              } finally {
-                setSettingsBusy(false);
-              }
-            }, children: "\u4FDD\u5B58\u51ED\u8BC1" })
-          ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: "\u51ED\u8BC1\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32\uFF0C\u4F9B\u6240\u6709\u8BBA\u6587\u9879\u76EE\u4F7F\u7528\u3002" })
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { disabled: settingsBusy, type: "password", "aria-label": "Overleaf \u51ED\u8BC1", autoComplete: "off", placeholder: globalConfig?.credential?.configured ? "\u5DF2\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32" : "Overleaf Git token", value: token, onChange: (e) => setToken(e.target.value) })
+          ] })
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-setting-section", children: [
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "Agent \u534F\u4F5C" }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "lp-instructions", children: [
             "AGENTS.md",
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("textarea", { "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("textarea", { disabled: settingsBusy, "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
               setGlobalConfig((v) => ({ ...v, instructions: e.target.value }));
               setSettingsMessage("");
             }, spellCheck: false })
@@ -46066,14 +46066,27 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: settingsBusy, onClick: async () => {
             setSettingsBusy(true);
             try {
-              setGlobalConfig(await api({ action: "saveSettings", ...globalConfig }));
-              setSettingsMessage("\u5DF2\u4FDD\u5B58");
+              const saved = await api({ action: "saveSettings", instructions: globalConfig.instructions, hash: globalConfig.hash });
+              setGlobalConfig(saved);
+              if (token.trim()) {
+                try {
+                  const credential = await api({ action: "credential", token: token.trim() });
+                  setGlobalConfig((v) => ({ ...v, credential }));
+                  setToken("");
+                } catch (e) {
+                  setSettingsMessage("\u6307\u4EE4\u5DF2\u4FDD\u5B58\uFF1B\u51ED\u8BC1\u4FDD\u5B58\u5931\u8D25\uFF1A" + e.message);
+                  return;
+                }
+              }
+              setTheme(draftTheme);
+              localStorage.setItem("dsh-latex-theme", draftTheme);
+              setSettingsMessage("\u5DF2\u4FDD\u5B58\u8BBE\u7F6E");
             } catch (e) {
               setSettingsMessage(e.message);
             } finally {
               setSettingsBusy(false);
             }
-          }, children: "\u4FDD\u5B58\u6307\u4EE4" })
+          }, children: "\u4FDD\u5B58\u8BBE\u7F6E" })
         ] })
       ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
@@ -46140,73 +46153,70 @@ function apply(ctx) {
             query && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setQuery(""), children: "\u6E05\u7A7A\u641C\u7D22" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-row", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-primary", onClick: () => setForm("create"), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-primary", onClick: () => openForm("create"), children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }),
               "\u65B0\u5EFA\u8BBA\u6587"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => setForm("import"), children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => openForm("import"), children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "folder" }),
               "\u6253\u5F00\u672C\u5730\u9879\u76EE"
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => {
-              setForm("overleaf");
-              setPath("");
-            }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => openForm("overleaf"), children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "git" }),
               "\u4ECE Overleaf Git \u521B\u5EFA"
             ] })
           ] }),
-          form && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
-            "form",
-            {
-              onSubmit: safe(async (e) => {
-                e.preventDefault();
-                setBusy(true);
-                try {
-                  const created = await api({
-                    action: "create",
-                    name: title,
-                    ...form === "import" ? { path } : {},
-                    ...form === "overleaf" ? { action: "clone", url: path } : {}
-                  });
-                  setProjects((v) => [
-                    ...v.filter((x) => x.id !== created.id),
-                    created
-                  ]);
-                  await choose(created);
-                } finally {
-                  setBusy(false);
-                }
-              }),
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
-                  "\u8BBA\u6587\u540D\u79F0",
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-                    "input",
-                    {
-                      required: true,
-                      value: title,
-                      onChange: (e) => setTitle(e.target.value)
-                    }
-                  )
-                ] }),
-                (form === "import" || form === "overleaf") && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
-                  form === "overleaf" ? "Overleaf Git \u94FE\u63A5" : "\u672C\u5730\u76EE\u5F55",
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-                    "input",
-                    {
-                      required: true,
-                      placeholder: form === "overleaf" ? "https://git@git.overleaf.com/\u9879\u76EEID" : "\u8BBA\u6587\u9879\u76EE\u76EE\u5F55\u7684\u5B8C\u6574\u8DEF\u5F84",
-                      value: path,
-                      onChange: (e) => setPath(e.target.value)
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: busy, children: "\u6253\u5F00\u5DE5\u4F5C\u53F0" }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => setForm(null), children: "\u53D6\u6D88" })
-              ]
+          form && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-settings-panel lp-create-dialog", role: "dialog", "aria-modal": "true", "aria-label": form === "overleaf" ? "\u4ECE Overleaf Git \u521B\u5EFA" : form === "import" ? "\u6253\u5F00\u672C\u5730\u9879\u76EE" : "\u65B0\u5EFA\u8BBA\u6587", onKeyDown: (e) => {
+            if (e.key === "Escape" && !busy) {
+              e.stopPropagation();
+              closeForm();
             }
-          )
+            if (e.key === "Tab") {
+              const items = [...e.currentTarget.querySelectorAll("button:not(:disabled),input:not(:disabled)")];
+              const first = items[0], last = items.at(-1);
+              if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last?.focus();
+              } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first?.focus();
+              }
+            }
+          }, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: form === "overleaf" ? "\u4ECE Overleaf Git \u521B\u5EFA" : form === "import" ? "\u6253\u5F00\u672C\u5730\u9879\u76EE" : "\u65B0\u5EFA\u8BBA\u6587" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u5173\u95ED\u521B\u5EFA\u7A97\u53E3", disabled: busy, onClick: closeForm, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }) })
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("form", { onSubmit: async (e) => {
+              e.preventDefault();
+              if (busy) return;
+              setBusy(true);
+              setFormError("");
+              try {
+                const created = await api(form === "overleaf" ? { action: "clone", url: path.trim() } : { action: "create", name: title.trim(), ...form === "import" ? { path: path.trim() } : {} });
+                setProjects((v) => [...v.filter((x) => x.id !== created.id), created]);
+                await choose(created);
+              } catch (e2) {
+                setFormError(e2.message);
+              } finally {
+                setBusy(false);
+              }
+            }, children: [
+              form !== "overleaf" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
+                "\u8BBA\u6587\u540D\u79F0",
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { autoFocus: true, required: true, maxLength: 120, disabled: busy, value: title, onChange: (e) => setTitle(e.target.value) })
+              ] }),
+              form !== "create" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
+                form === "overleaf" ? "Overleaf Git \u94FE\u63A5" : "\u672C\u5730\u76EE\u5F55",
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { autoFocus: form === "overleaf", required: true, disabled: busy, placeholder: form === "overleaf" ? "https://git@git.overleaf.com/\u9879\u76EEID" : "\u8BBA\u6587\u9879\u76EE\u76EE\u5F55\u7684\u5B8C\u6574\u8DEF\u5F84", value: path, onChange: (e) => setPath(e.target.value) })
+              ] }),
+              formError && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "alert", className: "lp-error", children: formError }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("footer", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", disabled: busy, onClick: closeForm, children: "\u53D6\u6D88" }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-primary", disabled: busy, children: busy ? "\u6B63\u5728\u6253\u5F00\u2026" : "\u6253\u5F00\u5DE5\u4F5C\u53F0" })
+              ] })
+            ] })
+          ] }) })
         ] })
       ] });
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [

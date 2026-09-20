@@ -30,3 +30,11 @@ test('missing global credentials reports a recoverable sync error',async t=>{
 test('rejecting a newly proposed file leaves synchronization clean',async t=>{
  const {p,sync}=await fixture(t);const result=await sync.sync(p.id,['discarded.tex']);assert.equal(result.status,'synced',result.message);
 });
+
+test('URL-only clone creates a named project and detects its main file',async t=>{
+ const {store,d}=await fixture(t);
+ const sync=new Overleaf(store,{get:async()=> 'fixture-password'},{runGit:async(args,options)=>git(['clone','--',join(d,'remote.git'),args.at(-1)],options)});
+ const project=await sync.clone(undefined,'https://git@git.overleaf.com/'+'b'.repeat(24));
+ assert.equal(project.name,'Overleaf · bbbbbb');assert.equal(project.main,'main.tex');
+ assert.equal(await readFile(join(project.root,'main.tex'),'utf8'),'Initial text.\n');
+});

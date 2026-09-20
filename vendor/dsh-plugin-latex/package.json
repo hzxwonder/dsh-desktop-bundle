@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-latex",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "type": "module",
   "description": "Local LaTeX paper workbench with native DeepSeek Harness conversations",
   "main": "index.js",
