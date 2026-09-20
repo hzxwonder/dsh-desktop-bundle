@@ -115,3 +115,5 @@ Agent 修改在源码原位置展示前后对比，支持逐处和批量接受�
 [源码审阅与论文设置验收报告](docs/INLINE-REVIEW-ACCEPTANCE.md)
 
 [输入区与设置文字验收报告](docs/COMPOSER-SETTINGS-ACCEPTANCE.md)
+
+[交互与视觉验收报告](docs/PRODUCT-UX-ACCEPTANCE.md) · [工作台设计规范](design-system/WORKSPACE.md)

@@ -26,6 +26,7 @@ import { tags } from "@lezer/highlight";
 import { stex } from "@codemirror/legacy-modes/mode/stex";
 import * as pdfjs from "pdfjs-dist";
 import css from "./style.css";
+import { Icon } from "./icons.jsx";
 import logic from "../lib/logic.cjs";
 export const name = "dsh-plugin-latex";
 export const inject = [
@@ -395,9 +396,9 @@ export function MindMap({ data, onLocate }) {
         </div>
       </div>
       <div className="lp-map-zoom">
-        <button onClick={() => setScale(Math.max(0.3, scale - 0.1))}>−</button>
+        <button onClick={() => setScale(Math.max(0.3, scale - 0.1))}><Icon name="minus"/></button>
         <span>{Math.round(scale * 100)}%</span>
-        <button onClick={() => setScale(Math.min(1.6, scale + 0.1))}>＋</button>
+        <button onClick={() => setScale(Math.min(1.6, scale + 0.1))}><Icon name="plus"/></button>
         <button
           onClick={() => {
             const area = scroll.current,
@@ -558,6 +559,8 @@ export function apply(ctx) {
       [settingsBusy, setSettingsBusy] = useState(false),
       [settingsMessage, setSettingsMessage] = useState(""),
       [conflict, setConflict] = useState(null);
+    const settingsTrigger = useRef(null);
+    const closeSettings = () => { setSettings(null); requestAnimationFrame(()=>settingsTrigger.current?.focus()); };
     const pRef = useRef(p),
       fileRef = useRef(file),
       serial = useRef(0),
@@ -963,6 +966,7 @@ export function apply(ctx) {
     );
     const gear = <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><path d="m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z"/><circle cx="11" cy="12" r="3"/></svg>;
     const openGlobal = safe(async () => {
+      settingsTrigger.current=document.activeElement;
       setToken("");setCredentialMessage("");
       setGlobalConfig(await api({action:"settings"}));
       setSettingsMessage("");
@@ -970,32 +974,33 @@ export function apply(ctx) {
     });
     const workspaceChrome = <>
           <header className="lp-toolbar">
-            {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}>◫</button>}
-            <button aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
-              ◌ 论文对话
+            {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}><Icon name="panelLeft"/></button>}
+            <button title="论文对话" aria-label="论文对话" aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
+              <Icon name="chat"/><span className="lp-label">论文对话</span>
             </button>
             <button
+              className="lp-source-tab" title={file?.name || "源码"}
               aria-pressed={view === "source" && !chatOpen}
               onClick={() => { setView("source"); setChatOpen(false); }}
             >
-              ▧ {file?.name || "源码"}
+              <Icon name="file"/><span className="lp-filename">{file?.name || "源码"}</span>
             </button>
-            <span className="lp-status">{status}</span>
+            <span className="lp-status" role="status" title={status}>{status}</span>
             {review && <button onClick={safe(async()=>{setNav("files");const first=review.files.find(f=>f.parts.some(h=>h.id&&!h.decision));if(first)await load(first.name);})}>变更 {review.count}</button>}
-            <button aria-label={rightOpen?"收起右侧面板":"展开右侧面板"} onClick={()=>setRightOpen(v=>!v)}>◨</button>
-            <button
+            <button aria-label={rightOpen?"收起右侧面板":"展开右侧面板"} onClick={()=>setRightOpen(v=>!v)}><Icon name="panelRight"/></button>
+            <button className="lp-compile" title="编译论文" aria-label="编译论文"
               disabled={job?.status === "running"}
               onClick={safe(() => start("compile"))}
             >
-              ↻ 编译
+              <Icon name="play"/><span className="lp-label">编译</span>
             </button>
-            <button
+            <button title="行文导图" aria-label="行文导图" aria-pressed={view === "map"}
               onClick={safe(async () => {
                 setView(view === "map" ? "source" : "map");
                 if (!map && view !== "map") await start("analyze");
               })}
             >
-              ⌘ 行文导图
+              <Icon name="map"/><span className="lp-label">行文导图</span>
             </button>
 
           </header>
@@ -1059,7 +1064,7 @@ export function apply(ctx) {
     </>;
     const settingsPanel = settings && <div className="lp-settings-overlay">
       <section className={"lp-settings-panel"+(settings==="project"?" lp-project-settings":"")} role="dialog" aria-modal="true" aria-label={settings === "global" ? "全局设置" : "论文设置"} onKeyDown={e => {
-        if(e.key === "Escape" && !settingsBusy) setSettings(null);
+        if(e.key === "Escape" && !settingsBusy) closeSettings();
         if(e.key === "Tab") {
           const items=[...e.currentTarget.querySelectorAll('button:not(:disabled),select:not(:disabled),input:not(:disabled),textarea')];
           const first=items[0],last=items.at(-1);
@@ -1068,15 +1073,15 @@ export function apply(ctx) {
         }
       }}>
         {error && <p role="alert" className="lp-error">{error}</p>}
-        <header><h2>{settings === "global" ? "全局设置" : "论文设置"}</h2><button autoFocus aria-label="关闭设置" disabled={settingsBusy} onClick={()=>setSettings(null)}>×</button></header>
-        {settings === "global" ? <>
-          <label>工作台主题<select value={theme} onChange={e=>{setTheme(e.target.value);localStorage.setItem("dsh-latex-theme",e.target.value);}}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
-          <label>Overleaf 凭证<input type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
-          <div className="lp-credential-row"><span role="status">{credentialMessage}</span><button disabled={!token || settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const credential=await api({action:"credential",token});setGlobalConfig(v=>({...v,credential}));setToken("");setCredentialMessage("凭证已存入系统钥匙串");}catch(e){setCredentialMessage(e.message);}finally{setSettingsBusy(false);}}}>保存凭证</button></div>
-          <label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
-          <p className="lp-help">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p>
+        <header><h2>{settings === "global" ? "全局设置" : "论文设置"}</h2><button autoFocus aria-label="关闭设置" disabled={settingsBusy} onClick={()=>closeSettings()}><Icon name="close"/></button></header>
+        {settings === "global" ? <div className="lp-global-fields">
+          <section className="lp-setting-section"><h3>外观</h3><label>工作台主题<select value={theme} onChange={e=>{setTheme(e.target.value);localStorage.setItem("dsh-latex-theme",e.target.value);}}><option value="system">跟随 Desktop</option><option value="light">浅色</option><option value="dark">深色</option></select></label></section>
+          <section className="lp-setting-section"><h3>Overleaf 同步</h3><label>访问凭证<input type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
+          <div className="lp-credential-row"><span role="status">{credentialMessage}</span><button disabled={!token || settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const credential=await api({action:"credential",token});setGlobalConfig(v=>({...v,credential}));setToken("");setCredentialMessage("凭证已存入系统钥匙串");}catch(e){setCredentialMessage(e.message);}finally{setSettingsBusy(false);}}}>保存凭证</button></div><p className="lp-help">凭证保存在系统钥匙串，供所有论文项目使用。</p></section>
+          <section className="lp-setting-section"><h3>Agent 协作</h3><label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
+          <p className="lp-help">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p></section>
           <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{setGlobalConfig(await api({action:"saveSettings",...globalConfig}));setSettingsMessage("已保存");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存指令</button></footer>
-        </> : <>
+        </div> : <>
           <label>编译主文件<select value={p.main} disabled={job?.status === "running"} onChange={safe(e=>update({main:e.target.value}))}>{files.filter(f=>f.name.endsWith(".tex")).map(f=><option key={f.name}>{f.name}</option>)}</select></label>
           <label>编译器<select value={p.engine} disabled={job?.status === "running"} onChange={safe(e=>update({engine:e.target.value}))}>{["pdflatex","xelatex","lualatex"].map(x=><option key={x}>{x}</option>)}</select></label>
           <label className="lp-auto-save"><span>自动保存并编译</span><input type="checkbox" checked={!!p.autoSave} onChange={safe(e=>update({autoSave:e.target.checked}))}/></label>
@@ -1088,7 +1093,7 @@ export function apply(ctx) {
       return (
         <div className={"lp lp-theme-" + theme}>
           <header className="lp-picker-head">
-            <button onClick={back}>← 主会话</button>
+            <button onClick={back}><Icon name="back"/>主会话</button>
             <h2>论文工作台</h2>
             <button className="lp-global-settings" onClick={openGlobal}>{gear} 全局设置</button>
           </header>
@@ -1114,15 +1119,16 @@ export function apply(ctx) {
                   key={x.id}
                   onClick={safe(() => choose(x))}
                 >
-                  <b>▧ {x.name}</b>
-                  <small>{x.main}</small>
-                  <span>→</span>
+                  <span className="lp-project-icon"><Icon name="file" size={22}/></span>
+                  <span className="lp-project-info"><b>{x.name}</b><small>{x.main}</small></span>
+                  <Icon name="forward"/>
                 </button>
               ))}
+            {!projects.some(x=>x.name.toLowerCase().includes(query.toLowerCase())) && <div className="lp-picker-empty"><Icon name="file" size={28}/><strong>{query ? "没有找到匹配的论文" : "开始你的第一篇论文"}</strong><p className="lp-help">{query ? "换一个关键词，或打开新的论文项目。" : "新建论文，或从本地目录与 Overleaf 导入。"}</p>{query && <button onClick={()=>setQuery("")}>清空搜索</button>}</div>}
             <div className="lp-row">
-              <button onClick={() => setForm("create")}>＋ 新建论文</button>
-              <button onClick={() => setForm("import")}>打开本地项目</button>
-              <button onClick={() => {setForm("overleaf");setPath("");}}>从 Overleaf Git 创建</button>
+              <button className="lp-primary" onClick={() => setForm("create")}><Icon name="plus"/>新建论文</button>
+              <button onClick={() => setForm("import")}><Icon name="folder"/>打开本地项目</button>
+              <button onClick={() => {setForm("overleaf");setPath("");}}><Icon name="git"/>从 Overleaf Git 创建</button>
             </div>
             {form && (
               <form
@@ -1178,9 +1184,9 @@ export function apply(ctx) {
       <div className={"lp lp-theme-" + theme}>
         {settingsPanel}
         <aside className="lp-sidebar" hidden={sideHidden}>
-          <button className="lp-collapse" aria-label="收起论文侧栏" onClick={() => setSideHidden(true)}>◫</button>
+          <button className="lp-collapse" aria-label="收起论文侧栏" onClick={() => setSideHidden(true)}><Icon name="panelLeft"/></button>
           <button className="lp-back" onClick={back}>
-            ← 主会话
+            <Icon name="back"/>主会话
           </button>
           <button
             className="lp-project-title"
@@ -1192,7 +1198,7 @@ export function apply(ctx) {
               setProjects(await api({ action: "list" }));
             })}
           >
-            <span>{p.name}</span><span className="lp-project-chevron" aria-hidden="true">⌄</span>
+            <span>{p.name}</span><Icon name="chevron" className="lp-project-chevron"/>
           </button>
           <div className="lp-nav">
             {[
@@ -1223,7 +1229,7 @@ export function apply(ctx) {
                     : safe(() => ensureChat(true))
                 }
               >
-                ＋
+                <Icon name="plus"/>
               </button>
             )}
           </div>
@@ -1282,7 +1288,7 @@ export function apply(ctx) {
                     title={f.name}
                     onClick={safe(() => load(f.name))}
                   >
-                    <span>{f.name}</span>
+                    <Icon name="file"/><span>{f.name}</span>
                     {review?.files.find(r=>r.name===f.name && r.parts.some(h=>h.id&&!h.decision)) && (()=>{const kind=review.files.find(r=>r.name===f.name).kind;return <span className={"lp-file-badge "+kind} title={{added:"新增",modified:"修改",deleted:"删除"}[kind]} aria-label={{added:"新增",modified:"修改",deleted:"删除"}[kind]}>{{added:"A",modified:"M",deleted:"D"}[kind]}</span>;})()}
                   </button>
                 ))}
@@ -1301,7 +1307,7 @@ export function apply(ctx) {
                       await ensureChat();
                     })}
                   >
-                    ◌ {sessions.byId?.[c.id]?.title || c.title}
+                    <Icon name="chat"/><span>{sessions.byId?.[c.id]?.title || c.title}</span>
                   </button>
                 ))}
                 {!p.chats.length && <p>打开论文对话开始讨论。</p>}
@@ -1381,7 +1387,7 @@ export function apply(ctx) {
                           aria-label={"加入对话：" + r.messages[0]}
                           onClick={safe(() => reviewDraft([r]))}
                         >
-                          ↗
+                          <Icon name="send"/>
                         </button>
                       </div>
                     </footer>
@@ -1393,7 +1399,7 @@ export function apply(ctx) {
               </>
             )}
           </div>
-          <footer className="lp-side-footer"><button className="lp-gear" aria-label="论文设置" title="论文设置" onClick={()=>setSettings("project")}>{gear}</button></footer>
+          <footer className="lp-side-footer"><button className="lp-gear" aria-label="论文设置" title="论文设置" onClick={()=>{settingsTrigger.current=document.activeElement;setSettings("project");}}>{gear}</button></footer>
         </aside>
         <main className={"lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : "")} style={{"--lp-split": split + "%"}}>
           {view === "map" && workspaceChrome}
@@ -1442,7 +1448,7 @@ export function apply(ctx) {
                   ))}
                 </div>
                 <div className="lp-source-body" hidden={chatOpen}>
-                {review && <div className="lp-review-summary"><span>{review.active ? "Agent 正在修改…" : `待审阅 · ${review.count} 处`}</span><button disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></div>}
+                {review && <div className="lp-review-summary"><span role="status">{review.active ? "Agent 正在修改…" : `待审阅 · ${review.count} 处`}</span><button className="lp-accept" disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></div>}
                 <div className="lp-editor-wrap">
                 {file ? (
                   <Editor
@@ -1470,17 +1476,16 @@ export function apply(ctx) {
               <section className="lp-pdf lp-right" hidden={!rightOpen}>
                 <nav className="lp-right-tabs">{[["pdf","PDF"],["logs","日志"],["browser","浏览器"]].map(([key,label])=><button key={key} aria-pressed={rightTab===key} onClick={()=>setRightTab(key)}>{label}</button>)}
                   {rightTab === "pdf" && <div className="lp-pdf-actions" aria-label="PDF 工具">
-                    <button aria-label="缩小 PDF" onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}>−</button>
+                    <button aria-label="缩小 PDF" onClick={() => setPdfZoom((z) => Math.max(0.5, z - 0.25))}><Icon name="minus"/></button>
                     <button aria-label="PDF 适合宽度" onClick={() => setPdfZoom(1)}>{Math.round(pdfZoom * 100)}%</button>
-                    <button aria-label="放大 PDF" onClick={() => setPdfZoom((z) => Math.min(3, z + 0.25))}>＋</button>
-                    <button onClick={() => setRightTab("logs")}>日志</button>
-                    {pdf && <button onClick={() => {
+                    <button aria-label="放大 PDF" onClick={() => setPdfZoom((z) => Math.min(3, z + 0.25))}><Icon name="plus"/></button>
+                    {pdf && <button aria-label="下载 PDF" title="下载 PDF" onClick={() => {
                       const blob = new Blob([Uint8Array.from(atob(pdf), (x) => x.charCodeAt(0))], { type: "application/pdf" });
                       const url = URL.createObjectURL(blob), a = document.createElement("a");
                       a.href = url; a.download = p.name + ".pdf"; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-                    }}>下载</button>}
+                    }}><Icon name="download"/></button>}
                   </div>}
-                  <button aria-label="关闭右侧面板" onClick={()=>setRightOpen(false)}>×</button>
+                  <button aria-label="关闭右侧面板" onClick={()=>setRightOpen(false)}><Icon name="close"/></button>
                 </nav>
                 <div className="lp-right-page" hidden={rightTab!=="pdf"}>
                 <PDF base64={pdf} zoom={pdfZoom} />

@@ -470,7 +470,7 @@ __export(index_exports, {
   name: () => name2
 });
 module.exports = __toCommonJS(index_exports);
-var import_react = __toESM(require("react"), 1);
+var import_react2 = __toESM(require("react"), 1);
 
 // node_modules/@marijn/find-cluster-break/src/index.js
 var rangeFrom = [];
@@ -29203,18 +29203,18 @@ var CanvasGraphics = class _CanvasGraphics {
     this.dependencyTracker?.recordOpenMarker(opIdx).resetIncrementalData("sameLineText").resetIncrementalData("moveText", opIdx);
   }
   endText(opIdx) {
-    const paths = this.pendingTextPaths;
+    const paths2 = this.pendingTextPaths;
     const ctx = this.ctx;
     if (this.dependencyTracker) {
       const {
         dependencyTracker
       } = this;
-      if (paths !== void 0) {
+      if (paths2 !== void 0) {
         dependencyTracker.recordFutureForcedDependency("textClip", dependencyTracker.getOpenMarker()).recordFutureForcedDependency("textClip", opIdx);
       }
       dependencyTracker.recordCloseMarker(opIdx);
     }
-    if (paths !== void 0) {
+    if (paths2 !== void 0) {
       const newPath = new Path2D();
       const invTransf = ctx.getTransform().invertSelf();
       for (const {
@@ -29223,7 +29223,7 @@ var CanvasGraphics = class _CanvasGraphics {
         y,
         fontSize,
         path
-      } of paths) {
+      } of paths2) {
         if (!path) {
           continue;
         }
@@ -29389,8 +29389,8 @@ var CanvasGraphics = class _CanvasGraphics {
       }
     }
     if (isAddToPathSet) {
-      const paths = this.pendingTextPaths ||= [];
-      paths.push({
+      const paths2 = this.pendingTextPaths ||= [];
+      paths2.push({
         transform: getCurrentTransform(ctx),
         x,
         y,
@@ -44857,11 +44857,120 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 /* The divider follows the actual composer card at every pane width. */
 .lp-composer { border-top:0; }
 .lp-composer .p_FcLG_root::before { content:""; display:block; flex:none; width:100%; max-width:var(--dsh-composer-card-max-width); height:1px; margin-bottom:8px; background:var(--lp-line); pointer-events:none; }
+
+/* Desktop workspace design system: restrained surfaces and consistent controls. */
+.lp-theme-light, body:not([data-ds-dark-theme]) .lp-theme-system { --lp-muted:#656970; --lp-accent:#496488; }
+.lp-theme-dark, body[data-ds-dark-theme] .lp-theme-system { --lp-muted:#a7abb2; --lp-accent:#b0c5e5; }
+.lp-icon { flex:none; vertical-align:middle; }
+.lp button:has(> .lp-icon) { display:inline-flex; align-items:center; justify-content:center; gap:6px; }
+.lp button:not(.lp-native *):focus-visible { outline:2px solid var(--lp-accent); outline-offset:2px; }
+.lp button:not(.lp-native *) { transition:background-color 120ms ease,color 120ms ease; }
+.lp button:not(.lp-native *):active:not(:disabled) { background:var(--lp-hover); }
+.lp-source { container-type:inline-size; }
+.lp .lp-toolbar { padding:8px; gap:4px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-toolbar button { height:32px; min-width:32px; font-size:12px !important; padding:6px 8px !important; border-radius:7px !important; flex:none; }
+.lp .lp-toolbar .lp-source-tab { flex:0 1 auto; min-width:36px; max-width:180px; }
+.lp-filename { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.lp .lp-toolbar > button[aria-pressed="true"] { background:var(--lp-hover) !important; border:0 !important; box-shadow:inset 0 0 0 1px var(--lp-line); }
+.lp .lp-toolbar .lp-compile { background:var(--lp-hover); }
+.lp-toolbar .lp-status { margin:0 4px; padding:0; border:0; min-width:0; }
+@container (max-width:560px) { .lp-toolbar .lp-status { display:none; } .lp-toolbar .lp-label { display:none; } .lp .lp-toolbar .lp-source-tab { max-width:160px; } }
+@container (max-width:350px) { .lp .lp-toolbar { gap:2px; padding:8px 4px; } .lp .lp-toolbar button { padding:5px !important; } .lp .lp-toolbar .lp-source-tab { flex:1; max-width:100px; } }
+.lp .lp-right-tabs { padding:8px; gap:2px; }
+.lp .lp-right-tabs > button,.lp .lp-pdf-actions button { min-width:28px; height:32px; padding:6px !important; font-size:12px !important; border-radius:7px; }
+.lp .lp-right-tabs > button[aria-pressed="true"] { background:var(--lp-hover); }
+.lp .lp-pdf-actions { padding-left:6px; border-left:1px solid var(--lp-line); }
+.lp .lp-back { justify-content:flex-start; color:var(--lp-muted); font-size:12px; min-height:32px; }
+.lp .lp-collapse { width:30px; height:30px; top:15px; }
+.lp .lp-nav { gap:4px; margin-top:16px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-nav button { min-height:32px; padding:6px 8px; }
+.lp .lp-nav button[aria-pressed="true"] { background:var(--lp-hover) !important; border:0 !important; border-radius:7px !important; }
+.lp .lp-file { justify-content:flex-start; min-height:34px; gap:9px; border-radius:7px; }
+.lp-file > span:not(.lp-file-badge) { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lp-file > .lp-icon { color:var(--lp-muted); }
+.lp .lp-file.active { background:var(--lp-hover); }
+.lp-review { border-radius:10px; padding:10px; box-shadow:none; }
+.lp-review blockquote { border-left:2px solid var(--lp-line); padding-left:10px; color:var(--lp-muted); line-height:1.6; }
+.lp-review-jump p { font-size:13px; line-height:1.65; }
+.lp-review-bar { flex-wrap:wrap; gap:8px; padding:8px 2px; }
+.lp-review-summary { padding:8px 12px; min-height:42px; }
+.lp-review-summary button { min-height:28px; }
+.lp .lp-accept { background:var(--lp-hover); }
+.lp-settings-panel { padding:24px; border-radius:16px; scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; }
+.lp-settings-panel > header { margin-bottom:20px; }
+.lp-settings-panel > header button { width:32px; height:32px; padding:7px; }
+.lp-global-fields { display:flex; flex-direction:column; gap:22px; }
+.lp-setting-section + .lp-setting-section { padding-top:20px; border-top:1px solid var(--lp-line); }
+.lp-setting-section h3 { font-size:12px; font-weight:600; color:var(--lp-muted); margin:0 0 12px; }
+.lp-setting-section label { margin:0; gap:16px; font-size:13px; }
+.lp-setting-section select { min-height:36px; width:220px; }
+.lp-setting-section input[type=password] { min-height:36px; }
+.lp-setting-section .lp-credential-row { margin-top:10px; }
+.lp-setting-section .lp-help { margin-bottom:0; }
+.lp .lp-settings-panel textarea { height:180px; min-height:110px; border-radius:8px; padding:12px; font-size:13px; line-height:1.7; scrollbar-width:thin; }
+.lp-global-fields footer { margin-top:0; padding-top:16px; border-top:1px solid var(--lp-line); }
+.lp-global-fields footer button { min-height:34px; padding:7px 14px; }
+.lp-picker { width:min(680px,calc(100% - 48px)); }
+.lp-picker h1 { font-size:26px; font-weight:600; letter-spacing:-.5px; margin-bottom:24px; }
+.lp-picker > input { height:40px; padding:9px 12px; border-radius:9px; }
+.lp .lp-project { display:flex; justify-content:flex-start; padding:14px !important; gap:14px; border:1px solid var(--lp-line) !important; border-radius:10px; margin-bottom:10px; }
+.lp-project-icon { display:grid; place-items:center; width:40px; height:44px; background:var(--lp-hover); border-radius:8px; color:var(--lp-muted); }
+.lp-project-info { display:flex; flex-direction:column; gap:4px; flex:1; min-width:0; }
+.lp-project-info b { font-size:14px; font-weight:550; overflow:hidden; text-overflow:ellipsis; }
+.lp-project-info small { font-size:12px; color:var(--lp-muted); }
+.lp-project > .lp-icon { color:var(--lp-muted); }
+.lp-picker .lp-row { flex-wrap:wrap; gap:8px; margin-top:22px; }
+.lp-picker .lp-row button { min-height:36px; border:1px solid var(--lp-line); padding:8px 12px; }
+.lp .lp-primary { background:var(--lp-text) !important; color:var(--lp-bg) !important; }
+.lp-picker-empty { padding:32px 16px; text-align:center; border:1px dashed var(--lp-line); border-radius:10px; }
+.lp-picker-empty > svg { display:block; margin:0 auto 12px; color:var(--lp-muted); }
+.lp-picker-empty strong { font-size:14px; font-weight:500; }
+.lp-picker form { padding:20px; margin-top:18px; border:1px solid var(--lp-line); border-radius:12px; }
+.lp-picker form label { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+@media(prefers-reduced-motion:reduce) { .lp button:not(.lp-native *) { transition:none; } }
+.lp button.lp-file, .lp button.lp-back { justify-content:flex-start; }
+@container (min-width:400px) { .lp-toolbar .lp-compile .lp-label,.lp-toolbar button[aria-label="\u884C\u6587\u5BFC\u56FE"] .lp-label { display:inline; } }
+.lp-picker { scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; }
+@media(max-height:800px) {
+  .lp-settings-panel:not(.lp-project-settings) { padding:20px 24px; }
+  .lp-settings-panel:not(.lp-project-settings) > header { margin-bottom:12px; }
+  .lp-global-fields { gap:14px; }
+  .lp-setting-section + .lp-setting-section { padding-top:14px; }
+  .lp-setting-section h3 { margin-bottom:8px; }
+  .lp .lp-settings-panel textarea { height:130px; }
+  .lp-global-fields footer { padding-top:10px; }
+}
 `;
+
+// client/icons.jsx
+var import_react = __toESM(require("react"), 1);
+var import_jsx_runtime = require("react/jsx-runtime");
+var paths = {
+  file: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h5",
+  chat: "M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z",
+  panelLeft: "M9 3v18 M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z",
+  panelRight: "M15 3v18 M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z",
+  play: "m9 5 10 7-10 7V5Z",
+  map: "M4 9h6v6H4z M16 3h5v5h-5z M16 16h5v5h-5z M10 12h3 M13 5.5v13 M13 5.5h3 M13 18.5h3",
+  back: "m12 19-7-7 7-7 M5 12h14",
+  forward: "m12 5 7 7-7 7 M5 12h14",
+  chevron: "m6 9 6 6 6-6",
+  plus: "M12 5v14 M5 12h14",
+  minus: "M5 12h14",
+  close: "m6 6 12 12 M18 6 6 18",
+  download: "M12 3v12 m-5-5 5 5 5-5 M5 17v4h14v-4",
+  folder: "M3 7V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z",
+  git: "M6 3v12 M18 6v5a4 4 0 0 1-4 4H6 M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z",
+  send: "m22 2-7 20-4-9-9-4 20-7Z M22 2 11 13",
+  check: "m5 12 4 4L19 6"
+};
+function Icon({ name: name3, size = 16, className = "" }) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { className: "lp-icon " + className, width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: paths[name3] || paths.file }) });
+}
 
 // client/index.jsx
 var import_logic = __toESM(require_logic(), 1);
-var import_jsx_runtime = require("react/jsx-runtime");
+var import_jsx_runtime2 = require("react/jsx-runtime");
 var name2 = "dsh-plugin-latex";
 var inject = [
   "slots",
@@ -44921,9 +45030,9 @@ var RevisionWidget = class extends WidgetType {
   }
 };
 function Editor({ file, onChange, onSelect, jump, revision, active, onDecide }) {
-  const host = (0, import_react.useRef)(), view = (0, import_react.useRef)(), viewport = (0, import_react.useRef)(null), handlers2 = (0, import_react.useRef)({ onChange, onSelect });
+  const host = (0, import_react2.useRef)(), view = (0, import_react2.useRef)(), viewport = (0, import_react2.useRef)(null), handlers2 = (0, import_react2.useRef)({ onChange, onSelect });
   handlers2.current = { onChange, onSelect };
-  (0, import_react.useEffect)(() => {
+  (0, import_react2.useEffect)(() => {
     if (!file) return;
     let selecting = false, pointerAnchor = null;
     const reportSelection = (v2) => v2.requestMeasure({
@@ -45054,7 +45163,7 @@ function Editor({ file, onChange, onSelect, jump, revision, active, onDecide }) 
       view.current = null;
     };
   }, [file?.name, file?.loadKey, JSON.stringify(revision), active]);
-  (0, import_react.useEffect)(() => {
+  (0, import_react2.useEffect)(() => {
     if (!jump || !view.current) return;
     const v = view.current;
     v.dispatch({
@@ -45069,12 +45178,12 @@ function Editor({ file, onChange, onSelect, jump, revision, active, onDecide }) 
     });
     v.focus();
   }, [jump]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-editor", ref: host });
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-editor", ref: host });
 }
 function PDF({ base64, zoom = 1 }) {
-  const host = (0, import_react.useRef)();
-  const [error, setError] = (0, import_react.useState)("");
-  (0, import_react.useEffect)(() => {
+  const host = (0, import_react2.useRef)();
+  const [error, setError] = (0, import_react2.useState)("");
+  (0, import_react2.useEffect)(() => {
     if (!base64) return;
     let stopped = false, doc2, task, workerURL;
     const renders = [];
@@ -45128,17 +45237,17 @@ function PDF({ base64, zoom = 1 }) {
       if (workerURL) URL.revokeObjectURL(workerURL);
     };
   }, [base64, zoom]);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-pdf-scroll", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { role: "alert", children: error }),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { ref: host }),
-    !base64 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u70B9\u51FB\u6E90\u7801\u53F3\u4E0A\u89D2\u300C\u7F16\u8BD1\u300D\u9884\u89C8\u8BBA\u6587" })
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-pdf-scroll", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { role: "alert", children: error }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { ref: host }),
+    !base64 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-empty", children: "\u70B9\u51FB\u6E90\u7801\u53F3\u4E0A\u89D2\u300C\u7F16\u8BD1\u300D\u9884\u89C8\u8BBA\u6587" })
   ] });
 }
 function MindMap({ data, onLocate }) {
-  const scroll = (0, import_react.useRef)(), canvas = (0, import_react.useRef)(), drag = (0, import_react.useRef)();
-  const [fold, setFold] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [scale, setScale] = (0, import_react.useState)(0.8), [selected, setSelected] = (0, import_react.useState)(null), [edges, setEdges] = (0, import_react.useState)([]);
+  const scroll = (0, import_react2.useRef)(), canvas = (0, import_react2.useRef)(), drag = (0, import_react2.useRef)();
+  const [fold, setFold] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [scale, setScale] = (0, import_react2.useState)(0.8), [selected, setSelected] = (0, import_react2.useState)(null), [edges, setEdges] = (0, import_react2.useState)([]);
   const nodes = data?.nodes || [], root = nodes.find((n) => n.type === "paper"), children = (id) => nodes.filter((n) => n.parent === id);
-  (0, import_react.useLayoutEffect)(() => {
+  (0, import_react2.useLayoutEffect)(() => {
     const plane = canvas.current;
     const measure = () => {
       const base2 = plane.getBoundingClientRect();
@@ -45157,9 +45266,9 @@ function MindMap({ data, onLocate }) {
     observer.observe(plane);
     return () => observer.disconnect();
   }, [data, fold, scale]);
-  const branch = (n, depth = 0) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-branch depth-" + depth, children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-node-wrap", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  const branch = (n, depth = 0) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-branch depth-" + depth, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-node-wrap", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "button",
         {
           "data-node-id": n.id,
@@ -45177,7 +45286,7 @@ function MindMap({ data, onLocate }) {
           children: n.label
         }
       ),
-      children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "button",
         {
           className: "lp-fold",
@@ -45192,10 +45301,10 @@ function MindMap({ data, onLocate }) {
         }
       )
     ] }),
-    !fold.has(n.id) && children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-children", children: children(n.id).map((c) => branch(c, depth + 1)) })
+    !fold.has(n.id) && children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-children", children: children(n.id).map((c) => branch(c, depth + 1)) })
   ] }, n.id);
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-map", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
       "div",
       {
         ref: scroll,
@@ -45227,28 +45336,28 @@ function MindMap({ data, onLocate }) {
               (v) => Math.max(0.3, Math.min(1.6, v + (e.deltaY > 0 ? -0.05 : 0.05)))
             );
         },
-        children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+        children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "div",
           {
             ref: canvas,
             className: "lp-map-plane",
             style: { zoom: scale, padding: 40, width: "max-content" },
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", { className: "lp-map-edges", "aria-hidden": "true", children: edges.map((e) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: e.d }, e.id)) }),
-              root ? branch(root) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u8BBA\u6587\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className: "lp-map-edges", "aria-hidden": "true", children: edges.map((e) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: e.d }, e.id)) }),
+              root ? branch(root) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u8BBA\u6587\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
             ]
           }
         )
       }
     ),
-    /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-map-zoom", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setScale(Math.max(0.3, scale - 0.1)), children: "\u2212" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map-zoom", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setScale(Math.max(0.3, scale - 0.1)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "minus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { children: [
         Math.round(scale * 100),
         "%"
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setScale(Math.min(1.6, scale + 0.1)), children: "\uFF0B" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setScale(Math.min(1.6, scale + 0.1)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "button",
         {
           onClick: () => {
@@ -45292,9 +45401,9 @@ function apply(ctx) {
   const bus = new EventTarget();
   function InputBridge({ sessionId, useInput, inputActions }) {
     const draft = useInput((s) => s.draft);
-    const latest = (0, import_react.useRef)(draft);
+    const latest = (0, import_react2.useRef)(draft);
     latest.current = draft;
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       const apply2 = () => {
         if (pendingDraft?.sessionId === sessionId) {
           const next = pendingDraft;
@@ -45314,7 +45423,7 @@ function apply(ctx) {
     ctx.layout.selectPanel("latex-studio");
   };
   function Entry({ wide = true }) {
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
       "button",
       {
         className: "lp-entry lp-sidebar-entry" + (wide ? "" : " is-rail"),
@@ -45322,17 +45431,17 @@ function apply(ctx) {
         "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0",
         onClick: open,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M14 2v6h6M8 13h8M8 17h6" })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2v6h6M8 13h8M8 17h6" })
           ] }),
-          wide && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" })
+          wide && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" })
         ]
       }
     );
   }
   function NativeChat({ sessionId, browser: browser2 = false }) {
-    const surface = (0, import_react.useMemo)(() => {
+    const surface = (0, import_react2.useMemo)(() => {
       const registry = ctx.slots;
       if (!registry.hostFace || !registry._renderer) return null;
       const base2 = registry.hostFace(), adapter = base2.scope("session"), binding = adapter?.resolve(sessionId);
@@ -45361,20 +45470,25 @@ function apply(ctx) {
       };
       return registry._renderer.renderRoot(host, {});
     }, [sessionId, browser2]);
-    return surface || /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
+    return surface || /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react.useState)([]), [p, setP] = (0, import_react.useState)(null), [files, setFiles] = (0, import_react.useState)([]), [file, setFile] = (0, import_react.useState)(null), [tabs, setTabs] = (0, import_react.useState)([]), [nav2, setNav] = (0, import_react.useState)("files"), [chatOpen, setChatOpen] = (0, import_react.useState)(false), [newName, setNewName] = (0, import_react.useState)(null), [newError, setNewError] = (0, import_react.useState)(""), [selected, setSelected] = (0, import_react.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react.useState)(null), [comment2, setComment] = (0, import_react.useState)(null), [commentText, setCommentText] = (0, import_react.useState)(""), [jump, setJump] = (0, import_react.useState)(null), [busy, setBusy] = (0, import_react.useState)(false), [status, setStatus] = (0, import_react.useState)(""), [error, setError] = (0, import_react.useState)(""), [pdf, setPdf] = (0, import_react.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react.useState)(1), [map, setMap] = (0, import_react.useState)(null), [view, setView] = (0, import_react.useState)("source"), [split, setSplit] = (0, import_react.useState)(55), [sideHidden, setSideHidden] = (0, import_react.useState)(false), [job, setJob] = (0, import_react.useState)(null), [showLog, setShowLog] = (0, import_react.useState)(false), [rightOpen, setRightOpen] = (0, import_react.useState)(true), [rightTab, setRightTab] = (0, import_react.useState)("pdf"), [review, setReview] = (0, import_react.useState)(null), [logs, setLogs] = (0, import_react.useState)({}), [token, setToken] = (0, import_react.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react.useState)(""), [form, setForm] = (0, import_react.useState)(null), [title, setTitle] = (0, import_react.useState)(""), [path, setPath] = (0, import_react.useState)(""), [query, setQuery] = (0, import_react.useState)(""), [theme2, setTheme] = (0, import_react.useState)(
+    const [projects, setProjects] = (0, import_react2.useState)([]), [p, setP] = (0, import_react2.useState)(null), [files, setFiles] = (0, import_react2.useState)([]), [file, setFile] = (0, import_react2.useState)(null), [tabs, setTabs] = (0, import_react2.useState)([]), [nav2, setNav] = (0, import_react2.useState)("files"), [chatOpen, setChatOpen] = (0, import_react2.useState)(false), [newName, setNewName] = (0, import_react2.useState)(null), [newError, setNewError] = (0, import_react2.useState)(""), [selected, setSelected] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react2.useState)(null), [comment2, setComment] = (0, import_react2.useState)(null), [commentText, setCommentText] = (0, import_react2.useState)(""), [jump, setJump] = (0, import_react2.useState)(null), [busy, setBusy] = (0, import_react2.useState)(false), [status, setStatus] = (0, import_react2.useState)(""), [error, setError] = (0, import_react2.useState)(""), [pdf, setPdf] = (0, import_react2.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react2.useState)(1), [map, setMap] = (0, import_react2.useState)(null), [view, setView] = (0, import_react2.useState)("source"), [split, setSplit] = (0, import_react2.useState)(55), [sideHidden, setSideHidden] = (0, import_react2.useState)(false), [job, setJob] = (0, import_react2.useState)(null), [showLog, setShowLog] = (0, import_react2.useState)(false), [rightOpen, setRightOpen] = (0, import_react2.useState)(true), [rightTab, setRightTab] = (0, import_react2.useState)("pdf"), [review, setReview] = (0, import_react2.useState)(null), [logs, setLogs] = (0, import_react2.useState)({}), [token, setToken] = (0, import_react2.useState)(""), [credentialMessage, setCredentialMessage] = (0, import_react2.useState)(""), [form, setForm] = (0, import_react2.useState)(null), [title, setTitle] = (0, import_react2.useState)(""), [path, setPath] = (0, import_react2.useState)(""), [query, setQuery] = (0, import_react2.useState)(""), [theme2, setTheme] = (0, import_react2.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
-    ), [settings, setSettings] = (0, import_react.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react.useState)(""), [conflict, setConflict] = (0, import_react.useState)(null);
-    const pRef = (0, import_react.useRef)(p), fileRef = (0, import_react.useRef)(file), serial = (0, import_react.useRef)(0), selectedAll = (0, import_react.useRef)(), jobHandled = (0, import_react.useRef)(""), chatPending = (0, import_react.useRef)(null), mounted = (0, import_react.useRef)(true);
+    ), [settings, setSettings] = (0, import_react2.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react2.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react2.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react2.useState)(""), [conflict, setConflict] = (0, import_react2.useState)(null);
+    const settingsTrigger = (0, import_react2.useRef)(null);
+    const closeSettings = () => {
+      setSettings(null);
+      requestAnimationFrame(() => settingsTrigger.current?.focus());
+    };
+    const pRef = (0, import_react2.useRef)(p), fileRef = (0, import_react2.useRef)(file), serial = (0, import_react2.useRef)(0), selectedAll = (0, import_react2.useRef)(), jobHandled = (0, import_react2.useRef)(""), chatPending = (0, import_react2.useRef)(null), mounted = (0, import_react2.useRef)(true);
     pRef.current = p;
     fileRef.current = file;
-    const sessions = (0, import_react.useSyncExternalStore)(
+    const sessions = (0, import_react2.useSyncExternalStore)(
       ctx.sessions.list.subscribe,
       ctx.sessions.list.getSnapshot
     );
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       mounted.current = true;
       api({ action: "list" }).then(setProjects).catch((e) => setError(e.message));
       return () => {
@@ -45383,7 +45497,7 @@ function apply(ctx) {
         if (f && pRef.current) drafts.set(pRef.current.id + ":" + f.name, f);
       };
     }, []);
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       if (selectedAll.current) {
         selectedAll.current.indeterminate = selected.size > 0 && selected.size < (p?.reviews?.length || 0);
       }
@@ -45531,7 +45645,7 @@ function apply(ctx) {
         ).join("\n\n")
       );
     }
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       if (!p) return;
       let stopped = false;
       const poll = async () => {
@@ -45588,7 +45702,7 @@ function apply(ctx) {
         clearInterval(timer);
       };
     }, [p?.id]);
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       if (!p || !file) return;
       const id = p.id, name3 = file.name;
       let stopped = false;
@@ -45612,7 +45726,7 @@ function apply(ctx) {
         clearInterval(timer);
       };
     }, [p?.id, file?.name]);
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       const handle = (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key === "s" && pRef.current) {
           e.preventDefault();
@@ -45622,12 +45736,12 @@ function apply(ctx) {
       window.addEventListener("keydown", handle);
       return () => window.removeEventListener("keydown", handle);
     }, []);
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       if (!p?.autoSave || !file?.dirty || review || job?.status === "running") return;
       const timer = setTimeout(() => save(true).catch((e) => setError(e.message)), 1e3);
       return () => clearTimeout(timer);
     }, [p?.autoSave, file?.content, file?.dirty, job?.status, review]);
-    (0, import_react.useEffect)(() => {
+    (0, import_react2.useEffect)(() => {
       if (!p) return;
       let stopped = false;
       const poll = async () => {
@@ -45752,38 +45866,44 @@ function apply(ctx) {
       if (returnSession) await ctx.sessions.open(returnSession);
       ctx.layout.selectPanel(null);
     });
-    const saveButton = /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(save), disabled: !file?.dirty, children: "\u4FDD\u5B58" });
-    const gear = /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.6", "aria-hidden": "true", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z" }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)("circle", { cx: "11", cy: "12", r: "3" })
+    const saveButton = /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(save), disabled: !file?.dirty, children: "\u4FDD\u5B58" });
+    const gear = /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.6", "aria-hidden": "true", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "m9 3-.6 2.3-2 .9-2.1-.7-2 3.5 1.6 1.7v2.6L2.3 15l2 3.5 2.1-.7 2 .9L9 21h4l.6-2.3 2-.9 2.1.7 2-3.5-1.6-1.7v-2.6L19.7 9l-2-3.5-2.1.7-2-.9L13 3Z" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("circle", { cx: "11", cy: "12", r: "3" })
     ] });
     const openGlobal = safe(async () => {
+      settingsTrigger.current = document.activeElement;
       setToken("");
       setCredentialMessage("");
       setGlobalConfig(await api({ action: "settings" }));
       setSettingsMessage("");
       setSettings("global");
     });
-    const workspaceChrome = /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
-        sideHidden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: "\u25EB" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: "\u25CC \u8BBA\u6587\u5BF9\u8BDD" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+    const workspaceChrome = /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "lp-toolbar", children: [
+        sideHidden && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "panelLeft" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { title: "\u8BBA\u6587\u5BF9\u8BDD", "aria-label": "\u8BBA\u6587\u5BF9\u8BDD", "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "chat" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-label", children: "\u8BBA\u6587\u5BF9\u8BDD" })
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "button",
           {
+            className: "lp-source-tab",
+            title: file?.name || "\u6E90\u7801",
             "aria-pressed": view === "source" && !chatOpen,
             onClick: () => {
               setView("source");
               setChatOpen(false);
             },
             children: [
-              "\u25A7 ",
-              file?.name || "\u6E90\u7801"
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-filename", children: file?.name || "\u6E90\u7801" })
             ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-status", children: status }),
-        review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { onClick: safe(async () => {
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-status", role: "status", title: status, children: status }),
+        review && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: safe(async () => {
           setNav("files");
           const first = review.files.find((f) => f.parts.some((h) => h.id && !h.decision));
           if (first) await load(first.name);
@@ -45791,33 +45911,45 @@ function apply(ctx) {
           "\u53D8\u66F4 ",
           review.count
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": rightOpen ? "\u6536\u8D77\u53F3\u4FA7\u9762\u677F" : "\u5C55\u5F00\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen((v) => !v), children: "\u25E8" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": rightOpen ? "\u6536\u8D77\u53F3\u4FA7\u9762\u677F" : "\u5C55\u5F00\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen((v) => !v), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "panelRight" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "button",
           {
+            className: "lp-compile",
+            title: "\u7F16\u8BD1\u8BBA\u6587",
+            "aria-label": "\u7F16\u8BD1\u8BBA\u6587",
             disabled: job?.status === "running",
             onClick: safe(() => start("compile")),
-            children: "\u21BB \u7F16\u8BD1"
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "play" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-label", children: "\u7F16\u8BD1" })
+            ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "button",
           {
+            title: "\u884C\u6587\u5BFC\u56FE",
+            "aria-label": "\u884C\u6587\u5BFC\u56FE",
+            "aria-pressed": view === "map",
             onClick: safe(async () => {
               setView(view === "map" ? "source" : "map");
               if (!map && view !== "map") await start("analyze");
             }),
-            children: "\u2318 \u884C\u6587\u5BFC\u56FE"
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "map" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-label", children: "\u884C\u6587\u5BFC\u56FE" })
+            ]
           }
         )
       ] }),
-      error && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-error", role: "alert", children: [
+      error && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-error", role: "alert", children: [
         error,
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u9519\u8BEF\u63D0\u793A", onClick: () => setError(""), children: "\xD7" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u5173\u95ED\u9519\u8BEF\u63D0\u793A", onClick: () => setError(""), children: "\xD7" })
       ] }),
-      conflict && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-conflict", children: [
+      conflict && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-conflict", children: [
         "\u78C1\u76D8\u5185\u5BB9\u5DF2\u66F4\u65B0\u3002\u8349\u7A3F\u4ECD\u4FDD\u7559\uFF0C\u8BF7\u590D\u5236\u8349\u7A3F\u6216\u53E6\u5B58\u6587\u4EF6\u540E\u91CD\u65B0\u8BFB\u53D6\u3002",
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
           "button",
           {
             onClick: () => {
@@ -45826,7 +45958,7 @@ function apply(ctx) {
             children: "\u590D\u5236\u8349\u7A3F"
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
           "button",
           {
             onClick: safe(async () => {
@@ -45855,13 +45987,13 @@ function apply(ctx) {
           }
         )
       ] }),
-      job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-progress", children: [
+      job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-progress", children: [
         job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
       ] })
     ] });
-    const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-settings-panel" + (settings === "project" ? " lp-project-settings" : ""), role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
-      if (e.key === "Escape" && !settingsBusy) setSettings(null);
+    const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-settings-panel" + (settings === "project" ? " lp-project-settings" : ""), role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
+      if (e.key === "Escape" && !settingsBusy) closeSettings();
       if (e.key === "Tab") {
         const items = [...e.currentTarget.querySelectorAll("button:not(:disabled),select:not(:disabled),input:not(:disabled),textarea")];
         const first = items[0], last = items.at(-1);
@@ -45874,54 +46006,64 @@ function apply(ctx) {
         }
       }
     }, children: [
-      error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { role: "alert", className: "lp-error", children: error }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { autoFocus: true, "aria-label": "\u5173\u95ED\u8BBE\u7F6E", disabled: settingsBusy, onClick: () => setSettings(null), children: "\xD7" })
+      error && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "alert", className: "lp-error", children: error }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { autoFocus: true, "aria-label": "\u5173\u95ED\u8BBE\u7F6E", disabled: settingsBusy, onClick: () => closeSettings(), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }) })
       ] }),
-      settings === "global" ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-          "\u5DE5\u4F5C\u53F0\u4E3B\u9898",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("select", { value: theme2, onChange: (e) => {
-            setTheme(e.target.value);
-            localStorage.setItem("dsh-latex-theme", e.target.value);
-          }, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "system", children: "\u8DDF\u968F Desktop" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "light", children: "\u6D45\u8272" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
+      settings === "global" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-global-fields", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-setting-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "\u5916\u89C2" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
+            "\u5DE5\u4F5C\u53F0\u4E3B\u9898",
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("select", { value: theme2, onChange: (e) => {
+              setTheme(e.target.value);
+              localStorage.setItem("dsh-latex-theme", e.target.value);
+            }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "system", children: "\u8DDF\u968F Desktop" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "light", children: "\u6D45\u8272" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { value: "dark", children: "\u6DF1\u8272" })
+            ] })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-          "Overleaf \u51ED\u8BC1",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "password", "aria-label": "Overleaf \u51ED\u8BC1", autoComplete: "off", placeholder: globalConfig?.credential?.configured ? "\u5DF2\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32" : "Overleaf Git token", value: token, onChange: (e) => setToken(e.target.value) })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-setting-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "Overleaf \u540C\u6B65" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
+            "\u8BBF\u95EE\u51ED\u8BC1",
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { type: "password", "aria-label": "Overleaf \u51ED\u8BC1", autoComplete: "off", placeholder: globalConfig?.credential?.configured ? "\u5DF2\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32" : "Overleaf Git token", value: token, onChange: (e) => setToken(e.target.value) })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-credential-row", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { role: "status", children: credentialMessage }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !token || settingsBusy, onClick: async () => {
+              setSettingsBusy(true);
+              try {
+                const credential = await api({ action: "credential", token });
+                setGlobalConfig((v) => ({ ...v, credential }));
+                setToken("");
+                setCredentialMessage("\u51ED\u8BC1\u5DF2\u5B58\u5165\u7CFB\u7EDF\u94A5\u5319\u4E32");
+              } catch (e) {
+                setCredentialMessage(e.message);
+              } finally {
+                setSettingsBusy(false);
+              }
+            }, children: "\u4FDD\u5B58\u51ED\u8BC1" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: "\u51ED\u8BC1\u4FDD\u5B58\u5728\u7CFB\u7EDF\u94A5\u5319\u4E32\uFF0C\u4F9B\u6240\u6709\u8BBA\u6587\u9879\u76EE\u4F7F\u7528\u3002" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-credential-row", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { role: "status", children: credentialMessage }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !token || settingsBusy, onClick: async () => {
-            setSettingsBusy(true);
-            try {
-              const credential = await api({ action: "credential", token });
-              setGlobalConfig((v) => ({ ...v, credential }));
-              setToken("");
-              setCredentialMessage("\u51ED\u8BC1\u5DF2\u5B58\u5165\u7CFB\u7EDF\u94A5\u5319\u4E32");
-            } catch (e) {
-              setCredentialMessage(e.message);
-            } finally {
-              setSettingsBusy(false);
-            }
-          }, children: "\u4FDD\u5B58\u51ED\u8BC1" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-setting-section", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h3", { children: "Agent \u534F\u4F5C" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "lp-instructions", children: [
+            "AGENTS.md",
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("textarea", { "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
+              setGlobalConfig((v) => ({ ...v, instructions: e.target.value }));
+              setSettingsMessage("");
+            }, spellCheck: false })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: "\u9002\u7528\u4E8E\u6240\u6709\u8BBA\u6587\u4F1A\u8BDD\uFF0C\u4FDD\u5B58\u5728\u5DE5\u4F5C\u53F0\u5185\u90E8\u3002\u4FDD\u5B58\u540E\u7528\u4E8E\u540E\u7EED Agent \u8C03\u7528\u3002" })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: "lp-instructions", children: [
-          "AGENTS.md",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", { "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0\u5168\u5C40\u6307\u4EE4", value: globalConfig?.instructions || "", onChange: (e) => {
-            setGlobalConfig((v) => ({ ...v, instructions: e.target.value }));
-            setSettingsMessage("");
-          }, spellCheck: false })
-        ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-help", children: "\u9002\u7528\u4E8E\u6240\u6709\u8BBA\u6587\u4F1A\u8BDD\uFF0C\u4FDD\u5B58\u5728\u5DE5\u4F5C\u53F0\u5185\u90E8\u3002\u4FDD\u5B58\u540E\u7528\u4E8E\u540E\u7EED Agent \u8C03\u7528\u3002" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { role: "status", children: settingsMessage }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: settingsBusy, onClick: async () => {
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("footer", { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { role: "status", children: settingsMessage }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: settingsBusy, onClick: async () => {
             setSettingsBusy(true);
             try {
               setGlobalConfig(await api({ action: "saveSettings", ...globalConfig }));
@@ -45933,37 +46075,40 @@ function apply(ctx) {
             }
           }, children: "\u4FDD\u5B58\u6307\u4EE4" })
         ] })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
           "\u7F16\u8BD1\u4E3B\u6587\u4EF6",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { value: p.main, disabled: job?.status === "running", onChange: safe((e) => update({ main: e.target.value })), children: files.filter((f) => f.name.endsWith(".tex")).map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: f.name }, f.name)) })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("select", { value: p.main, disabled: job?.status === "running", onChange: safe((e) => update({ main: e.target.value })), children: files.filter((f) => f.name.endsWith(".tex")).map((f) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { children: f.name }, f.name)) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
           "\u7F16\u8BD1\u5668",
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("select", { value: p.engine, disabled: job?.status === "running", onChange: safe((e) => update({ engine: e.target.value })), children: ["pdflatex", "xelatex", "lualatex"].map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { children: x }, x)) })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("select", { value: p.engine, disabled: job?.status === "running", onChange: safe((e) => update({ engine: e.target.value })), children: ["pdflatex", "xelatex", "lualatex"].map((x) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("option", { children: x }, x)) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { className: "lp-auto-save", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u81EA\u52A8\u4FDD\u5B58\u5E76\u7F16\u8BD1" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "checkbox", checked: !!p.autoSave, onChange: safe((e) => update({ autoSave: e.target.checked })) })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "lp-auto-save", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "\u81EA\u52A8\u4FDD\u5B58\u5E76\u7F16\u8BD1" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("input", { type: "checkbox", checked: !!p.autoSave, onChange: safe((e) => update({ autoSave: e.target.checked })) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-help", children: "\u5173\u95ED\u540E\u4F7F\u7528 Ctrl / \u2318 + S \u4FDD\u5B58\u5E76\u7F16\u8BD1\u3002Overleaf \u9879\u76EE\u5728\u4FEE\u6539\u6574\u5408\u540E\u81EA\u52A8\u540C\u6B65\u3002" })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: "\u5173\u95ED\u540E\u4F7F\u7528 Ctrl / \u2318 + S \u4FDD\u5B58\u5E76\u7F16\u8BD1\u3002Overleaf \u9879\u76EE\u5728\u4FEE\u6539\u6574\u5408\u540E\u81EA\u52A8\u540C\u6B65\u3002" })
       ] })
     ] }) });
     if (!p)
-      return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-picker-head", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: back, children: "\u2190 \u4E3B\u4F1A\u8BDD" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h2", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { className: "lp-global-settings", onClick: openGlobal, children: [
+      return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "lp-picker-head", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: back, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "back" }),
+            "\u4E3B\u4F1A\u8BDD"
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-global-settings", onClick: openGlobal, children: [
             gear,
             " \u5168\u5C40\u8BBE\u7F6E"
           ] })
         ] }),
-        error && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-error", role: "alert", children: error }),
+        error && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-error", role: "alert", children: error }),
         settingsPanel,
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-picker", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)("h1", { children: "\u7EE7\u7EED\u4F60\u7684\u8BBA\u6587" }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-picker", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h1", { children: "\u7EE7\u7EED\u4F60\u7684\u8BBA\u6587" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
             "input",
             {
               "aria-label": "\u641C\u7D22\u8BBA\u6587",
@@ -45972,31 +46117,46 @@ function apply(ctx) {
               onChange: (e) => setQuery(e.target.value)
             }
           ),
-          projects.filter((x) => x.name.toLowerCase().includes(query.toLowerCase())).map((x) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          projects.filter((x) => x.name.toLowerCase().includes(query.toLowerCase())).map((x) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
             "button",
             {
               className: "lp-project",
               onClick: safe(() => choose(x)),
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("b", { children: [
-                  "\u25A7 ",
-                  x.name
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-project-icon", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 22 }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-project-info", children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("b", { children: x.name }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { children: x.main })
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: x.main }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u2192" })
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "forward" })
               ]
             },
             x.id
           )),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-row", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setForm("create"), children: "\uFF0B \u65B0\u5EFA\u8BBA\u6587" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setForm("import"), children: "\u6253\u5F00\u672C\u5730\u9879\u76EE" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
+          !projects.some((x) => x.name.toLowerCase().includes(query.toLowerCase())) && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-picker-empty", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 28 }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: query ? "\u6CA1\u6709\u627E\u5230\u5339\u914D\u7684\u8BBA\u6587" : "\u5F00\u59CB\u4F60\u7684\u7B2C\u4E00\u7BC7\u8BBA\u6587" }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: query ? "\u6362\u4E00\u4E2A\u5173\u952E\u8BCD\uFF0C\u6216\u6253\u5F00\u65B0\u7684\u8BBA\u6587\u9879\u76EE\u3002" : "\u65B0\u5EFA\u8BBA\u6587\uFF0C\u6216\u4ECE\u672C\u5730\u76EE\u5F55\u4E0E Overleaf \u5BFC\u5165\u3002" }),
+            query && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setQuery(""), children: "\u6E05\u7A7A\u641C\u7D22" })
+          ] }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-row", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-primary", onClick: () => setForm("create"), children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }),
+              "\u65B0\u5EFA\u8BBA\u6587"
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => setForm("import"), children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "folder" }),
+              "\u6253\u5F00\u672C\u5730\u9879\u76EE"
+            ] }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: () => {
               setForm("overleaf");
               setPath("");
-            }, children: "\u4ECE Overleaf Git \u521B\u5EFA" })
+            }, children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "git" }),
+              "\u4ECE Overleaf Git \u521B\u5EFA"
+            ] })
           ] }),
-          form && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          form && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
             "form",
             {
               onSubmit: safe(async (e) => {
@@ -46019,9 +46179,9 @@ function apply(ctx) {
                 }
               }),
               children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
                   "\u8BBA\u6587\u540D\u79F0",
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                     "input",
                     {
                       required: true,
@@ -46030,9 +46190,9 @@ function apply(ctx) {
                     }
                   )
                 ] }),
-                (form === "import" || form === "overleaf") && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
+                (form === "import" || form === "overleaf") && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
                   form === "overleaf" ? "Overleaf Git \u94FE\u63A5" : "\u672C\u5730\u76EE\u5F55",
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                     "input",
                     {
                       required: true,
@@ -46042,19 +46202,22 @@ function apply(ctx) {
                     }
                   )
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: busy, children: "\u6253\u5F00\u5DE5\u4F5C\u53F0" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { type: "button", onClick: () => setForm(null), children: "\u53D6\u6D88" })
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: busy, children: "\u6253\u5F00\u5DE5\u4F5C\u53F0" }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { type: "button", onClick: () => setForm(null), children: "\u53D6\u6D88" })
               ]
             }
           )
         ] })
       ] });
-    return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp lp-theme-" + theme2, children: [
       settingsPanel,
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("aside", { className: "lp-sidebar", hidden: sideHidden, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-collapse", "aria-label": "\u6536\u8D77\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(true), children: "\u25EB" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-back", onClick: back, children: "\u2190 \u4E3B\u4F1A\u8BDD" }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("aside", { className: "lp-sidebar", hidden: sideHidden, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-collapse", "aria-label": "\u6536\u8D77\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(true), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "panelLeft" }) }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-back", onClick: back, children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "back" }),
+          "\u4E3B\u4F1A\u8BDD"
+        ] }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "button",
           {
             className: "lp-project-title",
@@ -46066,17 +46229,17 @@ function apply(ctx) {
               setProjects(await api({ action: "list" }));
             }),
             children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: p.name }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-project-chevron", "aria-hidden": "true", children: "\u2304" })
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: p.name }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "chevron", className: "lp-project-chevron" })
             ]
           }
         ),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-nav", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-nav", children: [
           [
             ["files", "\u6587\u4EF6"],
             ["chats", "\u804A\u5929"],
             ["reviews", "\u5BA1\u9605"]
-          ].map(([id, label]) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          ].map(([id, label]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
             "button",
             {
               "aria-pressed": nav2 === id,
@@ -46088,7 +46251,7 @@ function apply(ctx) {
             },
             id
           )),
-          nav2 !== "reviews" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          nav2 !== "reviews" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
             "button",
             {
               "aria-label": nav2 === "files" ? "\u6DFB\u52A0\u6587\u4EF6" : "\u65B0\u5EFA\u8BBA\u6587\u5BF9\u8BDD",
@@ -46096,13 +46259,13 @@ function apply(ctx) {
                 setNewName("");
                 setNewError("");
               } : safe(() => ensureChat(true)),
-              children: "\uFF0B"
+              children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" })
             }
           )
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-side-content", children: [
-          nav2 === "files" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-            newName !== null && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-side-content", children: [
+          nav2 === "files" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+            newName !== null && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
               "form",
               {
                 onSubmit: async (e) => {
@@ -46125,7 +46288,7 @@ function apply(ctx) {
                   }
                 },
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                     "input",
                     {
                       autoFocus: true,
@@ -46141,11 +46304,11 @@ function apply(ctx) {
                       }
                     }
                   ),
-                  newError && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { role: "alert", className: "lp-error", children: newError })
+                  newError && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { role: "alert", className: "lp-error", children: newError })
                 ]
               }
             ),
-            [...files, ...(review?.files || []).filter((r) => !files.some((f) => f.name === r.name)).map((r) => ({ name: r.name, editable: true }))].map((f) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+            [...files, ...(review?.files || []).filter((r) => !files.some((f) => f.name === r.name)).map((r) => ({ name: r.name, editable: true }))].map((f) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
               "button",
               {
                 className: "lp-file " + (file?.name === f.name ? "active" : ""),
@@ -46153,18 +46316,19 @@ function apply(ctx) {
                 title: f.name,
                 onClick: safe(() => load(f.name)),
                 children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: f.name }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: f.name }),
                   review?.files.find((r) => r.name === f.name && r.parts.some((h) => h.id && !h.decision)) && (() => {
                     const kind = review.files.find((r) => r.name === f.name).kind;
-                    return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "lp-file-badge " + kind, title: { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], "aria-label": { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], children: { added: "A", modified: "M", deleted: "D" }[kind] });
+                    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-file-badge " + kind, title: { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], "aria-label": { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], children: { added: "A", modified: "M", deleted: "D" }[kind] });
                   })()
                 ]
               },
               f.name
             ))
           ] }),
-          nav2 === "chats" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-            p.chats.map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+          nav2 === "chats" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+            p.chats.map((c) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
               "button",
               {
                 className: "lp-file " + (p.lastChat === c.id ? "active" : ""),
@@ -46173,18 +46337,18 @@ function apply(ctx) {
                   await ensureChat();
                 }),
                 children: [
-                  "\u25CC ",
-                  sessions.byId?.[c.id]?.title || c.title
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "chat" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: sessions.byId?.[c.id]?.title || c.title })
                 ]
               },
               c.id
             )),
-            !p.chats.length && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: "\u6253\u5F00\u8BBA\u6587\u5BF9\u8BDD\u5F00\u59CB\u8BA8\u8BBA\u3002" })
+            !p.chats.length && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u6253\u5F00\u8BBA\u6587\u5BF9\u8BDD\u5F00\u59CB\u8BA8\u8BBA\u3002" })
           ] }),
-          nav2 === "reviews" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-review-bar", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("label", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          nav2 === "reviews" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-review-bar", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                   "input",
                   {
                     ref: selectedAll,
@@ -46200,11 +46364,11 @@ function apply(ctx) {
                 ),
                 "\u5168\u9009"
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("small", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("small", { children: [
                 "\u5DF2\u9009 ",
                 selected.size
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 "button",
                 {
                   disabled: !selected.size,
@@ -46215,21 +46379,21 @@ function apply(ctx) {
                 }
               )
             ] }),
-            p.reviews.map((r) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("article", { className: "lp-review", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+            p.reviews.map((r) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("article", { className: "lp-review", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
                 "button",
                 {
                   className: "lp-review-jump",
                   onClick: safe(() => jumpReview(r)),
                   children: [
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("small", { children: r.file }),
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("blockquote", { children: r.text }),
-                    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { children: r.messages.join("\n") })
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { children: r.file }),
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("blockquote", { children: r.text }),
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: r.messages.join("\n") })
                   ]
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("footer", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                   "button",
                   {
                     className: "lp-state",
@@ -46243,8 +46407,8 @@ function apply(ctx) {
                     children: r.resolved ? "\u5DF2\u89E3\u51B3" : "\u5F85\u5904\u7406"
                   }
                 ),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                     "input",
                     {
                       type: "checkbox",
@@ -46257,29 +46421,32 @@ function apply(ctx) {
                       })
                     }
                   ),
-                  /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                     "button",
                     {
                       title: "\u52A0\u5165\u6700\u8FD1\u4F7F\u7528\u7684\u5BF9\u8BDD",
                       "aria-label": "\u52A0\u5165\u5BF9\u8BDD\uFF1A" + r.messages[0],
                       onClick: safe(() => reviewDraft([r])),
-                      children: "\u2197"
+                      children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "send" })
                     }
                   )
                 ] })
               ] })
             ] }, r.id)),
-            !p.reviews.length && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u9009\u4E2D\u6587\u5B57\u5E76\u6DFB\u52A0\u8BC4\u8BBA\u3002" })
+            !p.reviews.length && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-muted", children: "\u9009\u4E2D\u6587\u5B57\u5E76\u6DFB\u52A0\u8BC4\u8BBA\u3002" })
           ] })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", { className: "lp-side-footer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-gear", "aria-label": "\u8BBA\u6587\u8BBE\u7F6E", title: "\u8BBA\u6587\u8BBE\u7F6E", onClick: () => setSettings("project"), children: gear }) })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("footer", { className: "lp-side-footer", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-gear", "aria-label": "\u8BBA\u6587\u8BBE\u7F6E", title: "\u8BBA\u6587\u8BBE\u7F6E", onClick: () => {
+          settingsTrigger.current = document.activeElement;
+          setSettings("project");
+        }, children: gear }) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : ""), style: { "--lp-split": split + "%" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : ""), style: { "--lp-split": split + "%" }, children: [
         view === "map" && workspaceChrome,
-        view === "map" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-map-toolbar", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setView("source"), children: "\u2190 \u6E90\u7801" }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+        view === "map" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map-toolbar", children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setView("source"), children: "\u2190 \u6E90\u7801" }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
               "button",
               {
                 disabled: job?.status === "running",
@@ -46288,13 +46455,13 @@ function apply(ctx) {
               }
             )
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(MindMap, { data: map, onLocate: safe(locate) })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(MindMap, { data: map, onLocate: safe(locate) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-split" + (rightOpen ? "" : " lp-right-closed"), hidden: view === "map", children: [
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-source", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-split" + (rightOpen ? "" : " lp-right-closed"), hidden: view === "map", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-source", children: [
             workspaceChrome,
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-tabs", hidden: chatOpen || tabs.length < 2, children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("span", { children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-tabs", hidden: chatOpen || tabs.length < 2, children: tabs.map((t2) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 "button",
                 {
                   "aria-pressed": file?.name === t2,
@@ -46302,7 +46469,7 @@ function apply(ctx) {
                   children: t2
                 }
               ),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 "button",
                 {
                   "aria-label": "\u5173\u95ED " + t2,
@@ -46320,13 +46487,13 @@ function apply(ctx) {
                 }
               )
             ] }, t2)) }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-source-body", hidden: chatOpen, children: [
-              review && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-review-summary", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: review.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : `\u5F85\u5BA1\u9605 \xB7 ${review.count} \u5904` }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-source-body", hidden: chatOpen, children: [
+              review && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-review-summary", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { role: "status", children: review.active ? "Agent \u6B63\u5728\u4FEE\u6539\u2026" : `\u5F85\u5BA1\u9605 \xB7 ${review.count} \u5904` }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-accept", disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 Editor,
                 {
                   file,
@@ -46337,11 +46504,11 @@ function apply(ctx) {
                   active: !!review?.active,
                   onDecide: (decision, id) => safe(() => decide(decision, id))()
                 }
-              ) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
+              ) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
             ] }),
-            p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
+            p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
           ] }),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
             "div",
             {
               hidden: !rightOpen,
@@ -46374,49 +46541,48 @@ function apply(ctx) {
               }
             }
           ),
-          /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("section", { className: "lp-pdf lp-right", hidden: !rightOpen, children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("nav", { className: "lp-right-tabs", children: [
-              [["pdf", "PDF"], ["logs", "\u65E5\u5FD7"], ["browser", "\u6D4F\u89C8\u5668"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": rightTab === key, onClick: () => setRightTab(key), children: label }, key)),
-              rightTab === "pdf" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-pdf-actions", "aria-label": "PDF \u5DE5\u5177", children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u7F29\u5C0F PDF", onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)), children: "\u2212" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", { "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6", onClick: () => setPdfZoom(1), children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-pdf lp-right", hidden: !rightOpen, children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("nav", { className: "lp-right-tabs", children: [
+              [["pdf", "PDF"], ["logs", "\u65E5\u5FD7"], ["browser", "\u6D4F\u89C8\u5668"]].map(([key, label]) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-pressed": rightTab === key, onClick: () => setRightTab(key), children: label }, key)),
+              rightTab === "pdf" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-pdf-actions", "aria-label": "PDF \u5DE5\u5177", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u7F29\u5C0F PDF", onClick: () => setPdfZoom((z) => Math.max(0.5, z - 0.25)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "minus" }) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { "aria-label": "PDF \u9002\u5408\u5BBD\u5EA6", onClick: () => setPdfZoom(1), children: [
                   Math.round(pdfZoom * 100),
                   "%"
                 ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u653E\u5927 PDF", onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)), children: "\uFF0B" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setRightTab("logs"), children: "\u65E5\u5FD7" }),
-                pdf && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => {
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u653E\u5927 PDF", onClick: () => setPdfZoom((z) => Math.min(3, z + 0.25)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }) }),
+                pdf && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u4E0B\u8F7D PDF", title: "\u4E0B\u8F7D PDF", onClick: () => {
                   const blob = new Blob([Uint8Array.from(atob(pdf), (x) => x.charCodeAt(0))], { type: "application/pdf" });
                   const url = URL.createObjectURL(blob), a = document.createElement("a");
                   a.href = url;
                   a.download = p.name + ".pdf";
                   a.click();
                   setTimeout(() => URL.revokeObjectURL(url), 1e3);
-                }, children: "\u4E0B\u8F7D" })
+                }, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "download" }) })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5173\u95ED\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen(false), children: "\xD7" })
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u5173\u95ED\u53F3\u4FA7\u9762\u677F", onClick: () => setRightOpen(false), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }) })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-right-page", hidden: rightTab !== "pdf", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PDF, { base64: pdf, zoom: pdfZoom }) }),
-            rightTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-log-page", children: [
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u7F16\u8BD1\u4E0E\u540C\u6B65" }),
-                /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(async () => {
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-right-page", hidden: rightTab !== "pdf", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PDF, { base64: pdf, zoom: pdfZoom }) }),
+            rightTab === "logs" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-log-page", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "\u7F16\u8BD1\u4E0E\u540C\u6B65" }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(async () => {
                   await api({ action: "sync", id: p.id });
                   setLogs(await api({ action: "logs", id: p.id }));
                 }), children: "\u91CD\u8BD5\u540C\u6B65" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("pre", { children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("pre", { children: [
                 logs.sync?.message || "",
                 "\n\n",
                 logs.compile || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7"
               ] })
             ] }),
-            rightTab === "browser" && rightOpen && !settings && (p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(NativeChat, { sessionId: p.lastChat, browser: true }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { className: "lp-empty", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: safe(() => ensureChat()), children: "\u8FDE\u63A5\u8BBA\u6587\u4F1A\u8BDD\u6D4F\u89C8\u5668" }) }))
+            rightTab === "browser" && rightOpen && !settings && (p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(NativeChat, { sessionId: p.lastChat, browser: true }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-empty", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(() => ensureChat()), children: "\u8FDE\u63A5\u8BBA\u6587\u4F1A\u8BDD\u6D4F\u89C8\u5668" }) }))
           ] })
         ] }),
-        showLog && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("pre", { className: "lp-log", children: job?.result?.log || job?.error || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7" })
+        showLog && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("pre", { className: "lp-log", children: job?.result?.log || job?.error || "\u6682\u65E0\u7F16\u8BD1\u65E5\u5FD7" })
       ] }),
-      selection && !chatOpen && !comment2 && view === "source" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+      selection && !chatOpen && !comment2 && view === "source" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "div",
         {
           className: "lp-selection",
@@ -46425,7 +46591,7 @@ function apply(ctx) {
             top: Math.min(selection.y + 6, innerHeight - 70)
           },
           onMouseDown: (e) => e.preventDefault(),
-          children: ["\u6DA6\u8272", "\u7F29\u51CF", "\u8BC4\u8BBA"].map((action) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+          children: ["\u6DA6\u8272", "\u7F29\u51CF", "\u8BC4\u8BBA"].map((action) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
             "button",
             {
               onClick: action === "\u8BC4\u8BBA" ? () => {
@@ -46447,7 +46613,7 @@ function apply(ctx) {
           ))
         }
       ),
-      comment2 && /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+      comment2 && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
         "div",
         {
           className: "lp-comment",
@@ -46456,12 +46622,12 @@ function apply(ctx) {
             top: Math.min(comment2.y + 6, innerHeight - 300)
           },
           children: [
-            /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
               "\u6DFB\u52A0\u8BC4\u8BBA",
-              /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { onClick: () => setComment(null), children: "\xD7" })
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setComment(null), children: "\xD7" })
             ] }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("blockquote", { children: comment2.text }),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)(
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("blockquote", { children: comment2.text }),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
               "textarea",
               {
                 autoFocus: true,
@@ -46471,7 +46637,7 @@ function apply(ctx) {
                 onChange: (e) => setCommentText(e.target.value)
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: !commentText.trim(), onClick: safe(addComment), children: "\u6DFB\u52A0\u8BC4\u8BBA" })
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !commentText.trim(), onClick: safe(addComment), children: "\u6DFB\u52A0\u8BC4\u8BBA" })
           ]
         }
       )
@@ -46501,14 +46667,14 @@ function apply(ctx) {
     let active = true;
     const listeners = /* @__PURE__ */ new Set();
     const Wrapped = (props) => {
-      const enabled = (0, import_react.useSyncExternalStore)((fn) => {
+      const enabled = (0, import_react2.useSyncExternalStore)((fn) => {
         listeners.add(fn);
         return () => listeners.delete(fn);
       }, () => active);
-      return enabled ? /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "lp-workspaces-host", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Native, { ...props }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Entry, { wide: props.wide })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Native, { ...props });
+      return enabled ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-workspaces-host", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Native, { ...props }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Entry, { wide: props.wide })
+      ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Native, { ...props });
     };
     native.component = Wrapped;
     return () => {
