@@ -44845,12 +44845,18 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-project-settings select { width:100%; max-width:100%; min-width:0; padding:9px 12px; color:var(--lp-text); background:var(--lp-editor); border:1px solid var(--lp-line); border-radius:8px; }
 .lp-project-settings .lp-auto-save { flex-direction:row-reverse; justify-content:flex-end; gap:10px; border-top:1px solid var(--lp-line); padding-top:20px; font-size:13px; }
 .lp-project-settings input[type=checkbox] { width:16px; height:16px; margin:0; accent-color:var(--lp-accent); }
-.lp-project-settings .lp-muted { margin:10px 0 0 26px; font-size:12px; line-height:1.7; }
+.lp-project-settings .lp-help { margin:10px 0 0 26px; }
 .lp-source > .lp-error { margin:8px 12px; padding:8px 10px; border-radius:8px; border:1px solid var(--lp-line); background:var(--lp-side); color:var(--lp-text); font-size:12px; }
-.lp-composer { padding:10px 12px; }
-.lp-composer [data-composer-seat] { width:100%; max-width:none; margin:0; }
 
-.lp-composer ._0cyzDW_root { --dsh-composer-side-clearance:0px; --dsh-composer-card-max-width:100%; }
+
+/* Explanatory copy has a consistent secondary text hierarchy. */
+.lp .lp-help { color:var(--lp-muted); font-size:12px; font-weight:400; line-height:1.7; margin-top:10px; }
+.lp .lp-project-settings label:not(.lp-auto-save) { font-size:13px; color:var(--lp-text); }
+.lp .lp-project-settings select { font-size:13px; color:var(--lp-text); }
+
+/* The divider follows the actual composer card at every pane width. */
+.lp-composer { border-top:0; }
+.lp-composer .p_FcLG_root::before { content:""; display:block; flex:none; width:100%; max-width:var(--dsh-composer-card-max-width); height:1px; margin-bottom:8px; background:var(--lp-line); pointer-events:none; }
 `;
 
 // client/index.jsx
@@ -45912,7 +45918,7 @@ function apply(ctx) {
             setSettingsMessage("");
           }, spellCheck: false })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u9002\u7528\u4E8E\u6240\u6709\u8BBA\u6587\u4F1A\u8BDD\uFF0C\u4FDD\u5B58\u5728\u5DE5\u4F5C\u53F0\u5185\u90E8\u3002\u4FDD\u5B58\u540E\u7528\u4E8E\u540E\u7EED Agent \u8C03\u7528\u3002" }),
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-help", children: "\u9002\u7528\u4E8E\u6240\u6709\u8BBA\u6587\u4F1A\u8BDD\uFF0C\u4FDD\u5B58\u5728\u5DE5\u4F5C\u53F0\u5185\u90E8\u3002\u4FDD\u5B58\u540E\u7528\u4E8E\u540E\u7EED Agent \u8C03\u7528\u3002" }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("footer", { children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { role: "status", children: settingsMessage }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { disabled: settingsBusy, onClick: async () => {
@@ -45940,7 +45946,7 @@ function apply(ctx) {
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { children: "\u81EA\u52A8\u4FDD\u5B58\u5E76\u7F16\u8BD1" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", { type: "checkbox", checked: !!p.autoSave, onChange: safe((e) => update({ autoSave: e.target.checked })) })
         ] }),
-        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-muted", children: "\u5173\u95ED\u540E\u4F7F\u7528 Ctrl / \u2318 + S \u4FDD\u5B58\u5E76\u7F16\u8BD1\u3002Overleaf \u9879\u76EE\u5728\u4FEE\u6539\u6574\u5408\u540E\u81EA\u52A8\u540C\u6B65\u3002" })
+        /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "lp-help", children: "\u5173\u95ED\u540E\u4F7F\u7528 Ctrl / \u2318 + S \u4FDD\u5B58\u5E76\u7F16\u8BD1\u3002Overleaf \u9879\u76EE\u5728\u4FEE\u6539\u6574\u5408\u540E\u81EA\u52A8\u540C\u6B65\u3002" })
       ] })
     ] }) });
     if (!p)

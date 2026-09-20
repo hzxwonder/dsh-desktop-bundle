@@ -1074,13 +1074,13 @@ export function apply(ctx) {
           <label>Overleaf 凭证<input type="password" aria-label="Overleaf 凭证" autoComplete="off" placeholder={globalConfig?.credential?.configured ? "已保存在系统钥匙串" : "Overleaf Git token"} value={token} onChange={e=>setToken(e.target.value)}/></label>
           <div className="lp-credential-row"><span role="status">{credentialMessage}</span><button disabled={!token || settingsBusy} onClick={async()=>{setSettingsBusy(true);try{const credential=await api({action:"credential",token});setGlobalConfig(v=>({...v,credential}));setToken("");setCredentialMessage("凭证已存入系统钥匙串");}catch(e){setCredentialMessage(e.message);}finally{setSettingsBusy(false);}}}>保存凭证</button></div>
           <label className="lp-instructions">AGENTS.md<textarea aria-label="论文工作台全局指令" value={globalConfig?.instructions || ""} onChange={e=>{setGlobalConfig(v=>({...v,instructions:e.target.value}));setSettingsMessage("");}} spellCheck={false}/></label>
-          <p className="lp-muted">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p>
+          <p className="lp-help">适用于所有论文会话，保存在工作台内部。保存后用于后续 Agent 调用。</p>
           <footer><span role="status">{settingsMessage}</span><button disabled={settingsBusy} onClick={async()=>{setSettingsBusy(true);try{setGlobalConfig(await api({action:"saveSettings",...globalConfig}));setSettingsMessage("已保存");}catch(e){setSettingsMessage(e.message);}finally{setSettingsBusy(false);}}}>保存指令</button></footer>
         </> : <>
           <label>编译主文件<select value={p.main} disabled={job?.status === "running"} onChange={safe(e=>update({main:e.target.value}))}>{files.filter(f=>f.name.endsWith(".tex")).map(f=><option key={f.name}>{f.name}</option>)}</select></label>
           <label>编译器<select value={p.engine} disabled={job?.status === "running"} onChange={safe(e=>update({engine:e.target.value}))}>{["pdflatex","xelatex","lualatex"].map(x=><option key={x}>{x}</option>)}</select></label>
           <label className="lp-auto-save"><span>自动保存并编译</span><input type="checkbox" checked={!!p.autoSave} onChange={safe(e=>update({autoSave:e.target.checked}))}/></label>
-          <p className="lp-muted">关闭后使用 Ctrl / ⌘ + S 保存并编译。Overleaf 项目在修改整合后自动同步。</p>
+          <p className="lp-help">关闭后使用 Ctrl / ⌘ + S 保存并编译。Overleaf 项目在修改整合后自动同步。</p>
         </>}
       </section>
     </div>;

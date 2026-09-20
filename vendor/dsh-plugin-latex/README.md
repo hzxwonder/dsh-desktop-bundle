@@ -113,3 +113,5 @@ Agent 修改在源码原位置展示前后对比，支持逐处和批量接受�
 ![深色源码审阅](assets/inline-review-dark.png)
 
 [源码审阅与论文设置验收报告](docs/INLINE-REVIEW-ACCEPTANCE.md)
+
+[输入区与设置文字验收报告](docs/COMPOSER-SETTINGS-ACCEPTANCE.md)
