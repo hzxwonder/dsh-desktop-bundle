@@ -44795,59 +44795,30 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-change-review { background:var(--lp-editor); }
 .lp-change-review > header { border-radius:8px; }
 
-/* Paper mode occupies the full Desktop content surface. The native macOS
- * drag row is useful in the regular conversation but becomes a distracting
- * light strip above this dedicated workspace. */
-body:has(.lp) { background:var(--lp-bg, #202020) !important; }
-.dshDesktopFrame:has(.lp) { grid-template-rows:0 minmax(0,1fr) !important; }
-.dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface,
-.dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface { grid-row:1 !important; }
-.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { display:none !important; }
-.lp { position:absolute; inset:0; width:100%; height:100%; }
-.lp-sidebar { padding-top:0; }
+/* Workspace chrome follows the selected paper theme. */
+.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { background:var(--paper-chrome,#171717); }
+.dshDesktopFrame:has(.lp) { --paper-chrome:#171717; }
+.dshDesktopFrame:has(.lp-theme-light) { --paper-chrome:#f3f3f3; }
 .lp-main { margin-top:0; }
-.lp-toolbar { padding-top:6px; }
-
-/* Keep the native Harness composer legible in both paper themes. Harness
- * utility classes carry light-mode fills, so the workbench owns these tokens
- * at the composer boundary. */
-.lp-composer, .lp-composer > *, .lp-composer [data-composer-seat],
-.lp-composer [data-conversation-scroll], .lp-composer [class*="_0cyzDW"] {
-  color:var(--lp-text) !important;
-  --dsw-alias-bg-base:var(--lp-editor) !important;
-  --dsw-alias-bg-layer-1:var(--lp-editor) !important;
-  --dsw-alias-bg-layer-2:var(--lp-hover) !important;
-  --dsw-alias-label-primary:var(--lp-text) !important;
-  --dsw-alias-label-secondary:var(--lp-muted) !important;
-  --dsw-alias-border-l2:var(--lp-line) !important;
-}
-.lp-composer [class*="bg-white"], .lp-composer [class*="bg-neutral-50"],
-.lp-composer [class*="bg-static-neutral"] { background:var(--lp-hover) !important; }
-.lp-composer button { color:var(--lp-text) !important; border-color:var(--lp-line) !important; }
-.lp-composer button:hover { background:var(--lp-hover) !important; }
-.lp-composer button[aria-label="\u6DFB\u52A0\u9644\u4EF6"], .lp-composer button[title*="\u9644\u4EF6"],
-.lp-composer [data-testid*="attachment"], .lp-composer [data-testid*="attach"] {
-  background:var(--lp-hover) !important; color:var(--lp-text) !important;
-  border:1px solid var(--lp-line) !important; border-radius:999px !important;
-}
-.lp-composer button[type="submit"], .lp-composer [aria-label*="\u53D1\u9001"],
-.lp-composer [aria-label*="Send"] { background:var(--lp-accent) !important; color:var(--lp-bg) !important; border-color:transparent !important; }
-.lp-composer input, .lp-composer textarea, .lp-composer [contenteditable="true"] {
-  color:var(--lp-text) !important; caret-color:var(--lp-text) !important;
-}
-
-/* PDF controls share the top browser-like row with the tab switcher. */
-.lp-pdf-actions { display:flex; align-items:center; gap:2px; margin-left:auto; }
-.lp-pdf-actions button { min-width:30px; padding:5px 8px !important; }
-.lp-pdf-actions button[aria-label="PDF \u9002\u5408\u5BBD\u5EA6"] { min-width:48px; }
-.lp-right-tabs > button:last-child { margin-left:8px; }
-.lp-right-page > header { display:none; }
-
-/* The paper browser is the BrowserSurface supplied by dsh-plugin-browser;
- * give it the same flush, full-height frame as the PDF and logs pages. */
-.lp-right-page:has(.dsh-browser-body) { padding:0; }
-.lp-right-page:has(.dsh-browser-body) .dsh-browser-body { height:100%; min-height:0; border:0; border-radius:0; }
-.lp-right-page:has(.dsh-browser-body) .dsh-browser-toolbar { flex:none; }
+.lp-toolbar { width:calc(var(--lp-split) - 3px); gap:4px; }
+.lp-mapping .lp-toolbar, .lp-panel-closed .lp-toolbar { width:100%; }
+.lp-right { margin-top:-53px; }
+.lp-right-tabs { height:53px; flex:none; align-items:center; gap:2px; }
+.lp-pdf-actions { display:flex; align-items:center; gap:0; margin-left:auto; }
+.lp-pdf-actions button { padding:5px !important; font-size:11px !important; }
+.lp-right-tabs > button:last-child { margin-left:auto; }
+.lp-pdf-actions + button:last-child { margin-left:2px; }
+.lp-native { --dsw-alias-button-secondary-fill:var(--lp-hover); --dsw-alias-button-secondary-hover:var(--lp-line); }
+.lp-native button[aria-label="\u6DFB\u52A0\u9644\u4EF6"], .lp-native button[aria-label="\u6307\u4EE4"] { background:var(--lp-hover) !important; color:var(--lp-text) !important; }
+.lp-right { --dsw-alias-bg-base:var(--lp-editor); --dsw-alias-bg-layer-1:var(--lp-editor); --dsw-alias-bg-layer-2:var(--lp-side); --dsw-alias-label-primary:var(--lp-text); --dsw-alias-label-secondary:var(--lp-muted); --dsw-alias-label-tertiary:var(--lp-muted); --dsw-alias-border-l1:var(--lp-line); --dsw-alias-border-l2:var(--lp-line); }
+.lp .dshDesktopBrowserPanel button { padding:0; }
+.lp .dshDesktopBrowserPanel { border:0; }
+@media(max-width:1050px) { .lp-status { display:none; } .lp-right-tabs { gap:0; padding:4px; } .lp-right-tabs > button { padding:5px !important; } }
+.lp-toolbar > button[aria-label$="\u53F3\u4FA7\u9762\u677F"] { margin-left:auto; }
+.lp-editor .cm-scroller { scrollbar-color:var(--lp-line) var(--lp-editor); scrollbar-width:thin; }
+.lp-right .dshDesktopBrowserPanelToolbar { flex-wrap:nowrap; padding:6px 4px; gap:1px; }
+.lp-right .dshDesktopBrowserPanelButton { width:24px; flex-shrink:0; }
+.lp-right .dshDesktopBrowserPanelAddress { min-width:40px; }
 `;
 
 // client/index.jsx
@@ -45278,7 +45249,7 @@ function apply(ctx) {
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {
       } };
-      const slot = browser2 ? "paper.browser" : "main.conversation";
+      const slot = browser2 ? registry.entriesOfSlot("desktop.browser.embedded").length ? "desktop.browser.embedded" : "paper.browser" : "main.conversation";
       const entry = {
         component: (props) => props.renderSlot(slot, {}),
         options: {},
@@ -46107,7 +46078,7 @@ function apply(ctx) {
         ] }),
         /* @__PURE__ */ (0, import_jsx_runtime.jsx)("footer", { className: "lp-side-footer", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { className: "lp-gear", "aria-label": "\u8BBA\u6587\u8BBE\u7F6E", title: "\u8BBA\u6587\u8BBE\u7F6E", onClick: () => setSettings("project"), children: gear }) })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : ""), style: { "--lp-split": split + "%" }, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("main", { className: "lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : ""), style: { "--lp-split": split + "%" }, children: [
         /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("header", { className: "lp-toolbar", children: [
           sideHidden && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-label": "\u5C55\u5F00\u8BBA\u6587\u4FA7\u680F", onClick: () => setSideHidden(false), children: "\u25EB" }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { "aria-pressed": chatOpen, onClick: safe(() => ensureChat()), children: "\u25CC \u8BBA\u6587\u5BF9\u8BDD" }),
@@ -46421,7 +46392,7 @@ function apply(ctx) {
   });
   ctx.slots.inject(
     "main",
-    () => ctx.slots.register({ name: "main", key: "latex-studio", children: { "paper.browser": { kind: "single", scope: "session-maybe" } } }, Panel)
+    () => ctx.slots.register({ name: "main", key: "latex-studio", children: { "desktop.browser.embedded": { kind: "single", scope: "session-maybe" }, "paper.browser": { kind: "single", scope: "session-maybe" } } }, Panel)
   );
   ctx.slots.inject(
     "conversation.input.left",

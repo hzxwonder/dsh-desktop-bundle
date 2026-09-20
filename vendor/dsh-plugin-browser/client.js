@@ -1324,9 +1324,10 @@ window.__ModuleLoader__.load({
      * Sidebar surface: one pane per Session, mounted only while its tab is the
      * active one, so a pane nobody is looking at asks for no frames at all.
      */
-    function BrowserPane({useTabInfo, sessionId, t, layout}) {
+    function BrowserPane({useTabInfo, sessionId, t, layout, renderSlot, nativeDesktop}) {
       const {tab} = useTabInfo();
       const open = React.useCallback(() => { layout?.selectPanel(PANEL); }, [layout]);
+      if (nativeDesktop && renderSlot) return tab.visible ? renderSlot("desktop.browser.sidebar", {}) : null;
       return React.createElement(BrowserSurface, {
         sessionId, t, placement: "pane", visible: tab.visible,
         onExpand: layout ? open : undefined,
@@ -1486,8 +1487,9 @@ window.__ModuleLoader__.load({
       ctx.effect(() => ctx.slots.inject("sidebar.right.pane.tab", () => ctx.slots.register({
         name: "sidebar.right.pane.tab",
         key: ID,
+        children: {"desktop.browser.sidebar": {kind:"single",scope:"session-maybe"}},
         locale: NS,
-      }, props => React.createElement(BrowserPane, {...props, layout: ctx.layout}))), "dsh-plugin-browser: right Sidebar body");
+      }, props => React.createElement(BrowserPane, {...props, layout: ctx.layout, nativeDesktop:ctx.slots.entriesOfSlot("desktop.browser.sidebar").length > 0}))), "dsh-plugin-browser: right Sidebar body");
       ctx.effect(() => ctx.slots.inject("paper.browser", () => ctx.slots.register({
         name: "paper.browser", key: "dsh-plugin-browser/paper", locale: NS,
       }, props => React.createElement(BrowserSurface, {sessionId:props.sessionId,t,placement:"pane",visible:true}))), "dsh-plugin-browser: paper workbench browser");

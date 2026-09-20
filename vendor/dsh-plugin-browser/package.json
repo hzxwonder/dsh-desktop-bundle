@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-browser",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Session-isolated Playwright browser tools for DeepSeek Harness",
   "type": "module",
   "main": "index.js",

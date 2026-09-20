@@ -101,3 +101,7 @@ npm run check:privacy
 MIT License。CodeMirror、PDF.js 等依赖遵循各自许可证。
 
 行文导图已通过 Desktop 真实模型全量与增量验证：首次分析 6 段，未修改复用 6 段，单段修改仅重算 1 段。详细证据与测试范围见[验收报告](docs/ACCEPTANCE.md)。
+
+## Desktop 浏览器与布局
+
+论文浏览器与普通右侧栏可使用 Desktop 的原生浏览器组件，包括地址栏、标签、菜单与状态栏。PDF 缩放和下载集中在右侧顶部；编译和导图位于源码栏右上角。原生嵌入需要 Desktop 客户端提供 `desktop.browser.embedded` 与 `desktop.browser.sidebar` 接口。详见[布局验收与截图](docs/LAYOUT-ACCEPTANCE.md)。

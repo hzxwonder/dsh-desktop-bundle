@@ -32,8 +32,8 @@
     },
     {
       "name": "dsh-plugin-browser",
-      "version": "0.5.1",
-      "commit": "b27bb3df8558a2dcfa838bcf5382267491a1f1ed",
+      "version": "0.5.2",
+      "commit": "5e041a0fe4a122892d9396c06222f49666908064",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-browser.git"
     },
     {
@@ -92,8 +92,8 @@
     },
     {
       "name": "dsh-plugin-latex",
-      "version": "0.1.8",
-      "commit": "10d79f4d34099ef19f36b273420f57be79fb4b44",
+      "version": "0.1.9",
+      "commit": "16f3ec9bf903d3afddee7e7806fb5ecf3501cd0d",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex.git"
     },
     {

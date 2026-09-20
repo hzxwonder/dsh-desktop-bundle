@@ -452,7 +452,7 @@ export function apply(ctx) {
         binding = adapter?.resolve(sessionId);
       if (!binding) return null;
       const current = { getSnapshot: () => binding, subscribe: () => () => {} };
-      const slot = browser ? "paper.browser" : "main.conversation";
+      const slot = browser ? (registry.entriesOfSlot("desktop.browser.embedded").length ? "desktop.browser.embedded" : "paper.browser") : "main.conversation";
       const entry = {
         component: (props) => props.renderSlot(slot, {}),
         options: {},
@@ -1268,7 +1268,7 @@ export function apply(ctx) {
           </div>
           <footer className="lp-side-footer"><button className="lp-gear" aria-label="论文设置" title="论文设置" onClick={()=>setSettings("project")}>{gear}</button></footer>
         </aside>
-        <main className={"lp-main " + (view === "map" ? "lp-mapping" : "")} style={{"--lp-split": split + "%"}}>
+        <main className={"lp-main " + (view === "map" ? "lp-mapping" : "") + (!rightOpen ? " lp-panel-closed" : "")} style={{"--lp-split": split + "%"}}>
           <header className="lp-toolbar">
             {sideHidden && <button aria-label="展开论文侧栏" onClick={() => setSideHidden(false)}>◫</button>}
             <button aria-pressed={chatOpen} onClick={safe(() => ensureChat())}>
@@ -1530,7 +1530,7 @@ export function apply(ctx) {
     return () => style.remove();
   });
   ctx.slots.inject("main", () =>
-    ctx.slots.register({ name: "main", key: "latex-studio", children:{"paper.browser":{kind:"single",scope:"session-maybe"}} }, Panel),
+    ctx.slots.register({ name: "main", key: "latex-studio", children:{"desktop.browser.embedded":{kind:"single",scope:"session-maybe"},"paper.browser":{kind:"single",scope:"session-maybe"}} }, Panel),
   );
   ctx.slots.inject("conversation.input.left", () =>
     ctx.slots.register(
