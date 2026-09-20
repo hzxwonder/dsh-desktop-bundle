@@ -131,6 +131,6 @@ under the upstream MIT license.
 
 ## Prompt library
 
-Type `/prompt` in the composer and choose a saved template directly from the suggestion menu to insert its text. Choose “新建 Prompt 模板” to open the two-pane template editor: select or create templates on the left, edit their name and body on the right, and copy, delete, or save from the footer. Includes retryable saves, deletion confirmation, and unsaved edit protection.
+Type `/prompt` in the composer and choose a saved template directly from the suggestion menu to insert its text. Choose “新建 Prompt 模板” to open the two-pane template editor: select or create templates on the left, edit their name and body on the right, and duplicate, delete, or save from the footer. Duplicating immediately creates and selects a saved template named “Original - copy” with the current body; matching copy names receive a numeric suffix. Includes retryable saves, deletion confirmation, and unsaved edit protection.
 
 The complete Desktop 2.0.11 application includes the paired client and Host API. Builds use the exact manifest commit and verify both prompt components in the packaged application.

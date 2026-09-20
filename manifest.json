@@ -3,7 +3,7 @@
   "desktop": {
     "repository": "https://github.com/hzxwonder/dsh-desktop.git",
     "ref": "feat/desktop-prompt",
-    "commit": "3c38b7a89ee61b863c106b205dfa37654a1bb8cc",
+    "commit": "21d5b5b1422c7ac03a6ff644f8cdd74dfebe1160",
     "appVersion": "2.0.11",
     "runtimeVersion": "0.1.5-rc.2",
     "dshEngine": ">=24.0.0"
