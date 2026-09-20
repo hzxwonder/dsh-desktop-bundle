@@ -2,9 +2,9 @@
   "$comment": "Pinned composition for the vendored DSH Desktop environment. Versions are the releases vendored into vendor/ and the runtime packages the pinned DSH Desktop build ships. Regenerate with scripts/vendor.mjs after syncing plugin sources.",
   "desktop": {
     "repository": "https://github.com/hzxwonder/dsh-desktop.git",
-    "ref": "master",
-    "commit": "b34aca9252667a2d4e5a7e842801a9e139df3db3",
-    "appVersion": "2.0.10",
+    "ref": "feat/desktop-prompt",
+    "commit": "5742edf18b5d7be5ed7921ffdfa37a88f9c747bd",
+    "appVersion": "2.0.11",
     "runtimeVersion": "0.1.5-rc.2",
     "dshEngine": ">=24.0.0"
   },

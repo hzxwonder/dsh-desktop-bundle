@@ -128,3 +128,9 @@ LGPL-3.0-or-later and MIT; see each `LICENSE`). The scripts and documents here
 follow the plugin family and use LGPL-3.0-only. The desktop shell comes from a
 fork of [anywhere-labs/dsh-desktop](https://github.com/anywhere-labs/dsh-desktop)
 under the upstream MIT license.
+
+## Prompt library
+
+Type `/prompt` in the composer to search saved prompts or browse recently used prompts. Preview the text and insert it into the draft, or create a prompt with a name and body. Keyboard navigation, retryable saves, and unsaved form protection are included.
+
+The complete Desktop 2.0.11 application includes the paired client and Host API. Builds use the exact manifest commit and verify both prompt components in the packaged application.

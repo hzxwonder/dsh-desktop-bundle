@@ -10,7 +10,7 @@
 #
 # Usage: ./build-dmg.sh [options]
 #   --arch arm64|universal   Package target (default: arm64)
-#   --ref <git-ref>          Fork revision to build (default: master)
+#   --ref <git-ref>          Fork revision to build (default: manifest commit)
 #   --source <dir>           Existing fork checkout to build instead of cloning
 #   --work <dir>             Build directory (default: <repo>/.build)
 #   --stage <dir>            Packaging output (default: /tmp/dsh-desktop-stage)
@@ -23,7 +23,7 @@ REPO_ROOT="${SELF_DIR}"
 APP_NAME="DSH Desktop.app"
 
 DEFAULT_REPO="$(node -p "require('${REPO_ROOT}/manifest.json').desktop.repository")"
-DEFAULT_REF="$(node -p "require('${REPO_ROOT}/manifest.json').desktop.ref")"
+DEFAULT_REF="$(node -p "require('${REPO_ROOT}/manifest.json').desktop.commit")"
 DESKTOP_VERSION="$(node -p "require('${REPO_ROOT}/manifest.json').desktop.appVersion")"
 
 ARCH="arm64"
@@ -82,11 +82,11 @@ else
   step "1/6 fork checkout (${DEFAULT_REPO} @ ${REF})"
   if [ -d "${FORK}/.git" ]; then
     git -C "${FORK}" fetch --quiet origin
-    git -C "${FORK}" checkout --quiet "${REF}"
-    git -C "${FORK}" pull --ff-only --quiet origin "${REF}" || git -C "${FORK}" reset --hard --quiet "origin/${REF}"
+    git -C "${FORK}" checkout --detach --quiet "${REF}"
   else
     mkdir -p "$(dirname "${FORK}")"
-    git clone --quiet --branch "${REF}" "${DEFAULT_REPO}" "${FORK}"
+    git clone --quiet "${DEFAULT_REPO}" "${FORK}"
+    git -C "${FORK}" checkout --detach --quiet "${REF}"
   fi
   git -C "${FORK}" submodule update --init --recursive --quiet
   echo "commit $(git -C "${FORK}" rev-parse --short HEAD)"
@@ -132,6 +132,8 @@ for candidate in "${STAGE}/mac-${ARCH}/${APP_NAME}" "${STAGE}/mac/${APP_NAME}" "
   [ -d "${candidate}" ] && { APP="${candidate}"; break; }
 done
 [ -n "${APP}" ] || { echo "build-dmg: no packaged application under ${STAGE}" >&2; exit 1; }
+
+node "${REPO_ROOT}/scripts/verify-prompt-runtime.mjs" "${APP}"
 
 step "5/6 ad-hoc signature"
 xattr -cr "${APP}"

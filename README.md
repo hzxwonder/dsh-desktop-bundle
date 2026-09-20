@@ -136,3 +136,9 @@ node scripts/vendor.mjs --check                   # 只报告偏差
 ![论文工作台演示](vendor/dsh-plugin-latex/assets/workbench-demo.gif)
 
 详见 [插件说明](vendor/dsh-plugin-latex/README.md) 和 [验收报告](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-latex/blob/main/docs/ACCEPTANCE.md)。演示由合成论文的实际 Desktop 操作截图组成。
+
+## 提示词库
+
+在聊天框输入 `/prompt` 打开提示词库，搜索或查看最近使用的提示词，预览正文后插入聊天框。点击“新建提示词”保存名称和正文。支持键盘选择、保存失败重试和未保存内容保护。
+
+Desktop 2.0.11 的完整应用提供配套的界面和数据接口。构建默认使用 `manifest.json` 的精确提交，打包后运行提示词前后端配套校验。
