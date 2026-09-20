@@ -131,6 +131,6 @@ under the upstream MIT license.
 
 ## Prompt library
 
-Type `/prompt` in the composer to search saved prompts or browse recently used prompts. Preview the text and insert it into the draft, or create a prompt with a name and body. Keyboard navigation, retryable saves, and unsaved form protection are included.
+Type `/prompt` in the composer and choose a saved template directly from the suggestion menu to insert its text. Choose “新建 Prompt 模板” to open the two-pane template editor: select or create templates on the left, edit their name and body on the right, and copy, delete, or save from the footer. Includes retryable saves, deletion confirmation, and unsaved edit protection.
 
 The complete Desktop 2.0.11 application includes the paired client and Host API. Builds use the exact manifest commit and verify both prompt components in the packaged application.
