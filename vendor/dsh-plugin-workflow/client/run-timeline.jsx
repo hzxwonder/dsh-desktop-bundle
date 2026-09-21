@@ -107,6 +107,8 @@ export function RunTimeline({ ctx, api, runId, openSession, onChange, embedded =
         </div>
         {focusNodeId && children}
         {state.output && !focusNodeId && <div className="wf-step-answer"><small>输出</small><Content value={state.output} /></div>}
+        {!!run.reviews?.[node.id]?.length && <details className="wf-review-history"><summary>评审记录 · {run.reviews[node.id].length} 轮</summary>{run.reviews[node.id].map(r => <section key={r.round}><strong>第 {r.round} 轮 · {r.accepted ? '通过' : '需要修订'}</strong><Content value={r.output} /></section>)}</details>}
+        {state.status === 'needs_attention' && node.repeat && <p role="status">已达到 {node.repeat.maxRounds} 轮评审上限。请检查评审记录，修改输入后通过步骤运行按钮开始新一轮。</p>}
         {state.status === 'stale' && <p className="wf-muted">输出已过期，等待重跑。</p>}
         {!!state.output?.attachments?.length && <div className="wf-file-row">{state.output.attachments.map(block => <FileCard key={block.attachment.attachmentId} api={api} runId={run.id} block={block} />)}</div>}
         {!!state.attempts?.length && <details><summary>文件与尝试记录 · {state.attempts.length}</summary>{state.attempts.map(a => <div key={a.index}><strong>尝试 {a.index} · {a.status}{a.reverted ? ' · 已回退' : ''}</strong><p className="wf-path">{a.folder}</p><pre>{pretty(a.checkpoint?.changes ?? [])}</pre></div>)}</details>}

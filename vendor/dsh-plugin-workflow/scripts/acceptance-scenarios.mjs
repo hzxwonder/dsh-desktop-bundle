@@ -57,7 +57,7 @@ export async function acceptance({ page, call, api, plugin, errors, environment 
   await record('U05', '总会话时间线显示步骤摘要', async () => {
     await page.getByRole('button', { name: '工作流', exact: true }).click();
     await page.locator('[data-workflow-card="editorial-demo"]').getByRole('button', { name: '打开', exact: true }).click();
-    await page.getByRole('tab', { name: '应用', exact: true }).click();
+    await page.getByRole('tab', { name: '运行记录', exact: true }).click();
     await page.getByRole('button', { name: '运行记录', exact: true }).click();
     await page.getByRole('button', { name: runId.slice(0, 18), exact: true }).click();
     await page.getByRole('button', { name: '打开总会话', exact: true }).click();

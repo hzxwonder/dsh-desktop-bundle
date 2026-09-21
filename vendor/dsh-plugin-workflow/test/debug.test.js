@@ -11,6 +11,28 @@ const definition = () => ({ schemaVersion: '1.0', id: 'debug', name: 'Editorial 
   { id: 'review', name: 'Review', kind: 'agent', prompt: 'Review', input: { text: { source: 'node', nodeId: 'draft', path: '/text' } } },
   { id: 'publish', name: 'Publish', kind: 'artifact', input: { content: { source: 'node', nodeId: 'review', path: '/text' } } },
 ], edges: [{ from: 'draft', to: 'review' }, { from: 'review', to: 'publish' }] });
+test('review team respects dependencies and explicit input boundaries', async t => {
+  const seen = {};
+  const f = await setup(t, { agent: async (node, input) => {
+    seen[node.id] = input;
+    return { text: node.id === 'ask' ? 'What does the method do?' : node.id };
+  } });
+  const d = definition();
+  d.nodes[0].input = { paper: { source: 'literal', value: 'original-only' }, article: { source: 'literal', value: 'reader-text' } };
+  d.nodes[0].subagents = [
+    { id: 'ask', name: 'Questioner', prompt: 'Ask', input: { paper: { source: 'workflow', path: '/paper' }, article: { source: 'workflow', path: '/article' } } },
+    { id: 'answer', name: 'Reader', prompt: 'Answer', dependsOn: ['ask'], input: { article: { source: 'workflow', path: '/article' }, question: { source: 'node', nodeId: 'ask', path: '/text' } } },
+    { id: 'judge', name: 'Reviewer', prompt: 'Review', dependsOn: ['answer'], input: { paper: { source: 'workflow', path: '/paper' }, answer: { source: 'node', nodeId: 'answer' } } },
+  ];
+  f.store.save(d, 1);
+  const run = await f.start({ revision: 2 });
+  assert.equal(run.status, 'completed', run.error);
+  assert.deepEqual(seen.answer, { article: 'reader-text', question: 'What does the method do?' });
+  assert.equal(seen.judge.paper, 'original-only');
+  assert.deepEqual(Object.keys(seen).slice(0, 3), ['ask', 'answer', 'judge']);
+  d.nodes[0].subagents[0].dependsOn = ['judge'];
+  assert.throws(() => validateDefinition(d), /SUBAGENT_CYCLE/);
+});
 async function setup(t, overrides = {}) {
   const root = await mkdtemp('/private/tmp/workflow-debug-'), cwd = join(root, 'project');
   await mkdir(cwd);
@@ -25,6 +47,34 @@ async function setup(t, overrides = {}) {
   t.after(async () => { await engine.close(); store.close(); await rm(root, { recursive: true, force: true }); });
   return { engine, store, start, calls, parent, cwd, root };
 }
+for (const sessionMode of ['new', 'continue']) test(`review repeats with ${sessionMode} sessions and preserves debug boundaries`, async t => {
+  let rounds = 0; const sessions = [];
+  const f = await setup(t, { agent: async (node, input, route, skills, parent, signal, hooks) => {
+    sessions.push([node.id, hooks.sessionId]); hooks.onSession({ sessionId: `${node.id}-session` });
+    if (node.id === 'review') return { score: ++rounds === 1 ? 60 : 90, text: 'reviewed' };
+    return { text: input.revisionFeedback ? 'revised' : 'first' };
+  } });
+  const d = definition(); d.nodes[1].repeat = { target: 'draft', until: { '>=': [{ var: 'score' }, 85] }, maxRounds: 3, sessionMode };
+  f.store.save(d, 1);
+  let r = await f.start({ revision: 2, debug: true });
+  r = await f.engine.resume(r.id, f.parent, undefined, true);
+  assert.equal(r.status, 'paused', r.error); assert.equal(rounds, 1); assert.equal(r.nodes.draft.status, 'pending');
+  r = await f.engine.resume(r.id, f.parent, undefined, true);
+  assert.equal(r.nodes.draft.output.text, 'revised');
+  assert.equal(sessions[2][1], sessionMode === 'continue' ? 'draft-session' : undefined);
+  r = await f.engine.resume(r.id, f.parent, undefined, true);
+  r = await f.engine.resume(r.id, f.parent, undefined, true);
+  assert.equal(r.status, 'completed', r.error); assert.equal(r.reviews.review.length, 2);
+  assert.equal(r.nodes.draft.attempts.length, 2);
+});
+test('review limit blocks publication and cannot be bypassed by resume', async t => {
+  const f = await setup(t, { agent: async () => ({ score: 20, text: 'draft' }) });
+  const d = definition(); d.nodes[1].repeat = { target: 'draft', until: { '>=': [{ var: 'score' }, 85] }, maxRounds: 2, sessionMode: 'new' }; f.store.save(d, 1);
+  let r = await f.start({ revision: 2 });
+  assert.equal(r.status, 'needs_attention', r.error); assert.equal(r.reviews.review.length, 2); assert.equal(r.nodes.publish, undefined);
+  r = await f.engine.resume(r.id, f.parent, undefined, true);
+  assert.equal(r.status, 'needs_attention'); assert.equal(r.nodes.publish, undefined);
+});
 test('D01 D02: debug advances one ready step and finishes at the last step', async t => {
   const f = await setup(t); let r = await f.start({ debug: true });
   assert.equal(r.status, 'paused'); assert.deepEqual(f.calls, ['draft']);

@@ -13,6 +13,7 @@ export const kinds = [
   "subworkflow",
   "approval",
   "artifact",
+  "publish",
 ];
 export const interactions = ["once", "goal"];
 const route = {
@@ -54,16 +55,30 @@ export const schema = {
               id: { type: "string", pattern: "^[a-zA-Z0-9_-]{1,80}$" },
               name: { type: "string", minLength: 1, maxLength: 160 },
               prompt: { type: "string", minLength: 1, maxLength: 100000 },
+              dependsOn: { type: "array", items: { type: "string" }, uniqueItems: true },
+              input: { type: "object" },
+              outputSchema: { type: 'object' },
               executor: { type: "string", minLength: 1 }, provider: route, model: route, effort: route,
               tools: { type: "array", items: { type: "string" }, uniqueItems: true },
-              skills: { type: "array", items: { type: "string" }, uniqueItems: true },
+          skills: { type: "array", items: { type: "string" }, uniqueItems: true },
             },
           } },
           executor: { type: "string", minLength: 1 },
+          resultMember: { type: 'string' },
+          exportMarkdown: { type: 'boolean' },
           provider: route,
           model: route,
           effort: route,
           prompt: { type: "string", maxLength: 100000 },
+          repeat: {
+            type: 'object', additionalProperties: false,
+            required: ['target', 'until', 'maxRounds', 'sessionMode'],
+            properties: {
+              target: { type: 'string' }, until: {},
+              maxRounds: { type: 'integer', minimum: 1, maximum: 20 },
+              sessionMode: { enum: ['continue', 'new'] },
+            },
+          },
           input: { type: "object" },
           outputSchema: { type: "object" },
           tools: {
@@ -71,6 +86,7 @@ export const schema = {
             items: { type: "string" },
             uniqueItems: true,
           },
+          skillOverrides: {type:"object",additionalProperties:{type:"string",maxLength:200000}},
           skills: {
             type: "array",
             items: { type: "string" },
@@ -183,12 +199,31 @@ export function validateDefinition(def) {
     if (graph.hasNode(node.id)) fail("DUPLICATE_NODE", node.id);
     graph.setNode(node.id);
     if (node.subagents?.length && node.kind !== "agent") fail("TEAM_REQUIRES_AGENT", node.id);
+    if (node.resultMember && !node.subagents?.some(m => m.id === node.resultMember)) fail('RESULT_MEMBER_REQUIRED', node.id);
     if (new Set(node.subagents?.map(m => m.id)).size !== (node.subagents?.length ?? 0)) fail("DUPLICATE_SUBAGENT", node.id);
     if (!node.name.trim()) fail('NAME_REQUIRED', node.id);
     for (const member of node.subagents ?? []) {
       if (!member.name.trim() || !member.prompt.trim()) fail('PROMPT_REQUIRED', `${node.id}.${member.id}`);
       for (const field of ['provider', 'model', 'effort'])
         if (member[field]?.mode === 'explicit' && !member[field].id?.trim()) fail('ROUTE_ID_REQUIRED', `${node.id}.${member.id}.${field}`);
+    }
+    const teamGraph = new graphlib.Graph({ directed: true });
+    for (const member of node.subagents ?? []) teamGraph.setNode(member.id);
+    for (const member of node.subagents ?? []) {
+      for (const dependency of member.dependsOn ?? []) {
+        if (!teamGraph.hasNode(dependency)) fail('UNKNOWN_SUBAGENT_DEPENDENCY', dependency);
+        teamGraph.setEdge(dependency, member.id);
+      }
+    }
+    if (!graphlib.alg.isAcyclic(teamGraph)) fail('SUBAGENT_CYCLE', node.id);
+    for (const member of node.subagents ?? []) {
+      const ancestors = new Set();
+      const visit = id => { for (const p of teamGraph.predecessors(id) ?? []) if (!ancestors.has(p)) { ancestors.add(p); visit(p); } };
+      visit(member.id);
+      for (const ref of Object.values(member.input ?? {})) {
+        validateReference(ref);
+        if (ref.source === 'node' && !ancestors.has(ref.nodeId)) fail('SUBAGENT_INPUT_DEPENDENCY_REQUIRED', member.id);
+      }
     }
     for (const field of ["provider", "model", "effort"])
       if (node[field]?.mode === "explicit" && !node[field].id)
@@ -241,6 +276,12 @@ export function validateDefinition(def) {
     return seen;
   };
   for (const node of def.nodes) {
+    if (node.repeat) {
+      if (node.kind !== 'agent') fail('REPEAT_REQUIRES_AGENT', node.id);
+      if (!ancestors(node.id).has(node.repeat.target)) fail('REPEAT_TARGET_MUST_BE_UPSTREAM', node.id);
+      if (def.nodes.find(n => n.id === node.repeat.target)?.kind !== 'agent') fail('REPEAT_TARGET_REQUIRES_AGENT', node.id);
+      validateCondition(node.repeat.until);
+    }
     for (const match of (node.prompt ?? "").matchAll(/\{\{(?:input|node)\.([a-zA-Z0-9_-]+)\}\}/g))
       if (!Object.hasOwn(node.input ?? {}, match[1])) fail("PROMPT_INPUT_MISSING", match[1]);
     for (const ref of Object.values(node.input ?? {})) {

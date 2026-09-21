@@ -41,13 +41,13 @@ export function StepPrompt({node, definition, onChange, onReference}) {
   const sync = () => { const text = serialize(editor.current); last.current = text; onChange(text); };
   return <div className="wf-prompt-composer">
     <div ref={editor} contentEditable suppressContentEditableWarning role="textbox" aria-label="步骤说明" aria-multiline="true"
-      className="wf-step-prompt" data-placeholder="描述这一步要做什么，点击引用添加其他步骤的结果…"
+      className="wf-step-prompt" data-placeholder="描述任务；需要协作时写明“使用 subagents”及各自职责…"
       onInput={sync} onKeyDown={e => {e.stopPropagation(); if (e.key === '@') {e.preventDefault(); setPicker(true);} }}
       onPaste={e => {e.preventDefault(); const text = e.clipboardData.getData('text/plain'); const selection = window.getSelection(); if (!selection?.rangeCount) return; const range = selection.getRangeAt(0); range.deleteContents(); const inserted = document.createTextNode(text); range.insertNode(inserted); range.setStartAfter(inserted); range.collapse(true); selection.removeAllRanges(); selection.addRange(range); sync();}}
     />
-    <button type="button" className="wf-add-reference" aria-expanded={picker} onClick={() => setPicker(v => !v)}>＠ 引用步骤</button>
+    <button type="button" className="wf-add-reference" aria-expanded={picker} onClick={() => setPicker(v => !v)}>＠ 添加步骤结果</button>
     {picker && <div className="wf-reference-picker">
-      <input aria-label="搜索可引用步骤" placeholder="搜索步骤" value={query} onChange={e => setQuery(e.target.value)} />
+      <p className="wf-muted">将所选步骤的输出作为本步输入，并等待它完成。</p><input aria-label="搜索可引用步骤" placeholder="搜索步骤" value={query} onChange={e => setQuery(e.target.value)} />
       {definition.nodes.filter(n => canConnect(definition, n.id, node.id) && n.name.includes(query)).map(source => <button type="button" key={source.id} className={`wf-step-${source.kind}`} onClick={() => {onReference(source.id); setPicker(false); setQuery('');}}>{source.name}</button>)}
     </div>}
   </div>;

@@ -2,9 +2,38 @@ import { readFile } from "node:fs/promises";
 import { fail } from "./definition.js";
 import { hash, uid } from "./store.js";
 import { renderPrompt } from "./graph-edit.js";
+import { publishHalo } from './publisher.js';
 
-export function harnessAdapter(ctx) {
+// Only the authored step prompt enables delegation; input materials cannot grant tools.
+export function stepTools(node) {
+  const allow = [...(node.tools ?? [])];
+  if (/使用\s*subagents?\b/i.test(node.prompt ?? '') && !allow.includes('subagent')) allow.push('subagent');
+  return allow;
+}
+
+export function harnessAdapter(ctx, options = {}) {
+  const workflowParents = new Set();
+  // Presets may register per-session tools after the child's inherited filter.
+  // A monotonic execution guard also covers that session-owned surface.
+  ctx.tools?.guard?.(({ agent, name }) => {
+    // Find the owning workflow step, including prompt-created descendants.
+    let owner = agent;
+    const seen = new Set();
+    while (owner && !workflowParents.has(owner.session.header.parentSession)) {
+      const parentId = owner.session.header.parentSession;
+      if (!parentId || seen.has(parentId)) return;
+      seen.add(parentId);
+      owner = ctx.agents?.get?.(parentId);
+    }
+    if (!owner) return;
+    const descriptor = owner.session.snapshotEvents().find(e => e.type === 'subagent/descriptor')?.data;
+    const allowed = descriptor?.toolFilter?.allow;
+    const ownDescriptor = agent.session.snapshotEvents().find(e => e.type === 'subagent/descriptor')?.data;
+    if (ownDescriptor?.mode === 'one-shot' && name === 'structured_output') return;
+    if (allowed && !allowed.includes(name)) return 'WORKFLOW_TOOL_NOT_ALLOWED';
+  });
   return {
+    async publish(input, signal) { return publishHalo(input, options.haloConfigPath, signal); },
     async file(path, name) { return { type: 'file', attachment: await ctx.attachments.saveFile({ data: await readFile(path), name }) }; },
     rootRoute(parent) {
       const selection = ctx.sessionProjections.stateOf(
@@ -60,16 +89,20 @@ export function harnessAdapter(ctx) {
       return result;
     },
     async agent(node, input, route, skills, parent, signal, hooks = {}) {
+      workflowParents.add(parent.session.id);
+      const allowedTools = stepTools(node);
       const { executor, ...agentOptions } = route;
       const material = typeof input === 'string' ? input : Object.entries(input ?? {}).filter(([key]) => key !== 'attachments').map(([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value, null, 2)}`).join('\n\n');
-      const prompt = [{ type: "text", text: [renderPrompt(node.prompt, input), ...skills.map(s => s.content), material, node.outputSchema ? `Return only a JSON object matching this schema: ${JSON.stringify(node.outputSchema)}` : ''].filter(Boolean).join('\n\n') }, ...(input?.attachments ?? []).filter(a => ['file', 'image'].includes(a.type) && a.attachment?.attachmentId)];
+      const prompt = [{ type: "text", text: [renderPrompt(node.prompt, input), ...skills.map(s => s.content), material, `This workflow step may use only these tools: ${JSON.stringify(allowedTools)}. Do not delegate, read files, or use any other tool unless it is listed. When delegating, follow the roles, material boundaries and dependencies specified in the step prompt. Give each child only its assigned material and wait for its result before completing. Work directly from the supplied material.`, node.outputSchema ? `Return only a JSON object matching this schema: ${JSON.stringify(node.outputSchema)}. No preface or afterword.` : ''].filter(Boolean).join('\n\n') }, ...(input?.attachments ?? []).filter(a => ['file', 'image'].includes(a.type) && a.attachment?.attachmentId)];
+      if (hooks.sessionId && !ctx.subagents.getProvider(executor)?.prepareContinuable) fail('SESSION_CONTINUATION_UNSUPPORTED');
       if (ctx.subagents.getProvider(executor)?.prepareContinuable) {
-        const started = await ctx.agents.withInitiator(parent, () => ctx.subagents.startContinuable({
+        const started = hooks.sessionId ? { childId: hooks.sessionId } : await ctx.agents.withInitiator(parent, () => ctx.subagents.startContinuable({
           provider: executor, label: node.name, signal,
-          request: { parent, agentOptions, toolFilter: { allow: node.tools ?? [] }, prompt },
+          request: { parent, agentOptions, toolFilter: { allow: allowedTools }, prompt },
         }));
         const child = ctx.agents.get(started.childId);
         if (!child) fail("STEP_SESSION_UNAVAILABLE");
+        if (hooks.sessionId) await ctx.subagents.prompt({ requestId: uid('review'), parentSessionId: parent.session.id, childSessionId: hooks.sessionId, mode: 'continuable', delivery: 'queue', content: prompt }, signal);
         hooks.onSession?.({ sessionId: started.childId, executor, continuable: true });
         const cancel = () => child.cancel({ kind: "parent" });
         signal.addEventListener("abort", cancel, { once: true });
@@ -83,7 +116,15 @@ export function harnessAdapter(ctx) {
           const last = [...events].reverse().find(e => e.type === 'assistant/message' && e.data.message.content.length);
           const text = last?.data.message.content.filter(b => b.type === 'text').map(b => b.text).join('\n') ?? '';
           if (node.outputSchema) {
-            try { return JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, '')); } catch { fail('STRUCTURED_OUTPUT_MISSING'); }
+            try { return parseStructuredOutput(text); } catch {
+              await ctx.subagents.prompt({ requestId: uid('format'), parentSessionId: parent.session.id, childSessionId: started.childId, mode: 'continuable', delivery: 'queue', content: [{ type: 'text', text: `Your final result was not valid JSON. Return the same substantive result as valid JSON only. Escape backslashes and newlines correctly; Markdown escapes such as backslash-star must be doubled in JSON strings. Do not change the score or facts. Schema: ${JSON.stringify(node.outputSchema)}` }] }, signal);
+              await child.whenIdle();
+              signal.throwIfAborted();
+              const repaired = child.session.snapshotEvents();
+              if ([...repaired].reverse().find(e => e.type === 'turn/end')?.data.reason?.kind !== 'completed') fail('NODE_EXECUTION_FAILED');
+              const message = [...repaired].reverse().find(e => e.type === 'assistant/message');
+              return parseStructuredOutput(message?.data.message.content.filter(b => b.type === 'text').map(b => b.text).join('\n') ?? '');
+            }
           }
           return { text };
         } finally { signal.removeEventListener('abort', cancel); hooks.onTrace?.(child.session.snapshotEvents()); }
@@ -94,7 +135,7 @@ export function harnessAdapter(ctx) {
           parent,
           signal,
           agentOptions,
-          toolFilter: { allow: node.tools ?? [] },
+          toolFilter: { allow: allowedTools },
           ...(node.outputSchema ? { outputSchema: node.outputSchema } : {}),
           prompt: [
             {
@@ -140,6 +181,15 @@ export function harnessAdapter(ctx) {
       return result.value ?? { content: result.content };
     },
   };
+}
+
+export function parseStructuredOutput(text) {
+  try { return JSON.parse(text.trim()); } catch {}
+  const blocks = [...text.matchAll(/```json\s*\n([\s\S]*?)\n```/g)];
+  if (blocks.length === 1) {
+    try { return JSON.parse(blocks[0][1]); } catch {}
+  }
+  fail('STRUCTURED_OUTPUT_MISSING');
 }
 
 export async function materialInput(ctx, messages, signal) {

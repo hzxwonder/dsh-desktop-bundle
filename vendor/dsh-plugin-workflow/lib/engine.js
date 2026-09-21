@@ -120,6 +120,7 @@ export class Engine {
           parent,
           signal,
         );
+        prepared.skills[node.id] = prepared.skills[node.id].map(skill => node.skillOverrides?.[skill.name] === undefined ? skill : {...skill, content:node.skillOverrides[skill.name], hash:hash(node.skillOverrides[skill.name])});
       }
       if (node.subagents?.length) {
         prepared.teams ??= {};
@@ -289,7 +290,7 @@ export class Engine {
             ? "cancelled"
             : error.code === "APPROVAL_REQUIRED"
               ? "waiting_approval"
-              : "failed";
+              : error.code === 'REVIEW_LIMIT' ? 'needs_attention' : "failed";
       run.error = String(reason?.message ?? reason).slice(0, 3000);
     } finally {
       run.endedAt = Date.now();
@@ -346,6 +347,7 @@ export class Engine {
             return;
           }
           if (paused(run.nodes[key])) return;
+          if (node.repeat && (run.reviews?.[key]?.length ?? 0) >= node.repeat.maxRounds && !run.reviews[key].at(-1).accepted) fail('REVIEW_LIMIT', key);
           if (run.debug && !["subworkflow", "loop"].includes(node.kind)) run.stepBudget--;
           const mapped = mapInputs(node.input, input, local);
           const output = await this.executeNode(
@@ -367,6 +369,38 @@ export class Engine {
       batch.forEach((n) => pending.delete(n.id));
       const rejected = results.find((r) => r.status === "rejected");
       if (rejected) throw rejected.reason;
+      for (const node of batch) {
+        const key = prefix + node.id;
+        if (!node.repeat || run.nodes[key]?.status !== 'completed') continue;
+        const history = (run.reviews ??= {})[key] ??= [];
+        const attempt = run.nodes[key].attempts.length;
+        if (history.at(-1)?.attempt === attempt) continue;
+        const accepted = evaluateCondition(node.repeat.until, local[node.id]);
+        history.push({ round: history.length + 1, attempt, accepted, output: structuredClone(local[node.id]) });
+        this.store.updateRun(run, 'review.completed', { nodeId: key, round: history.length, accepted });
+        if (accepted) continue;
+        if (history.length >= node.repeat.maxRounds) {
+          // Keep the review pending so resuming cannot bypass the quality gate.
+          run.nodes[key].status = 'needs_attention';
+          fail('REVIEW_LIMIT', key);
+        }
+        const affected = new Set([node.repeat.target]);
+        let changed = true;
+        while (changed) { changed = false; for (const e of def.edges) if (affected.has(e.from) && !affected.has(e.to)) { affected.add(e.to); changed = true; } }
+        for (const id of affected) {
+          const state = run.nodes[prefix + id];
+          if (state) {
+            state.status = 'pending';
+            state.resumeSessionId = node.repeat.sessionMode === 'continue' ? state.sessionId : undefined;
+            state.resumeMemberSessions = node.repeat.sessionMode === 'continue' ? Object.fromEntries(Object.entries(state.subagents ?? {}).filter(([, m]) => m.sessionId).map(([id, m]) => [id, m.sessionId])) : {};
+            state.feedback = { round: history.length + 1, review: local[node.id] };
+          }
+          delete run.outputs[prefix + id];
+          pending.add(id);
+        }
+        for (const id of affected) delete local[id];
+        this.store.updateRun(run, 'review.repeating', { nodeId: key, target: node.repeat.target, sessionMode: node.repeat.sessionMode });
+      }
       if (Object.values(run.nodes).some(paused) || run.debugBoundary) return local;
     }
     return def.outputs ? mapInputs(def.outputs, input, local) : local;
@@ -392,16 +426,20 @@ export class Engine {
     const attachments = [...new Map([...inherited, ...(override?.attachments ?? [])].map(a => [a.attachment.attachmentId, a])).values()];
     if (attachments.length) input = { ...input, attachments };
     const old = run.nodes[key];
+    if (old?.feedback) input = { ...input, revisionFeedback: old.feedback };
     const attempts = old?.attempts ?? [];
     const state = (run.nodes[key] = {
       status: "running",
       input,
       prompt: node.prompt ?? "",
       effects:
-        node.kind === "tool" || node.tools?.length
+        node.kind === "tool" || node.kind === 'publish' || node.tools?.length
           ? "write"
           : (node.effects ?? "read-only"),
       attempts,
+      ...(old?.resumeSessionId ? { resumeSessionId: old.resumeSessionId } : {}),
+      ...(old?.resumeMemberSessions ? { resumeMemberSessions: old.resumeMemberSessions } : {}),
+      ...(old?.feedback ? { feedback: old.feedback } : {}),
       ...(old?.interaction ? { interaction: old.interaction } : {}),
       name: node.name, kind: node.kind, route: prepared.routes[node.id] ?? null,
     });
@@ -443,8 +481,9 @@ export class Engine {
     if (
       run.unattended &&
       !run.approvedTools?.includes(key) &&
-      ((node.kind === "tool" && !allowed.includes(node.tool)) ||
-        node.tools?.some((t) => !allowed.includes(t)))
+      ((node.kind === 'publish' && !allowed.includes('halo_publish')) || (node.kind === "tool" && !allowed.includes(node.tool)) ||
+        node.tools?.some((t) => !allowed.includes(t)) ||
+        node.subagents?.some(m => m.tools?.some(t => !allowed.includes(t))))
     ) {
       state.status = "waiting_approval";
       state.permissionGate = true;
@@ -479,11 +518,19 @@ export class Engine {
         if (node.kind === "agent") {
           if (prepared.teams?.[node.id]?.length) {
             state.subagents = {};
-            const team = await Promise.allSettled(prepared.teams[node.id].map(async member => {
+            const remaining = new Set(prepared.teams[node.id].map(m => m.node.id));
+            const memberOutputs = {};
+            while (remaining.size) {
+              const ready = prepared.teams[node.id].filter(m => remaining.has(m.node.id) && (m.node.dependsOn ?? []).every(id => Object.hasOwn(memberOutputs, id)));
+              if (!ready.length) fail('SUBAGENT_GRAPH_BLOCKED', key);
+              const team = await Promise.allSettled(ready.map(async member => {
               if (++run.calls > (run.prepared.definition.limits?.maxNodeCalls ?? 100)) fail('CALL_BUDGET');
               const memberState = state.subagents[member.node.id] = { name: member.node.name, status: "running", route: member.route };
               try {
-                memberState.output = await this.adapter.agent(member.node, input, member.route, member.skills, parent, deadline, {
+                const memberInput = member.node.input === undefined ? input : mapInputs(member.node.input, input, memberOutputs);
+                memberState.input = memberInput;
+                memberState.output = await this.adapter.agent(member.node, memberInput, member.route, member.skills, parent, deadline, {
+                  sessionId: old?.resumeMemberSessions?.[member.node.id],
                   onTrace: events => { memberState.trace = events; },
                   onSession: info => { Object.assign(memberState, info); this.store.updateRun(run, "subagent.started", { nodeId: key, memberId: member.node.id }); },
                 });
@@ -494,17 +541,22 @@ export class Engine {
             }));
             const failure = team.find(r => r.status === "rejected");
             if (failure) throw failure.reason;
-            input = { ...input, subagents: Object.fromEntries(team.map(r => r.value)) };
+              for (const result of team) { memberOutputs[result.value[0]] = result.value[1]; remaining.delete(result.value[0]); }
+            }
+            input = { ...input, subagents: memberOutputs };
           }
-          output = await this.adapter.agent(
+          output = node.resultMember ? input.subagents[node.resultMember] : await this.adapter.agent(
             node,
             input,
             prepared.routes[node.id],
             prepared.skills[node.id],
             parent,
             deadline,
-            { onTrace: events => { state.trace = events; }, onSession: info => { Object.assign(state, info); record.sessionId = info.sessionId; this.store.updateRun(run, "node.session", { nodeId: key }); } },
+            { sessionId: old?.resumeSessionId, onTrace: events => { state.trace = events; }, onSession: info => { Object.assign(state, info); record.sessionId = info.sessionId; this.store.updateRun(run, "node.session", { nodeId: key }); } },
           );
+        } else if (node.kind === 'publish') {
+          if (!this.adapter.publish) fail('PUBLISH_UNAVAILABLE');
+          output = await this.adapter.publish(input, deadline);
         } else if (node.kind === "tool")
           output = await this.adapter.tool(node.tool, input, parent, deadline);
         else if (node.kind === "condition")
@@ -577,6 +629,15 @@ export class Engine {
         }
         if (node.outputSchema)
           checkData(node.outputSchema, output, "OUTPUT_SCHEMA");
+        record.output = structuredClone(output);
+        if (state.subagents) record.subagents = Object.fromEntries(Object.entries(state.subagents).map(([id, { trace, ...member }]) => [id, structuredClone(member)]));
+        if (node.exportMarkdown && typeof output?.text === 'string') {
+          const path = join(record.folder, 'article.md');
+          await writeFile(path, output.text, { mode: 0o600 });
+          const artifact = { id: uid('artifact'), runId: run.id, path, name: 'article.md', mediaType: 'text/markdown', bytes: Buffer.byteLength(output.text) };
+          if (this.adapter.file) { artifact.attachment = await this.adapter.file(path, artifact.name); output.attachments = [artifact.attachment]; }
+          this.store.put('artifact', artifact.id, artifact);
+        }
         record.checkpoint = await this.checkpoints.finish(before, record.folder, output);
         if (this.adapter.file && output && typeof output === 'object' && record.checkpoint.root) {
           const files = [];
@@ -820,6 +881,13 @@ export class Engine {
         state.status = 'stale';
         delete state.output;
         delete state.interaction;
+        delete state.resumeSessionId;
+        delete state.resumeMemberSessions;
+        delete state.feedback;
+        if (run.reviews?.[key]) {
+          (run.reviewHistory ??= []).push({ nodeId: key, rounds: run.reviews[key] });
+          delete run.reviews[key];
+        }
         delete run.outputs[key];
       }
       run.status = 'paused';

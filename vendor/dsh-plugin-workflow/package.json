@@ -17,7 +17,8 @@
     "cordis.patch.yml",
     "README.md",
     "LICENSE",
-    "assets"
+    "assets",
+    "scripts/halo-publish.py"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",

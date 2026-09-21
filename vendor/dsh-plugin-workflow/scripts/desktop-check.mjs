@@ -32,7 +32,7 @@ try {
   if (!(await session.eval(`document.querySelector('button[aria-label=工作流]')?.getAttribute('aria-expanded') === 'true'`))) await session.click('button[aria-label=工作流]');
   if(await session.eval(`!!document.querySelector('button[aria-label=返回工作流列表]')`)) await click('返回工作流列表');
   await session.waitFor(`!!document.querySelector('[data-workflow-card="desktop-review-${suffix}"]')`);
-  await click('打开',`[data-workflow-card="desktop-review-${suffix}"] button`);await click('应用','[role=tab]');await click('运行记录');await click(runId.slice(0,18));await click('打开总会话');
+  await click('打开',`[data-workflow-card="desktop-review-${suffix}"] button`);await click('运行记录','[role=tab]');await click('运行记录');await click(runId.slice(0,18));await click('打开总会话');
   await session.waitFor('!!document.querySelector(".wf-timeline")');if(await session.eval(`!!document.querySelector('button[aria-label=展开过程]')`)) await click('展开过程');
   await session.waitFor(`document.querySelector('.wf-native-step [data-chat-flow]')?.textContent.includes('Synthetic local execution completed')`);
   await capture('native-step');

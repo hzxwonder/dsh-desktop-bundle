@@ -6,7 +6,8 @@ import { Store, uid } from "./lib/store.js";
 import { Engine } from "./lib/engine.js";
 import { Scheduler, nextAt } from "./lib/scheduler.js";
 import { schema, fail, checkData } from "./lib/definition.js";
-import { paperTemplate, blankTemplate } from "./lib/templates.js";
+import { blankTemplate } from "./lib/templates.js";
+import { reviewedPaperTemplate as paperTemplate } from './lib/paper-workflow.js';
 import { harnessAdapter, materialInput } from "./lib/harness.js";
 
 export const name = "dsh-plugin-workflow";
@@ -43,7 +44,7 @@ export async function apply(ctx, config = {}) {
     store.close();
     throw error;
   }
-  const adapter = harnessAdapter(ctx);
+  const adapter = harnessAdapter(ctx, { haloConfigPath: join(directory, 'halo-destination.json') });
   const engine = new Engine(store, adapter, join(directory, "artifacts"));
   const owned = new Map();
   const jobs = new Set();
@@ -61,12 +62,15 @@ export async function apply(ctx, config = {}) {
     const live = ctx.agents.get(id);
     if (live) return live;
     if (!owned.has(id))
-      owned.set(id, await ctx.agents.resume({ resumeSessionId: id, setup: (childCtx) => {
+      owned.set(id, await ctx.agents.resume({ resumeSessionId: id, setup: async (childCtx, child) => {
+        const presets = ctx.get('agentPresets');
+        if (presets) await presets.mount(childCtx, ctx.sessionProjections.stateOf(child.session, 'agentPreset') ?? undefined);
         const step = stepForSession(id);
         if (step) {
           const node = step.run.prepared.definition.nodes.find(n => n.id === step.nodeId);
           const spec = step.memberId ? node?.subagents?.find(m => m.id === step.memberId) : node;
           childCtx.tools.restrict({ allow: spec?.tools ?? [] });
+          childCtx.tools.guard(({ name }) => (spec?.tools ?? []).includes(name) ? undefined : 'WORKFLOW_TOOL_NOT_ALLOWED');
         }
       } }));
     return owned.get(id).agent;
@@ -145,6 +149,7 @@ export async function apply(ctx, config = {}) {
       sessionId: occurrence.sessionId,
       meta: { cwd: p.cwd },
       agentOptions: p.rootRoute,
+      setup: async (childCtx) => { await ctx.get('agentPresets')?.mount(childCtx); },
     });
     try {
       store.bind(
@@ -193,6 +198,7 @@ export async function apply(ctx, config = {}) {
     ["workflow-discovery", "Clarify workflow requirements before design"],
     ["workflow-refiner", "Repair and finely tune existing workflows"],
     ["workflow-debugger", "Debug workflows one node at a time"],
+    ["paper-explainer", "Write evidence-grounded beginner paper explanations with layered reading"],
   ];
   const skillText = {};
   for (const [skillName, description] of bundledSkills) {
@@ -215,18 +221,22 @@ export async function apply(ctx, config = {}) {
     signal = AbortSignal.timeout(60000),
   ) => {
     const { action, ...a } = args;
-    if (action === "state")
+    if (action === "state") {
+      const allRuns = store.list("run");
+      const usedSessions = new Set(allRuns.map(run => JSON.stringify([run.workflowId, run.sessionId])));
       return {
         workflows: store.list("workflow").map(w => ({ ...w, debug: Boolean(store.get("runSettings", w.id)?.debug) })),
         authoring: store.list("authoring"),
         bindings: store.list("binding"),
-        stepSessions: store.list("run").flatMap(run => Object.entries(run.nodes).flatMap(([nodeId, n]) => [
+        stepSessions: allRuns.flatMap(run => Object.entries(run.nodes).flatMap(([nodeId, n]) => [
           ...(n.sessionId ? [{ sessionId: n.sessionId, parentSessionId: run.sessionId, runId: run.id, nodeId, name: n.name }] : []),
           ...Object.entries(n.subagents ?? {}).filter(([, m]) => m.sessionId).map(([memberId, m]) => ({ sessionId: m.sessionId, parentSessionId: run.sessionId, runId: run.id, nodeId, memberId, name: m.name })),
         ])),
-        references: store.list("reference"),
-        runs: store
-          .list("run")
+        references: store.list("reference").map(reference => ({
+          ...reference,
+          hasHistory: usedSessions.has(JSON.stringify([reference.workflowId, reference.sessionId])),
+        })),
+        runs: allRuns
           .slice(0, 100)
           .map(({ prepared, input, outputs, nodes, ...run }) => ({
             ...run,
@@ -241,6 +251,13 @@ export async function apply(ctx, config = {}) {
         schedules: store.list("schedule"),
         schedulerError: scheduler.lastError,
       };
+    }
+    if (action === "skillRead") {
+      if (typeof a.name !== 'string' || a.name.length > 200) fail('INVALID_SKILL_NAME');
+      const item = await ctx.skills.get(a.name, {cwd:parent?.session.header.cwd, signal});
+      if (!item) fail('SKILL_UNAVAILABLE',a.name);
+      return {name:a.name,content:item.content};
+    }
     if (action === "describe")
       return { schema, templates: [paperTemplate(), blankTemplate("custom")] };
     if (action === "read") {

@@ -1,3 +1,5 @@
+import { StepOutline } from './step-outline.jsx';
+import { createGallery } from './gallery.jsx';
 import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { Menu } from "@deepseek-ai/dsh-client-ui-primitives";
 import {
@@ -42,6 +44,7 @@ import {
   Code,
   Send,
   RefreshCw,
+  AlertTriangle,
   Workflow,
   LayoutGrid,
   List,
@@ -73,6 +76,7 @@ const labels = {
   subworkflow: "子工作流",
   approval: "确认",
   artifact: "输出",
+  publish: "发布",
 };
 const statuses = {
   queued: "等待执行",
@@ -105,6 +109,7 @@ const glyphs = {
   subworkflow: GitBranch,
   approval: Check,
   artifact: FileText,
+  publish: Send,
 };
 const glyphFor = (glyph, size) => {
   const Glyph = glyphs[glyph] ?? GitBranch;
@@ -141,19 +146,7 @@ function Field({ label, children }) {
     </div>
   );
 }
-function TeamEditor({ members, update }) {
-  const patch = (index, changes) => update(members.map((member, i) => i === index ? { ...member, ...changes } : member));
-  return <section className="wf-team-editor" aria-label="并行子代理配置"><h3>并行子代理</h3><p className="wf-muted">先并行执行各成员，再由本步骤汇总结果。每个成员保留独立会话。</p>
-    {members.map((member, index) => <details key={member.id} open><summary>{member.name || `子代理 ${index + 1}`}</summary>
-      <Field label="子代理名称"><input value={member.name} onChange={e => patch(index, { name: e.target.value })} /></Field>
-      <Field label="子代理任务"><textarea value={member.prompt} onChange={e => patch(index, { prompt: e.target.value })} /></Field>
-      <Field label="子代理模型"><input placeholder="留空继承主会话" value={member.model?.mode === 'explicit' ? member.model.id : ''} onChange={e => patch(index, { model: e.target.value ? { mode: 'explicit', id: e.target.value } : { mode: 'inherit' } })} /></Field>
-      <Field label="子代理工具"><input placeholder="工具名称，以逗号分隔" value={(member.tools ?? []).join(', ')} onChange={e => patch(index, { tools: [...new Set(e.target.value.split(',').map(t => t.trim()).filter(Boolean))] })} /></Field>
-      <button type="button" onClick={() => update(members.filter((_, i) => i !== index))}>移除子代理</button>
-    </details>)}
-    <button type="button" disabled={members.length >= 8} onClick={() => update([...members, { id: `member-${crypto.randomUUID().slice(0, 8)}`, name: `子代理 ${members.length + 1}`, prompt: '' }])}><Plus size={14} />添加子代理</button>
-  </section>;
-}
+
 function JsonField({ label, value, change, rows = 5 }) {
   const [text, setText] = useState(pretty(value ?? {}));
   const [error, setError] = useState("");
@@ -218,7 +211,13 @@ export function apply(ctx) {
     error: "",
   };
   const listeners = new Set();
-  let panelOpen = false;
+  // Whether the panel was open belongs to the person, not to the process: the
+  // Desktop window is closed and reopened often, and losing the workflow view
+  // every time reads as the panel forgetting where it was.
+  const panelOpenKey = "workflow-studio:panel-open";
+  let panelOpen = (() => {
+    try { return localStorage.getItem(panelOpenKey) === "true"; } catch { return false; }
+  })();
   let panel = { id: null, tab: "graph" };
   const panelListeners = new Set();
   let picker = null;
@@ -252,13 +251,27 @@ export function apply(ctx) {
     snapshot = next;
     listeners.forEach((f) => f());
   };
+  // A run registers a conversation the host may not have listed yet, and the gallery
+  // shows a conversation only once the host knows the session. Whenever the state names
+  // a session the list does not hold, ask for the list again so the conversation a run
+  // just created becomes visible without reopening the panel.
+  const syncSessions = (data) => {
+    const known = ctx.sessions.list.getSnapshot().byId;
+    const referenced = new Set([
+      ...data.references.map((item) => item.sessionId),
+      ...data.bindings.map((item) => item.sessionId),
+      ...data.runs.map((item) => item.sessionId),
+      ...(data.stepSessions ?? []).map((item) => item.sessionId),
+    ]);
+    if ([...referenced].some((id) => id && !known[id])) void ctx.sessions.refresh();
+  };
   const refresh = () => {
     if (stopped) return Promise.resolve();
     if (refreshing) return refreshing;
     refreshing = api({ action: "state" }, AbortSignal.any([
       lifetime.signal, AbortSignal.timeout(15000),
     ]))
-      .then((data) => publish({ ...data, error: "" }))
+      .then((data) => { publish({ ...data, error: "" }); syncSessions(data); })
       .catch((e) => publish({ ...snapshot, error: e.message }))
       .finally(() => { refreshing = undefined; });
     return refreshing;
@@ -287,6 +300,7 @@ export function apply(ctx) {
   const setPanelOpen = (value) => {
     if (panelOpen === value) return;
     panelOpen = value;
+    try { localStorage.setItem(panelOpenKey, String(value)); } catch { /* storage may be unavailable */ }
     panelListeners.forEach((f) => f());
   };
   const openEditor = (id, tab = "graph") => {
@@ -359,14 +373,19 @@ export function apply(ctx) {
     return id;
   };
   const openSession = (id) => {
-    ctx.sessions.open(id);
-    ctx.layout.selectPanel(null);
+    ctx.uiWorkspace.openSession(id);
     setPanelOpen(false);
     closePicker();
   };
   const bindSession = async (wf, sessionId, mode = "run", revision) => {
-    const workspace =
-      mode === "run" && !sessionId ? await ensureWorkflowWorkspace(wf.id, wf.name) : null;
+    // A session without a workspace opens on the workspace picker, so a conversation
+    // started from a card or from 对话修改 is placed in a workspace before it opens:
+    // the workflow's own workspace for a run, the shared one for a modification.
+    const workspace = sessionId
+      ? null
+      : mode === "run"
+        ? await ensureWorkflowWorkspace(wf.id, wf.name)
+        : await ensureWorkflowWorkspace("tmp", "工作流对话");
     const id = sessionId ?? (await newSession(workspace?.workspaceId));
     await api({
       action: "bind",
@@ -399,29 +418,6 @@ export function apply(ctx) {
     await refresh();
     return id;
   };
-  // The editor's "编辑这些步骤" composer reuses one authoring conversation per
-  // workflow, creating it on first use without stealing the current panel.
-  const ensureAuthorSession = async (workflowId, revision) => {
-    const existing = snapshot.bindings.find(
-      (item) => item.workflowId === workflowId && item.mode === "author",
-    );
-    const listed =
-      existing && ctx.sessions.list.getSnapshot().byId[existing.sessionId];
-    if (listed) return existing.sessionId;
-    const tmp = await ensureWorkflowWorkspace("tmp", "工作流对话");
-    const id = await newSession(tmp.workspaceId);
-    await api({ action: "authorStart", sessionId: id });
-    await api({
-      action: "bind",
-      sessionId: id,
-      id: workflowId,
-      revision,
-      mode: "author",
-    });
-    await ctx.sessions.refresh();
-    await refresh();
-    return id;
-  };
   const unbind = async (sessionId) => {
     await api({ action: "unbind", sessionId });
     await refresh();
@@ -443,352 +439,7 @@ export function apply(ctx) {
     );
   // Conversation rows for one workflow, shared by the gallery card and the list
   // row. The sidebar keeps a single entry, so these actions live here.
-  function WorkflowSessions({ workflow, data, sessions, onError }) {
-    const [menuSession, setMenuSession] = useState(null);
-    const perform = (fn) =>
-      Promise.resolve()
-        .then(fn)
-        .catch((e) => onError(e.message));
-    const act = async (action, sessionId, title) => {
-      setMenuSession(null);
-      if (action === "copy") {
-        if (window.__dshSessionActions?.copy) {
-          await window.__dshSessionActions.copy(sessionId, title);
-        } else {
-          throw new Error("复制会话引用需要安装会话工具插件");
-        }
-      } else if (action === "rename") {
-        const next = window.prompt("重命名会话", title || "");
-        if (next?.trim()) {
-          const session = ctx.sessions.binding(sessionId)?.session;
-          if (!session) throw new Error("会话尚未就绪");
-          const result = await session.rename(next.trim());
-          if (!result.ok) throw new Error(result.error.message);
-          await ctx.sessions.refresh();
-        }
-      } else if (action === "fork") {
-        const childId = await ctx.sessions.fork({ sessionId, increaseTitle: true });
-        const binding = data.bindings.find((item) => item.sessionId === sessionId);
-        if (binding)
-          await api({
-            action: "bind",
-            sessionId: childId,
-            id: binding.workflowId,
-            revision: binding.revision,
-            mode: binding.mode,
-          });
-        await ctx.sessions.refresh();
-        await refresh();
-        ctx.sessions.open(childId);
-        setPanelOpen(false);
-      } else if (action === "archive") {
-        await ctx.uiWorkspace.archiveSession(sessionId);
-        await ctx.sessions.refresh();
-        await refresh();
-      }
-    };
-    const rows = data.references.filter(
-      (r) =>
-        r.workflowId === workflow.id &&
-        sessions.byId[r.sessionId] &&
-        !ctx.workspaces.list
-          .getSnapshot()
-          .archivedSessionIds.includes(r.sessionId),
-    );
-    if (!rows.length)
-      return <p className="wf-sessions-empty">还没有对话，点「运行」开始一个。</p>;
-    return (
-      <div className="wf-sessions">
-        {rows.map((r) => {
-          const title = sessions.byId[r.sessionId].displayTitle;
-          const openMenu = menuSession === r.sessionId;
-          return (
-            <div
-              key={r.sessionId}
-              className={
-                "wf-session-row " +
-                (sessions.current === r.sessionId ? "selected" : "")
-              }
-            >
-              <button
-                type="button"
-                className="wf-session-name"
-                title={title}
-                onClick={() => {
-                  ctx.sessions.open(r.sessionId);
-                  setPanelOpen(false);
-                }}
-              >
-                <MessageSquare size={13} aria-hidden="true" />
-                <span>{title}</span>
-              </button>
-              <Menu
-                open={openMenu}
-                onClose={() => setMenuSession(null)}
-                onSelect={(action) => perform(() => act(action, r.sessionId, title))}
-                items={[
-                  { id: "copy", label: "复制会话引用", icon: <Copy size={16} /> },
-                  { id: "rename", label: "重命名", icon: <Pencil size={16} /> },
-                  { id: "fork", label: "分叉会话", icon: <GitBranch size={16} /> },
-                  { id: "archive", label: "归档会话", icon: <Archive size={16} /> },
-                ]}
-                anchor={
-                  <button
-                    type="button"
-                    className="wf-session-menu-trigger wf-row-action"
-                    aria-label={`会话“${title}”的操作`}
-                    aria-expanded={openMenu}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      setMenuSession(openMenu ? null : r.sessionId);
-                    }}
-                  >
-                    <MoreHorizontal size={15} />
-                  </button>
-                }
-              />
-              <Icon
-                className="wf-row-action"
-                label={`新建 ${workflow.name} 会话`}
-                icon={Plus}
-                onClick={() => perform(() => bind(workflow))}
-              />
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // The workflow gallery: the same records as cards or as rows, with per-record
-  // copy, run, archive and its conversation list. It replaces the sidebar list.
-  function Gallery({ data, onError }) {
-    const sessions = useSessions();
-    const [view, setView] = useState(
-      () => localStorage.getItem("workflow-studio:view") ?? "cards",
-    );
-    const [archived, setArchived] = useState(false);
-    const [detail, setDetail] = useState(new Set());
-    const perform = (fn) =>
-      Promise.resolve()
-        .then(fn)
-        .catch((e) => onError(e.message));
-    const choose = (next) => {
-      localStorage.setItem("workflow-studio:view", next);
-      setView(next);
-    };
-    const conversations = (id) =>
-      data.references.filter((r) => r.workflowId === id && sessions.byId[r.sessionId])
-        .length;
-    // A copy is a fresh, unpublished workflow at the source's newest revision:
-    // runs, schedules and conversation bindings deliberately stay behind.
-    const copy = (record) =>
-      perform(async () => {
-        const created = await api({ action: "copy", id: record.id });
-        await refresh();
-        openEditor(created.id);
-      });
-    const archive = (record) =>
-      perform(() =>
-        api({ action: "archive", id: record.id, archived: !record.archived }),
-      );
-    const rows = data.workflows.filter((w) => w.archived === archived);
-    const empty = !rows.length;
-    return (
-      <div className="wf-scroll">
-        <div className="wf-gallery-bar">
-          <span>
-            {empty ? (archived ? "没有已归档的工作流" : "还没有工作流") : `${rows.length} 个工作流`}
-          </span>
-          <span className="wf-spacer" />
-          <label className="wf-check">
-            <input
-              type="checkbox"
-              checked={archived}
-              onChange={(e) => setArchived(e.target.checked)}
-            />
-            已归档
-          </label>
-          <div className="wf-segmented" role="tablist" aria-label="工作流样式">
-            <button
-              role="tab"
-              aria-selected={view === "cards"}
-              onClick={() => choose("cards")}
-            >
-              <LayoutGrid size={15} />
-              卡片
-            </button>
-            <button
-              role="tab"
-              aria-selected={view === "list"}
-              onClick={() => choose("list")}
-            >
-              <List size={15} />
-              列表
-            </button>
-          </div>
-        </div>
-        {empty ? (
-          <div className="wf-gallery-empty">
-            <p>
-              {archived
-                ? "归档的工作流会出现在这里。"
-                : "工作流把一段固定的做法变成可复用的步骤：先在对话里描述目标，Agent 会生成一个初步版本。"}
-            </p>
-            {!archived && (
-              <button className="wf-primary" onClick={() => perform(() => beginAuthorSession())}>
-                <Plus size={16} />
-                创建工作流
-              </button>
-            )}
-          </div>
-        ) : view === "cards" ? (
-          <div className="wf-cards">
-            {rows.map((w) => (
-              <article className="wf-card" key={w.id} data-workflow-card={w.id}>
-                <button
-                  type="button"
-                  className="wf-card-head"
-                  onClick={() => openEditor(w.id)}
-                >
-                  <span
-                    className={`wf-workflow-icon wf-icon-${w.icon ?? "workflow"}`}
-                    aria-hidden="true"
-                  >
-                    {glyphFor(w.icon ?? "workflow", 15)}
-                  </span>
-                  <span className="wf-card-title">{w.name}</span>
-                  <span
-                    className={`wf-chip ${w.published === w.revision ? "is-published" : ""}`}
-                  >
-                    {w.published ? `已发布 v${w.published}` : `草稿 v${w.revision}`}
-                  </span>
-                </button>
-                <p className="wf-card-desc">{w.description || "还没有描述"}</p>
-                <p className="wf-card-meta">
-                  <span>{conversations(w.id)} 个对话</span>
-                  <span>最近修改 {timestamp(w.updatedAt)}</span>
-                </p>
-                <div className="wf-card-actions">
-                  <button onClick={() => openEditor(w.id)}>
-                    <Settings2 size={15} />
-                    打开
-                  </button>
-                  <button
-                    disabled={w.archived}
-                    onClick={() => perform(() => bind(w))}
-                  >
-                    <Play size={15} />
-                    运行
-                  </button>
-                  <button onClick={() => copy(w)}>
-                    <Copy size={15} />
-                    拷贝
-                  </button>
-                  <Icon
-                    label={w.archived ? `恢复 ${w.name}` : `归档 ${w.name}`}
-                    icon={w.archived ? Undo2 : Trash2}
-                    onClick={() => archive(w)}
-                  />
-                </div>
-                <details className="wf-card-sessions">
-                  <summary>
-                    对话 {conversations(w.id) ? `(${conversations(w.id)})` : ""}
-                  </summary>
-                  <WorkflowSessions
-                    workflow={w}
-                    data={data}
-                    sessions={sessions}
-                    onError={onError}
-                  />
-                </details>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <table className="wf-table">
-            <thead>
-              <tr>
-                <th>工作流</th>
-                <th>版本</th>
-                <th>对话</th>
-                <th>最近修改</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((w) => (
-                <React.Fragment key={w.id}>
-                  <tr data-workflow-row={w.id}>
-                    <td>
-                      <button className="wf-link" onClick={() => openEditor(w.id)}>
-                        {w.name}
-                      </button>
-                      <small>{w.description}</small>
-                    </td>
-                    <td>
-                      {w.published ? `已发布 v${w.published}` : `草稿 v${w.revision}`}
-                    </td>
-                    <td>
-                      <button
-                        className="wf-link"
-                        aria-expanded={detail.has(w.id)}
-                        onClick={() =>
-                          setDetail((old) => {
-                            const next = new Set(old);
-                            next.has(w.id) ? next.delete(w.id) : next.add(w.id);
-                            return next;
-                          })
-                        }
-                      >
-                        {conversations(w.id)} 个对话
-                      </button>
-                    </td>
-                    <td>{timestamp(w.updatedAt)}</td>
-                    <td>
-                      <Icon
-                        label={`运行 ${w.name}`}
-                        icon={Play}
-                        disabled={w.archived}
-                        onClick={() => perform(() => bind(w))}
-                      />
-                      <Icon
-                        label={`拷贝 ${w.name}`}
-                        icon={Copy}
-                        onClick={() => copy(w)}
-                      />
-                      <Icon
-                        label={`编辑 ${w.name}`}
-                        icon={Settings2}
-                        onClick={() => openEditor(w.id)}
-                      />
-                      <Icon
-                        label={w.archived ? `恢复 ${w.name}` : `归档 ${w.name}`}
-                        icon={w.archived ? Undo2 : Trash2}
-                        onClick={() => archive(w)}
-                      />
-                    </td>
-                  </tr>
-                  {detail.has(w.id) && (
-                    <tr className="wf-detail-row">
-                      <td colSpan={5}>
-                        <WorkflowSessions
-                          workflow={w}
-                          data={data}
-                          sessions={sessions}
-                          onError={onError}
-                        />
-                      </td>
-                    </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    );
-  }
+  const Gallery = createGallery({ctx, api, refresh, openSession, openEditor, bind, beginAuthorSession, useSessions, Icon, glyphFor, timestamp});
 
   // The sidebar keeps one entry for the whole feature: it toggles the main
   // workflow panel and reports its count.
@@ -977,7 +628,7 @@ export function apply(ctx) {
             ))}
           </datalist>
         </Field>
-        <Field label="Effort">
+        <Field label="推理强度">
           <input
             list="wf-efforts"
             value={node.effort?.mode === "explicit" ? node.effort.id : ""}
@@ -998,10 +649,10 @@ export function apply(ctx) {
   const nodeTypes = {
     workflowNode: ({ data: view, selected: active }) => (
       <div className={`wf-node-card wf-step-${view.kind} ${active ? "is-selected" : ""}`}>
-        {view.kind !== 'input' && <Handle type="target" position={Position.Left} />}
+        {view.kind !== 'input' && <Handle type="target" position={Position.Top} />}
         <div className="wf-step-heading">
           <span className="wf-step-glyph">{glyphFor(view.kind, 14)}</span>
-          <strong>{view.title}</strong>
+          <span className="wf-node-order">{view.order}</span><strong>{view.title}</strong>
           <em>{labels[view.kind]}</em>
         </div>
         <div className="wf-step-body">
@@ -1014,9 +665,12 @@ export function apply(ctx) {
             </div>
           )}
           {view.kind === 'agent' && <span className="wf-step-model">{view.model}</span>}
+          {view.repeat && <span className="wf-step-model">未通过返回修订 · 最多 {view.repeat.maxRounds} 轮</span>}
           {view.kind === 'interact' && <span className="wf-step-model">{view.mode}</span>}
         </div>
-        <Handle type="source" position={Position.Right} />
+        <Handle type="source" position={Position.Bottom} />
+        <Handle id="retry-in" type="target" position={Position.Right} isConnectable={false} />
+        <Handle id="retry-out" type="source" position={Position.Right} isConnectable={false} />
       </div>
     ),
   };
@@ -1029,16 +683,28 @@ export function apply(ctx) {
     const [dirty, setDirty] = useState(drafts.has(draftKey));
     const [panelTab, setPanelTab] = useState("step");
     const [raw, setRaw] = useState(false);
+    const [editorView, setEditorView] = useState(() => localStorage.getItem("workflow-studio:editor-view") || "steps");
     const [error, setError] = useState("");
     const [history, setHistory] = useState([]);
     const [clipboard, setClipboard] = useState(null);
-    const [instruction, setInstruction] = useState("");
-    const [sending, setSending] = useState(false);
-    const [notice, setNotice] = useState("");
     const [run, setRun] = useState(null);
     const [assetsOpen, setAssetsOpen] = useState(false);
+    const [notice, setNotice] = useState("");
+    const [skillEdit, setSkillEdit] = useState(null);
+    const [selectedEdge, setSelectedEdge] = useState(null);
     const flow = React.useRef();
+    const flowElement = React.useRef();
     const importInput = React.useRef();
+    useEffect(() => {
+      if (!flowElement.current) return;
+      let frame;
+      const observer = new ResizeObserver(() => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => flow.current?.fitView({ padding: 0.18, duration: 0 }));
+      });
+      observer.observe(flowElement.current);
+      return () => { observer.disconnect(); cancelAnimationFrame(frame); };
+    }, [raw, editorView]);
     useEffect(() => {
       setDefinition(drafts.get(draftKey) ?? record.snapshot.definition);
       setDirty(drafts.has(draftKey));
@@ -1105,7 +771,7 @@ export function apply(ctx) {
         kind,
         position: position ?? {
           x: 100 + (definition.nodes.length % 3) * 400,
-          y: 100 + Math.floor(definition.nodes.length / 3) * 150,
+          y: 100 + Math.floor(definition.nodes.length / 3) * 300,
         },
       };
       if (kind === "agent") {
@@ -1131,19 +797,47 @@ export function apply(ctx) {
       change({ ...definition, nodes: [...definition.nodes, n] });
       setSelected(id);
     };
-    const remove = () => {
-      change(removeGraphItems(definition, [selected]));
-      setSelected(null);
+    const remove = (id = selected) => {
+      const index = definition.nodes.findIndex(n => n.id === id);
+      if (index < 0) return;
+      try {
+        const next = removeGraphItems(definition, [id]);
+        change(next);
+        setSelected(next.nodes[Math.min(index, next.nodes.length - 1)]?.id ?? null);
+        setNotice(`已删除“${definition.nodes[index].name}”，可撤销恢复。`);
+      } catch (e) { setError(e.message); }
     };
+    const undo = () => {
+      if (!history.length) return;
+      const previous = history.at(-1);
+      drafts.set(draftKey, previous);
+      setDefinition(previous);
+      setHistory(h => h.slice(0, -1));
+      setSelected(previous.nodes.some(n => n.id === selected) ? selected : previous.nodes.at(-1)?.id ?? null);
+      setDirty(true); setNotice("已撤销，步骤与材料关系已恢复。");
+    };
+    useEffect(() => {
+      const keydown = e => {
+        if (!e.target.closest('.wf-editor') || e.target.closest('input, textarea, select, [contenteditable="true"], [role="dialog"]')) return;
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          if (selectedEdge && !selectedEdge.startsWith('repeat:')) { e.preventDefault(); change(removeGraphItems(definition, [], [selectedEdge])); setSelectedEdge(null); setNotice('已删除连接，可撤销恢复。'); }
+          else if (selected) { e.preventDefault(); remove(); }
+        }
+      };
+      window.addEventListener('keydown', keydown);
+      return () => window.removeEventListener('keydown', keydown);
+    }, [definition, selected, selectedEdge]);
+    const ranks = Object.fromEntries(definition.nodes.map(n=>[n.id,0]));
+    for(let pass=0;pass<definition.nodes.length;pass++) for(const e of definition.edges) if(e.from in ranks && e.to in ranks) ranks[e.to]=Math.max(ranks[e.to],ranks[e.from]+1);
+    const lanes = {};
     const graphNodes = definition.nodes.map((n, i) => ({
       id: n.id,
       type: "workflowNode",
-      position: n.position ?? {
-        x: 80 + (i % 3) * 400,
-        y: 80 + Math.floor(i / 3) * 300,
-      },
+      position: {x:80+(lanes[ranks[n.id]]=(lanes[ranks[n.id]] ?? -1)+1)*340,y:60+ranks[n.id]*240},
       data: {
+        order: i+1,
         kind: n.kind,
+        repeat: n.repeat,
         title: n.name,
         model: n.model?.mode === "explicit" ? n.model.id : "会话模型",
         summary: n.prompt || (n.kind === 'artifact' ? '展示并保存上游步骤的结果' : '配置此步骤的执行行为'),
@@ -1153,13 +847,19 @@ export function apply(ctx) {
       className: `wf-node wf-node-${n.kind}`,
       selected: n.id === selected,
     }));
-    const graphEdges = definition.edges.map((e) => ({
+    const visibleEdges = definition.edges.filter(edge => {
+      if (edge.on && edge.on !== 'success') return true;
+      const seen = new Set();
+      const reaches = id => { if(id===edge.to) return true; if(seen.has(id)) return false; seen.add(id); return definition.edges.filter(e=>e!==edge && e.from===id && (!e.on || e.on==='success')).some(e=>reaches(e.to)); };
+      return !reaches(edge.from);
+    });
+    const graphEdges = visibleEdges.map((e) => ({
       id: `${e.from}:${e.to}`,
       source: e.from,
       target: e.to,
       label: e.on === "true" ? "是" : e.on === "false" ? "否" : undefined,
       className: e.on === "false" ? "wf-edge-dashed" : undefined,
-    }));
+    })).concat(definition.nodes.filter(n=>n.repeat?.target).map(n=>({id:`repeat:${n.id}`,source:n.id,target:n.repeat.target,sourceHandle:'retry-out',targetHandle:'retry-in',type:'smoothstep',label:`未通过，返回修改 · 最多 ${n.repeat.maxRounds} 轮`,className:'wf-edge-loop',deletable:false})));
     const latestRun = data.runs.find((item) => item.workflowId === record.id);
     useEffect(() => {
       let live = true;
@@ -1172,22 +872,6 @@ export function apply(ctx) {
         .catch(() => {});
       return () => { live = false; };
     }, [latestRun?.id, latestRun?.status, panelTab]);
-    const submitInstruction = async () => {
-      const text = instruction.trim();
-      if (!text || sending) return;
-      setSending(true);
-      setNotice("");
-      try {
-        const sessionId = await ensureAuthorSession(record.id, record.revision);
-        await send(sessionId, text);
-        setInstruction("");
-        setNotice("已交给对话修改会话；Agent 保存后画布会自动刷新。");
-      } catch (e) {
-        setNotice(e.message);
-      } finally {
-        setSending(false);
-      }
-    };
     const stepRun = run?.run?.nodes?.[selected];
     const stepEvents = (run?.events ?? []).filter((e) => !e.nodeId || e.nodeId === selected);
     const importDefinition = async (file) => {
@@ -1211,11 +895,15 @@ export function apply(ctx) {
     };
     return (
       <div className="wf-editor">
+        <div className="wf-editor-viewbar"><div className="wf-segmented" role="tablist" aria-label="步骤展示方式">{[["steps","步骤列表"],["graph","流程图"]].map(([id,label])=><button key={id} role="tab" aria-selected={editorView===id} onClick={()=>{setEditorView(id);setRaw(false);localStorage.setItem("workflow-studio:editor-view",id);}}>{label}</button>)}</div></div>
+        {notice && <div className="wf-editor-notice" role="status"><span>{notice}</span><button disabled={!history.length} onClick={undo}>撤销</button><Icon label="关闭提示" icon={X} onClick={()=>setNotice("")} /></div>}
+        {skillEdit && <Modal title={`编辑 skill · ${skillEdit.name}`} close={()=>setSkillEdit(null)}><textarea className="wf-skill-content" aria-label="Skill 内容" value={skillEdit.content} onChange={e=>setSkillEdit({...skillEdit,content:e.target.value})}/><button className="wf-primary" onClick={()=>{update({skillOverrides:{...node.skillOverrides,[skillEdit.name]:skillEdit.content}});setSkillEdit(null);}}>应用到步骤</button></Modal>}
+        {assetsOpen && <Modal title="添加步骤" close={()=>setAssetsOpen(false)}><div className="wf-modal-body"><div className="wf-step-picker" role="menu" aria-label="更多步骤选项">{Object.entries(labels).filter(([kind])=>!["input","interact","agent","artifact"].includes(kind)).map(([kind,label])=><button key={kind} role="menuitem" onClick={()=>{setAssetsOpen(false);add(kind);}}>{glyphFor(kind,20)}<span>{label}</span></button>)}</div></div></Modal>}
         <div className="wf-editor-body">
           <div className="wf-stage">
             <div className="wf-canvas">
               <div className="wf-addbar" role="toolbar" aria-label="添加步骤">
-                {Object.entries(labels).map(([kind, label]) => (
+                {Object.entries(labels).filter(([kind]) => ["input", "interact", "agent", "artifact"].includes(kind)).map(([kind, label]) => (
                   <button
                     key={kind}
                     draggable
@@ -1229,34 +917,8 @@ export function apply(ctx) {
                   </button>
                 ))}
                 <span className="wf-addbar-divider" aria-hidden="true" />
-                <Menu
-                  open={assetsOpen}
-                  onClose={() => setAssetsOpen(false)}
-                  items={[
-                    { id: "save", label: "保存版本", icon: <Save size={16} /> },
-                    { id: "import", label: "导入工作流", icon: <Upload size={16} /> },
-                    { id: "export", label: "导出定义", icon: <Download size={16} /> },
-                    { id: "json", label: raw ? "返回画布" : "编辑 JSON", icon: <FileText size={16} /> },
-                  ]}
-                  onSelect={(action) => {
-                    setAssetsOpen(false);
-                    if (action === "save") void saveDraft();
-                    if (action === "export") download(`${definition.id}.json`, pretty(definition));
-                    if (action === "json") setRaw((v) => !v);
-                    if (action === "import") importInput?.click();
-                  }}
-                  anchor={
-                    <button
-                      type="button"
-                      aria-label="添加资源"
-                      aria-expanded={assetsOpen}
-                      onClick={() => setAssetsOpen((v) => !v)}
-                    >
-                      <Plus size={14} />
-                      添加资源
-                    </button>
-                  }
-                />
+                <button aria-label="更多步骤" aria-expanded={assetsOpen} onClick={()=>setAssetsOpen(true)}><Plus size={14}/>更多步骤</button>
+
               </div>
               <input
                 ref={importInput}
@@ -1275,9 +937,12 @@ export function apply(ctx) {
                     rows={30}
                   />
                 </div>
+              ) : editorView === "steps" ? (
+                <StepOutline definition={definition} selected={selected} onDelete={remove} onSelect={id=>{setSelectedEdge(null);setSelected(id);setPanelTab("step");}} />
               ) : (
                 <div
                   className="wf-flow"
+                  ref={flowElement}
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     e.preventDefault();
@@ -1294,11 +959,14 @@ export function apply(ctx) {
                       type: "smoothstep",
                       markerEnd: { type: MarkerType.ArrowClosed },
                     }}
+                    nodesDraggable={false}
+                    deleteKeyCode={null}
                     fitView
                     fitViewOptions={{ padding: 0.18 }}
                     minZoom={0.2}
                     maxZoom={2}
-                    onNodeClick={(_, n) => { setSelected(n.id); setPanelTab("step"); }}
+                    onNodeClick={(_, n) => { setSelectedEdge(null); setSelected(n.id); setPanelTab("step"); }}
+                    onEdgeClick={(_, e) => { setSelected(null); setSelectedEdge(e.id); }}
                     onNodesChange={(changes) => {
                       const nodes = applyNodeChanges(changes, graphNodes);
                       if (
@@ -1323,13 +991,7 @@ export function apply(ctx) {
                     }}
                     onEdgesChange={(changes) => {
                       if (changes.some((c) => c.type === "remove")) {
-                        const edges = applyEdgeChanges(changes, graphEdges);
-                        change({
-                          ...definition,
-                          edges: definition.edges.filter((e) =>
-                            edges.some((x) => x.id === `${e.from}:${e.to}`),
-                          ),
-                        });
+                        change(removeGraphItems(definition, [], changes.filter(c=>c.type==='remove' && !c.id.startsWith('repeat:')).map(c=>c.id)));
                       }
                     }}
                     onConnect={(connection) => {
@@ -1339,11 +1001,12 @@ export function apply(ctx) {
                     }}
                   >
                     <Controls />
-                    <MiniMap pannable zoomable />
+
                   </ReactFlow>
                 </div>
               )}
               <div className="wf-canvas-tools">
+                {editorView === 'graph' && <button onClick={()=>flow.current?.fitView({padding:0.22,duration:0})}>查看全图</button>}
                 <Icon
                   label="复制节点"
                   icon={Copy}
@@ -1366,11 +1029,7 @@ export function apply(ctx) {
                   label="撤销"
                   icon={Undo2}
                   disabled={!history.length}
-                  onClick={() => {
-                    setDefinition(history.at(-1));
-                    setHistory((h) => h.slice(0, -1));
-                    setDirty(true);
-                  }}
+                  onClick={undo}
                 />
                 <Icon
                   label={raw ? "返回画布" : "编辑 JSON"}
@@ -1379,34 +1038,6 @@ export function apply(ctx) {
                   onClick={() => setRaw((v) => !v)}
                 />
               </div>
-            </div>
-            <div className="wf-step-composer">
-              <div className="wf-instruction">
-                <textarea
-                  rows={2}
-                  aria-label="编辑这些步骤"
-                  placeholder="描述你想调整的步骤…"
-                  value={instruction}
-                  disabled={sending}
-                  onChange={(e) => setInstruction(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                      e.preventDefault();
-                      void submitInstruction();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  className="wf-send"
-                  aria-label="发送修改指令"
-                  disabled={sending || !instruction.trim()}
-                  onClick={() => void submitInstruction()}
-                >
-                  <Send size={16} />
-                </button>
-              </div>
-              {notice && <p className="wf-composer-note" role="status">{notice}</p>}
             </div>
           </div>
           <aside className="wf-inspector" aria-label="步骤设置">
@@ -1427,7 +1058,7 @@ export function apply(ctx) {
                 <span className="wf-step-glyph">{glyphFor(node.kind, 14)}</span>
                 <strong>{node.name}</strong>
                 <em>{labels[node.kind]}</em>
-                <Icon label="删除节点" icon={Trash2} onClick={remove} />
+                <button className="wf-delete-step" aria-label="删除节点" title="删除此步骤，可撤销恢复" onClick={()=>remove()}><Trash2 size={15} />删除</button>
               </div>
             )}
             {panelTab === "theme" ? (
@@ -1454,8 +1085,7 @@ export function apply(ctx) {
                     ))}
                   </div>
                 </Field>
-                <p className="wf-muted">图标与配色写在定义里，保存后对所有会话生效。</p>
-              </div>
+                              </div>
             ) : panelTab === "preview" ? (
               <div className="wf-panel-body">
                 {!run ? (
@@ -1505,9 +1135,6 @@ export function apply(ctx) {
               </div>
             ) : node ? (
               <div className="wf-panel-body">
-                {!(node.kind === "interact" && node.interaction !== "goal") && (
-                  <Routing node={node} update={update} caps={caps} />
-                )}
                 <div className="wf-prompt-label">
                   <Sparkles size={12} />
                   <span>
@@ -1533,9 +1160,12 @@ export function apply(ctx) {
                     try { change(connectReference(definition, source, node.id).definition); } catch (e) { setError(e.message); }
                   }}
                 />
+                {(node.kind === 'agent' || (node.kind === 'interact' && node.interaction === 'goal')) && (
+                  <details className="wf-routing-settings"><summary>模型与执行设置 · {node.model?.mode === 'explicit' ? node.model.id : '继承会话'}</summary><Routing node={node} update={update} caps={caps} /></details>
+                )}
                 {node.kind === "agent" && (
-                  <>
-                    <Field label="技能">
+                  <details className="wf-settings-group"><summary>技能与工具 <small>{(node.skills?.length ?? 0) + (node.tools?.length ?? 0)} 项</small></summary>
+                                        <Field label="技能">
                       <input
                         list="wf-skills"
                         value={(node.skills ?? []).join(", ")}
@@ -1554,6 +1184,7 @@ export function apply(ctx) {
                         ))}
                       </datalist>
                     </Field>
+                    <div className="wf-skill-edit-links">{(node.skills ?? []).map(name=><button key={name} onClick={async()=>{try{const result=await api({action:'skillRead',name});setSkillEdit({name,content:node.skillOverrides?.[name] ?? result.content});}catch(e){setError(e.message);}}}><Pencil size={14}/>编辑 {name}</button>)}</div>
                     <Field label="工具">
                       <input
                         list="wf-tools"
@@ -1568,7 +1199,7 @@ export function apply(ctx) {
                         }
                       />
                     </Field>
-                  </>
+                  </details>
                 )}
                 {node.kind === "tool" && (
                   <Field label="Tool">
@@ -1638,12 +1269,6 @@ export function apply(ctx) {
                           )}
                       </select>
                     </Field>
-                    <p className="wf-muted">
-                      交互节点会暂停运行，把问题交给绑定会话里的 Agent；用户的下一条消息就是这次交互的回答。
-                      {node.interaction === "goal"
-                        ? "判定 Agent 认为已经理解意图后，会先请你确认，确认后才进入下一步。"
-                        : ""}
-                    </p>
                   </>
                 )}
                 <datalist id="wf-tools">
@@ -1651,7 +1276,16 @@ export function apply(ctx) {
                     <option key={t} value={t} />
                   ))}
                 </datalist>
-                {node.kind === 'agent' && <TeamEditor members={node.subagents ?? []} update={subagents => update({ subagents })} />}
+
+                {node.kind === 'agent' && <details className="wf-review-settings"><summary><span>评审与循环</span><span className="wf-setting-value">{node.repeat ? "已开启" : "未开启"}</span></summary>
+                  <label><input type="checkbox" checked={Boolean(node.repeat)} onChange={e => { if (e.target.checked) update({ repeat: { target: definition.nodes.find(n => n.id !== node.id && n.kind === 'agent')?.id ?? '', until: { '>=': [{ var: 'score' }, 85] }, maxRounds: 3, sessionMode: 'new' } }); else { const next = { ...node }; delete next.repeat; change({ ...definition, nodes: definition.nodes.map(n => n.id === node.id ? next : n) }); } }} />根据结果返回修订</label>
+                  {node.repeat && <>
+                    <Field label="返回步骤"><select value={node.repeat.target} onChange={e => update({ repeat: { ...node.repeat, target: e.target.value } })}><option value="">选择上游步骤</option>{definition.nodes.filter(n => n.id !== node.id && n.kind === 'agent').map(n => <option key={n.id} value={n.id}>{n.name}</option>)}</select></Field>
+                    <Field label="每轮会话"><select value={node.repeat.sessionMode} onChange={e => update({ repeat: { ...node.repeat, sessionMode: e.target.value } })}><option value="new">新建会话，传入材料与反馈</option><option value="continue">接着上次会话继续</option></select></Field>
+                    <Field label="最多评审轮数"><input type="number" min="1" max="20" value={node.repeat.maxRounds} onChange={e => update({ repeat: { ...node.repeat, maxRounds: Number(e.target.value) } })} /></Field>
+                    <JsonField label="通过条件" value={node.repeat.until} change={until => update({ repeat: { ...node.repeat, until } })} />
+                                      </>}
+                </details>}
                 <details className="wf-advanced">
                   <summary>高级设置</summary>
                   <Field label="步骤标识"><input value={node.id} readOnly /></Field>
@@ -1797,8 +1431,7 @@ export function apply(ctx) {
                       icon={MessageSquare}
                       onClick={async () => {
                         await ctx.sessions.refresh();
-                        ctx.sessions.open(r.sessionId);
-                        ctx.layout.selectPanel(null);
+                        openSession(r.sessionId);
                       }}
                     />
                     {r.status === "running" ? (
@@ -1873,8 +1506,7 @@ export function apply(ctx) {
                       className="wf-primary"
                       onClick={async () => {
                         await ctx.sessions.refresh();
-                        ctx.sessions.open(detail.run.sessionId);
-                        ctx.layout.selectPanel(null);
+                        openSession(detail.run.sessionId);
                       }}
                     >
                       <MessageSquare size={16} />
@@ -1911,9 +1543,7 @@ export function apply(ctx) {
                 "cancelled",
               ].includes(detail.run.status) && (
                 <>
-                  <p>
-                    恢复将保留已完成节点，并重新执行未完成节点。涉及写入的步骤需要核对外部执行结果。
-                  </p>
+                  <p>恢复会重新执行未完成节点。</p>
                   <button
                     className="wf-primary"
                     onClick={() =>
@@ -1946,13 +1576,17 @@ export function apply(ctx) {
     const [plan, setPlan] = useState(null);
     const [preview, setPreview] = useState([]);
     const [error, setError] = useState("");
-    const perform = async (fn) => {
+    const perform = async (fn, label = "") => {
+      if (busy) return;
+      if (label) setBusy(label);
       try {
         await fn();
         setError("");
         await refresh();
       } catch (e) {
         setError(e.message);
+      } finally {
+        setBusy("");
       }
     };
     const update = (patch) => setPlan((p) => ({ ...p, ...patch }));
@@ -2122,7 +1756,7 @@ export function apply(ctx) {
                   }
                 />
               </Field>
-              <Field label="Effort">
+              <Field label="推理强度">
                 <input
                   value={plan.rootRoute.reasoningEffort ?? ""}
                   onChange={(e) =>
@@ -2232,6 +1866,9 @@ export function apply(ctx) {
     const [versions, setVersions] = useState([]);
     const [archived, setArchived] = useState(false);
     const [moreOpen, setMoreOpen] = useState(false);
+    // One action at a time: without this a second click during a slow round trip
+    // starts a second authoring session, run or copy of the same workflow.
+    const [busy, setBusy] = useState("");
     const load = async () => {
       if (selected.id)
         setRecord(await api({ action: "read", id: selected.id }));
@@ -2327,7 +1964,7 @@ export function apply(ctx) {
                   aria-selected={section === "app"}
                   onClick={() => openEditor(record.id, "runs")}
                 >
-                  应用
+                  运行记录
                 </button>
               </div>
               <button onClick={() => perform(() => bind(record, undefined, "author"))}>
@@ -2335,13 +1972,14 @@ export function apply(ctx) {
                 对话修改
               </button>
               <label className="wf-editor-debug"><input type="checkbox" aria-label="逐步调试" checked={Boolean(data.workflows.find(w => w.id === record.id)?.debug)} onChange={e => perform(() => api({ action: 'setWorkflowDebug', id: record.id, debug: e.target.checked }))} />逐步调试</label>
-              <button onClick={() => setTrial(true)}>
+              <button className="wf-primary" onClick={() => setTrial(true)}>
                 <Play size={16} />
                 试运行
               </button>
               <Icon label="保存版本" icon={Save} onClick={() => void saveFromBar()} />
               <button
-                className="wf-primary"
+                disabled={record.published === record.revision || Boolean(draft?.dirty)}
+                title={draft?.dirty ? "先保存修改，再发布版本" : "将保存的版本用于后续任务"}
                 onClick={() =>
                   perform(async () => {
                     await api({
@@ -2374,10 +2012,12 @@ export function apply(ctx) {
                       const created = await api({ action: "copy", id: record.id });
                       await refresh();
                       openEditor(created.id);
-                    });
+                    }, "copy");
                   if (action === "archive")
-                    void perform(() =>
-                      api({ action: "archive", id: record.id, archived: !record.archived }),
+                    void perform(
+                      () =>
+                        api({ action: "archive", id: record.id, archived: !record.archived }),
+                      "archive",
                     );
                   if (action === "manage") openEditor(null);
                 }}
@@ -2424,18 +2064,35 @@ export function apply(ctx) {
               </label>
               <button
                 className="wf-primary"
-                onClick={() => perform(() => beginAuthorSession())}
+                disabled={busy === "create"}
+                aria-busy={busy === "create"}
+                onClick={() => perform(() => beginAuthorSession(), "create")}
               >
                 <Plus size={16} />
-                创建工作流
+                {busy === "create" ? "正在创建…" : "创建工作流"}
               </button>
             </>
           )}
         </header>
         {(error || data.error) && (
-          <p className="wf-error" role="alert">
-            {error || data.error}
-          </p>
+          <div className="wf-error-bar" role="alert">
+            <AlertTriangle size={15} aria-hidden="true" />
+            <p className="wf-error">
+              {error || data.error}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setError("");
+                void load().catch((e) => setError(e.message));
+                void refresh();
+              }}
+            >
+              <RefreshCw size={14} aria-hidden="true" />
+              重试
+            </button>
+            <Icon label="关闭提示" icon={X} onClick={() => setError("")} />
+          </div>
         )}
         {record ? (
           section === "editor" ? (
@@ -2766,14 +2423,23 @@ export function apply(ctx) {
   });
   ctx.effect(() => {
     let timer;
+    // Polling exists so an Agent's saved revision shows up while a person watches
+    // the panel. With the panel closed there is nothing to keep current, so the
+    // loop parks and the renderer stops talking to the backend twice a second.
     const poll = async () => {
-      if (!document.hidden) await refresh();
+      if (!document.hidden && panelOpen) await refresh();
       if (!stopped) timer = setTimeout(poll, 2000);
     };
     void refresh();
     void poll();
     if (window.innerWidth < 700) {
       try { ctx.layout.toggleSidebar(); } catch {}
+    }
+    // The panel is host layout state, so remembering the flag is not enough: after a
+    // reload or a window restart the plugin has to ask for the panel back, or the
+    // window comes up with the workflow surface closed every time.
+    if (panelOpen) {
+      try { ctx.layout.selectPanel("workflow-studio"); } catch { /* the host may not offer a panel slot */ }
     }
     const resize = () => {if (document.querySelector('.wf-main')) fitNarrowPanel();};
     window.addEventListener('resize', resize);

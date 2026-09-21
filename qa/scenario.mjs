@@ -12,11 +12,20 @@ export const CLICKABLE = 'button, [role=button], [role=menuitem], [role=tab], a[
 
 const HELPERS = String.raw`
 window.__qa = {
+  /**
+   * An element counts as visible only when it is really painted. A closed <details>
+   * keeps its contents laid out, so a size and style check alone would treat fields
+   * inside a collapsed group as visible; checkVisibility accounts for that.
+   */
   visible(el) {
     if (!el) return false
     const rect = el.getBoundingClientRect()
+    if (rect.width <= 1 || rect.height <= 1) return false
+    if (typeof el.checkVisibility === 'function') {
+      return el.checkVisibility({ contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true })
+    }
     const style = getComputedStyle(el)
-    return rect.width > 1 && rect.height > 1 && style.visibility !== 'hidden' && style.display !== 'none' && style.opacity !== '0'
+    return style.visibility !== 'hidden' && style.display !== 'none' && style.opacity !== '0'
   },
   all(selector) { return [...document.querySelectorAll(selector)].filter(el => window.__qa.visible(el)) },
   byText(text, selector = 'button, [role=button], [role=menuitem], [role=tab], a[href]') {

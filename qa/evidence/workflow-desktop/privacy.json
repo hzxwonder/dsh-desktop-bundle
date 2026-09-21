@@ -1,0 +1,4290 @@
+{
+  "at": "2026-09-21T02:44:17.714Z",
+  "repositories": {
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort": {
+      "tracked": 64,
+      "untrackedScanned": 0,
+      "historyCommits": 158
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite": {
+      "tracked": 13,
+      "untrackedScanned": 0,
+      "historyCommits": 3
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench": {
+      "tracked": 12,
+      "untrackedScanned": 0,
+      "historyCommits": 3
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser": {
+      "tracked": 22,
+      "untrackedScanned": 0,
+      "historyCommits": 13
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex": {
+      "tracked": 92,
+      "untrackedScanned": 0,
+      "historyCommits": 16
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory": {
+      "tracked": 18,
+      "untrackedScanned": 0,
+      "historyCommits": 11
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sessions": {
+      "tracked": 15,
+      "untrackedScanned": 0,
+      "historyCommits": 3
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar": {
+      "tracked": 18,
+      "untrackedScanned": 0,
+      "historyCommits": 4
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh": {
+      "tracked": 37,
+      "untrackedScanned": 0,
+      "historyCommits": 5
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite": {
+      "tracked": 14,
+      "untrackedScanned": 0,
+      "historyCommits": 1
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal": {
+      "tracked": 24,
+      "untrackedScanned": 0,
+      "historyCommits": 10
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench": {
+      "tracked": 16,
+      "untrackedScanned": 0,
+      "historyCommits": 4
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow": {
+      "tracked": 99,
+      "untrackedScanned": 0,
+      "historyCommits": 21
+    },
+    "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle": {
+      "tracked": 436,
+      "untrackedScanned": 31,
+      "historyCommits": 34
+    }
+  },
+  "findings": [
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 1528,
+      "match": "******",
+      "context": "\"google-auth-library\": \"^******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2438,
+      "match": "******",
+      "context": "\"version\": \"******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2611,
+      "match": "******",
+      "context": "\"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2645,
+      "match": "******",
+      "context": "\"version\": \"******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2646,
+      "match": "******",
+      "context": "\"resolved\": \"https://registry.npmjs.org/google-auth-library/-/google-auth-library-******.tgz\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2727,
+      "match": "******",
+      "context": "\"decimal.js\": \"^******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 3194,
+      "match": "******",
+      "context": "\"node\": \">=******\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/package-lock.json",
+      "line": 3874,
+      "match": "******",
+      "context": "\"node\": \">=******\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 25,
+      "match": "192.****1.10",
+      "context": "expect(isSelfHostedEndpoint('http://192.****1.10:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 26,
+      "match": "******",
+      "context": "expect(isSelfHostedEndpoint('http://******.5/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 27,
+      "match": "172.**.0.2",
+      "context": "expect(isSelfHostedEndpoint('http://172.**.0.2:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 488,
+      "match": "******",
+      "context": "await handler(fakeReq({ headers: { host: '******.5:3080', 'sec-fetch-site': 'cross-site' } }), res)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 526,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080' },"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 589,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080', 'sec-fetch-site': 'same-origin' },"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 605,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080', 'sec-fetch-site': 'same-site' },"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 662,
+      "match": "sekr************.com",
+      "context": "const settings = fakeSettings({ aliyun: { api: 'openai-completions', baseURL: 'https://user:sekr************.com/v1', m"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@751fc47f",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/google-auth-library/-/google-auth-library-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@281ae921",
+      "line": 0,
+      "match": "192.****1.10",
+      "context": "+    expect(isSelfHostedEndpoint('http://192.****1.10:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@281ae921",
+      "line": 0,
+      "match": "******",
+      "context": "+    expect(isSelfHostedEndpoint('http://******.5/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@281ae921",
+      "line": 0,
+      "match": "172.**.0.2",
+      "context": "+    expect(isSelfHostedEndpoint('http://172.**.0.2:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@35254842",
+      "line": 0,
+      "match": "sekr************.com",
+      "context": "+    const settings = fakeSettings({ aliyun: { api: 'openai-completions', baseURL: 'https://user:sekr************.com/v"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@07e03d6c",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"google-auth-library\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@07e03d6c",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@07e03d6c",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/google-auth-library/-/google-auth-library-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@07e03d6c",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \">=******\""
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@bf428478",
+      "line": 0,
+      "match": "sekr************.com",
+      "context": "+    const settings = fakeSettings({ aliyun: { baseURL: 'https://user:sekr************.com/v1', models: [] } })"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3264863c",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080' },"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3264863c",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080', 'sec-fetch-site': 'same-site' },"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@f8795d6d",
+      "line": 0,
+      "match": "******",
+      "context": "+    await handler(fakeReq({ headers: { host: '******.5:3080' } }), res)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@f8795d6d",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080', 'sec-fetch-site': 'same-origin' },"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@08d1050c",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/immer/-/immer-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@a5c7df6e",
+      "line": 0,
+      "match": "******",
+      "context": "+    await handler(fakeReq({ headers: { host: '******.5:3080', 'sec-fetch-site': 'cross-site' } }), res)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@a62998f6",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmmirror.com/immer/-/immer-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@62831279",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"emoji-regex\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@62831279",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@62831279",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmmirror.com/emoji-regex/-/emoji-regex-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@62831279",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"emoji-regex\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"immer\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\""
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/@shikijs/vscode-textmate/-/vscode-textmate-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/decimal.js/-/decimal.js-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/immer/-/immer-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"decimal.js\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"@shikijs/vscode-textmate\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-better-reasoning-effort@3d93c072",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \">=******\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.en.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Its Web counterpart is [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite). There the `bin/m"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.en.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.en.md",
+      "line": 42,
+      "match": "hzxw*nder",
+      "context": "dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.en.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "`members` holds unique, valid package names; `specs` may name an install target only for a configured member, and a memb"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Web 端的对应仓库是 [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)。Web 端由该仓库的 `bin/manage.mjs` "
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.md",
+      "line": 42,
+      "match": "hzxw*nder",
+      "context": "dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/README.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "`members` 必须是合法包名且不重复；`specs` 只能为 `members` 里的包名给出安装目标，未给出的成员使用 `github:hzxw*nder-dsh-plugins/<name>`。`timeoutMs` 是单次操作的"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/lib/inventory.js",
+      "line": 23,
+      "match": "hzxw*nder",
+      "context": "export const DEFAULT_SPEC_PREFIX = 'github:hzxw*nder-dsh-plugins/';"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/package.json",
+      "line": 30,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-suite\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite/test/suite.test.js",
+      "line": 71,
+      "match": "hzxw*nder",
+      "context": "assert.equal(defaultSpec('dsh-plugin-terminal'), 'github:hzxw*nder-dsh-plugins/dsh-plugin-terminal');"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Its Web counterpart is [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite). There the `bin/"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+`members` holds unique, valid package names; `specs` may name an install target only for a configured member, and a mem"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Web 端的对应仓库是 [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)。Web 端由该仓库的 `bin/manage.mjs`"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+`members` 必须是合法包名且不重复；`specs` 只能为 `members` 里的包名给出安装目标，未给出的成员使用 `github:hzxw*nder-dsh-plugins/<name>`。`timeoutMs` 是单次操作"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+export const DEFAULT_SPEC_PREFIX = 'github:hzxw*nder-dsh-plugins/';"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-suite\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-suite@a198eac5",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  assert.equal(defaultSpec('dsh-plugin-terminal'), 'github:hzxw*nder-dsh-plugins/dsh-plugin-terminal');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/README.en.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Its Web counterpart is [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench). That rep"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/README.en.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/README.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Web 端的对应仓库是 [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench)。该仓库负责组合本身（官方 `time-c"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/README.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/docs/desktop-contract.md",
+      "line": 15,
+      "match": "hzxw*nder",
+      "context": "未采用 `desktopPnpm`：桌面端的包操作归 [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)，本插件不做依赖或 bu"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench/package.json",
+      "line": 29,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-workbench\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Its Web counterpart is [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench). That re"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Web 端的对应仓库是 [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench)。该仓库负责组合本身（官方 `time-"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+未采用 `desktopPnpm`：桌面端的包操作归 [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)，本插件不做依赖或 b"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-desktop-workbench@de6a43c3",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-workbench\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/README.en.md",
+      "line": 40,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/README.md",
+      "line": 40,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/package-lock.json",
+      "line": 285,
+      "match": "******",
+      "context": "\"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/package.json",
+      "line": 33,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-browser\","
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser/test/browser.test.js",
+      "line": 73,
+      "match": "pass********.com",
+      "context": "for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://user:pass********.com', 'data:text/html,test'])"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@2de4b3e6",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-browser\","
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-browser@5a236a4f",
+      "line": 0,
+      "match": "pass********.com",
+      "context": "+  for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://user:pass********.com', 'data:text/html,test"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/README.md",
+      "line": 24,
+      "match": "hzxw*nder",
+      "context": "推荐使用 [DSH Desktop Bundle](https://github.com/hzxw*nder/dsh-desktop-bundle) 的固定版本组合。"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/README.md",
+      "line": 29,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/README.md",
+      "line": 87,
+      "match": "hzxw*nder",
+      "context": "详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://github"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/README.md",
+      "line": 87,
+      "match": "hzxw*nder",
+      "context": "详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://github"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/client/index.jsx",
+      "line": 1149,
+      "match": "git@************.com",
+      "context": "{form!==\"create\"&&<label>{form===\"overleaf\"?\"Overleaf Git 链接\":\"本地目录\"}<input autoFocus={form===\"overleaf\"} required disab"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/dist/client.js",
+      "line": 46211,
+      "match": "git@************.com",
+      "context": "/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(\"input\", { autoFocus: form === \"overleaf\", required: true, disabled: busy, "
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/lib/overleaf.js",
+      "line": 10,
+      "match": "git@************.com",
+      "context": "return 'https://git@************.com'+u.pathname.replace(/\\/$/,'');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/package.json",
+      "line": 35,
+      "match": "hzxw*nder",
+      "context": "\"url\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/test/overleaf.test.js",
+      "line": 12,
+      "match": "git@************.com",
+      "context": "const store=await new Store(join(d,'data')).init(),p=await store.add({name:'Git fixture',path:root});const url='https://"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/test/overleaf.test.js",
+      "line": 37,
+      "match": "git@************.com",
+      "context": "const project=await sync.clone(undefined,'https://git@************.com/'+'b'.repeat(24));"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/test/revisions.test.js",
+      "line": 34,
+      "match": "git@************.com",
+      "context": "assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24))"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/test/revisions.test.js",
+      "line": 34,
+      "match": "git@************.com",
+      "context": "assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24))"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex/test/revisions.test.js",
+      "line": 35,
+      "match": "secr************.com",
+      "context": "for(const u of ['http://git.overleaf.com/'+'a'.repeat(24),'https://git.overleaf.com.evil.test/'+'a'.repeat(24),'https://"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@fa60caa6",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                  {form!==\"create\"&&<label>{form===\"overleaf\"?\"Overleaf Git 链接\":\"本地目录\"}<input autoFocus={form===\"overle"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@fa60caa6",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(\"input\", { autoFocus: form === \"overleaf\", required: true,"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@fa60caa6",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ const project=await sync.clone(undefined,'https://git@************.com/'+'b'.repeat(24));"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                      placeholder={form === \"overleaf\" ? \"https://git@************.com/项目ID\" : \"论文项目目录的完整路径\"}"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                      placeholder: form === \"overleaf\" ? \"https://git@************.com/\\u9879\\u76EEID\" : \"\\u8BBA\\u6587\\"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+  return 'https://git@************.com'+u.pathname.replace(/\\/$/,'');"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ const store=await new Store(join(d,'data')).init(),p=await store.add({name:'Git fixture',path:root});const url='https:"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@dcbb4315",
+      "line": 0,
+      "match": "secr************.com",
+      "context": "+ for(const u of ['http://git.overleaf.com/'+'a'.repeat(24),'https://git.overleaf.com.evil.test/'+'a'.repeat(24),'https:"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@1813b021",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+推荐使用 [DSH Desktop Bundle](https://github.com/hzxw*nder/dsh-desktop-bundle) 的固定版本组合。"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@1813b021",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@1813b021",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://githu"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-latex@1813b021",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"url\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/NOTICE",
+      "line": 2,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/NOTICE",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "hzxw*nder and distributed as part of PI-Desktop under LGPL-3.0-or-later. The"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.en.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.en.md",
+      "line": 58,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.en.md",
+      "line": 78,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.md",
+      "line": 25,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.md",
+      "line": 31,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/README.md",
+      "line": 43,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/package.json",
+      "line": 32,
+      "match": "hzxw*nder",
+      "context": "\"url\": \"git+https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory/store.js",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "* Copyright (c) 2026 hzxw*nder. LGPL-3.0-or-later; see LICENSE and NOTICE."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@031a592b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@031a592b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@5b9b118f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.1"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@5b9b118f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.1"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@cb024125",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"url\": \"git+https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@e3a12c3a",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#v0.2.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@e3a12c3a",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#v0.2.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@e5d55f22",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#v0.1.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@e5d55f22",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#v0.1.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@39eb2063",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@39eb2063",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#<commit>"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@39eb2063",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@39eb2063",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-memory#<commit>"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@4565ac20",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@37e51d9b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@37e51d9b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+hzxw*nder and distributed as part of PI-Desktop under LGPL-3.0-or-later. The"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@37e51d9b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@37e51d9b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"url\": \"git+https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-memory.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-project-memory@37e51d9b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+ * Copyright (c) 2026 hzxw*nder. LGPL-3.0-or-later; see LICENSE and NOTICE."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar/README.en.md",
+      "line": 11,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar/README.md",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal)"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar/docs/screenshots/SOURCES.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "[`docs/e2e.md`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal/blob/main/docs/e2e.md)。"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar@2132062f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[`docs/e2e.md`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal/blob/main/docs/e2e.md)。"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar@9dbbb0ab",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal),"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-sidebar@9dbbb0ab",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal)"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.en.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzx"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.en.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzx"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.en.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.en.md",
+      "line": 55,
+      "match": "hzxw*nder",
+      "context": "The model uses the ssh tool for remote files and commands. Install [DSH Terminal](https://github.com/hzxw*nder-dsh-plugi"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿主"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿主"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/README.md",
+      "line": 55,
+      "match": "hzxw*nder",
+      "context": "模型通过 ssh 工具访问远程文件和运行命令。交互式 shell 由 [终端插件](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal) 提供。普通本机文件和 shell"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/client.js",
+      "line": 291,
+      "match": "user*****.com",
+      "context": "field('host','主机名','host.com 或 user*****.com'),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/package.json",
+      "line": 16,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-ssh\","
+    },
+    {
+      "rule": "credential-file",
+      "severity": "critical",
+      "description": "凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/test/ssh.test.js",
+      "line": 193,
+      "match": "pass************ist'",
+      "context": "const sanitized = normalizeConnection({...valid, pass************ist', token: 'must-not-persist', action: 'save_"
+    },
+    {
+      "rule": "credential-file",
+      "severity": "critical",
+      "description": "凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh/test/ssh.test.js",
+      "line": 193,
+      "match": "toke************ist'",
+      "context": "const sanitized = normalizeConnection({...valid, password: 'must-not-persist', toke************ist', action: 'save_"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@12a88c0b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hz"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@12a88c0b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@d54b9e54",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@d54b9e54",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+The model uses the ssh tool for remote files and commands. Install [DSH Terminal](https://github.com/hzxw*nder-dsh-plug"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@d54b9e54",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+模型通过 ssh 工具访问远程文件和运行命令。交互式 shell 由 [终端插件](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal) 提供。普通本机文件和 shel"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@d54b9e54",
+      "line": 0,
+      "match": "user*****.com",
+      "context": "+                field('host','主机名','host.com 或 user*****.com'),"
+    },
+    {
+      "rule": "history:credential-file",
+      "severity": "critical",
+      "description": "历史修订中的凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@d54b9e54",
+      "line": 0,
+      "match": "pass************ist'",
+      "context": "+  const sanitized = normalizeConnection({...valid, pass************ist', token: 'must-not-persist', action: 'sa"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@851e50d9",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@851e50d9",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@851e50d9",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-ssh@851e50d9",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-ssh\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite/README.en.md",
+      "line": 15,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite);"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite/README.en.md",
+      "line": 17,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite/README.md",
+      "line": 14,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)，"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite/README.md",
+      "line": 16,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)；"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite@de99ac6e",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite);"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite@de99ac6e",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite@de99ac6e",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)，"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-suite@de99ac6e",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)；"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal/package.json",
+      "line": 38,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-terminal\","
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal/test/remote.test.js",
+      "line": 57,
+      "match": "user********.com",
+      "context": "assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal/test/remote.test.js",
+      "line": 57,
+      "match": "user********.com",
+      "context": "assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal@4c087694",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-terminal\","
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-terminal@4c087694",
+      "line": 0,
+      "match": "user********.com",
+      "context": "+  assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/README.en.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench)."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/README.en.md",
+      "line": 54,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/README.md",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "- Desktop 专用的 `profile` 与服务控制放在另一个仓库 [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-work"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench/package.json",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-workbench\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3b00dc7f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench)."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3b00dc7f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- Desktop 专用的 `profile` 与服务控制放在另一个仓库 [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-wor"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3d233d67",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3ba1a80b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3ba1a80b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3ba1a80b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workbench@3ba1a80b",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-workbench\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "ssh-alias",
+      "severity": "medium",
+      "description": "SSH 主机别名或主机名",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow/test/publisher.test.js",
+      "line": 9,
+      "match": "sshH************lid'",
+      "context": "const path=join(dir,'destination.json');await writeFile(path,JSON.stringify({sshH************lid',helper:'/opt/site"
+    },
+    {
+      "rule": "history:ssh-alias",
+      "severity": "medium",
+      "description": "历史修订中的SSH 主机别名或主机名",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow@4f84aa54",
+      "line": 0,
+      "match": "sshH************lid'",
+      "context": "+ const path=join(dir,'destination.json');await writeFile(path,JSON.stringify({sshH************lid',helper:'/opt/si"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/repositories/dsh-plugin-workflow@d00269d4",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 ["
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.en.md",
+      "line": 32,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.en.md",
+      "line": 60,
+      "match": "hzxw*nder",
+      "context": "pinned revision of [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.en.md",
+      "line": 60,
+      "match": "hzxw*nder",
+      "context": "pinned revision of [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.md",
+      "line": 32,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.md",
+      "line": 60,
+      "match": "hzxw*nder",
+      "context": "[hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop) 的固定 revision 编译，"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.md",
+      "line": 60,
+      "match": "hzxw*nder",
+      "context": "[hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop) 的固定 revision 编译，"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.md",
+      "line": 130,
+      "match": "hzxw*nder",
+      "context": "本版本的插件单元测试与 Web 行为测试通过。Desktop 兼容模式的内容区恢复仍有待修复问题，完整产品验收尚未通过。详见[验收报告与截图](https://github.com/hzxw*nder-dsh-plugins/dsh-plu"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/README.md",
+      "line": 138,
+      "match": "hzxw*nder",
+      "context": "详见 [插件说明](vendor/dsh-plugin-latex/README.md) 和 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/mai"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/docs/build.md",
+      "line": 3,
+      "match": "hzxw*nder",
+      "context": "`build-dmg.sh` 从固定 revision 的 [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop)"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/docs/build.md",
+      "line": 3,
+      "match": "hzxw*nder",
+      "context": "`build-dmg.sh` 从固定 revision 的 [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop)"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/docs/install.md",
+      "line": 38,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 4,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder/dsh-desktop.git\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 31,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 37,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 43,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 49,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 55,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 61,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-sidebar.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 67,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 73,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 79,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-sessions.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 85,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 91,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/manifest.json",
+      "line": 97,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/ACCEPTANCE-REPORT.md",
+      "line": 220,
+      "match": "hzxw*nder",
+      "context": "- 现象：审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxw*nder-dsh-"
+    },
+    {
+      "rule": "home-path",
+      "severity": "high",
+      "description": "绝对家目录路径",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/cases-privacy.mjs",
+      "line": 15,
+      "match": "/Use*****body",
+      "context": "const PERSONAL = (process.env.HOME ?? '/Use*****body').split('/').pop()"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/privacy-scan.mjs",
+      "line": 26,
+      "match": "user********.com",
+      "context": "// user********.com; only a routable domain counts as personal data here."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/report.mjs",
+      "line": 53,
+      "match": "hzxw*nder",
+      "context": "+ '11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal`）——'"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 1528,
+      "match": "******",
+      "context": "\"google-auth-library\": \"^******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2438,
+      "match": "******",
+      "context": "\"version\": \"******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2611,
+      "match": "******",
+      "context": "\"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2645,
+      "match": "******",
+      "context": "\"version\": \"******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2646,
+      "match": "******",
+      "context": "\"resolved\": \"https://registry.npmjs.org/google-auth-library/-/google-auth-library-******.tgz\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 2727,
+      "match": "******",
+      "context": "\"decimal.js\": \"^******\","
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 3194,
+      "match": "******",
+      "context": "\"node\": \">=******\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/package-lock.json",
+      "line": 3874,
+      "match": "******",
+      "context": "\"node\": \">=******\""
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 25,
+      "match": "192.****1.10",
+      "context": "expect(isSelfHostedEndpoint('http://192.****1.10:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 26,
+      "match": "******",
+      "context": "expect(isSelfHostedEndpoint('http://******.5/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/compat-dual.spec.ts",
+      "line": 27,
+      "match": "172.**.0.2",
+      "context": "expect(isSelfHostedEndpoint('http://172.**.0.2:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 488,
+      "match": "******",
+      "context": "await handler(fakeReq({ headers: { host: '******.5:3080', 'sec-fetch-site': 'cross-site' } }), res)"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 526,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080' },"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 589,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080', 'sec-fetch-site': 'same-origin' },"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 605,
+      "match": "******",
+      "context": "headers: { host: '******.5:3080', 'sec-fetch-site': 'same-site' },"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-better-reasoning-effort/tests/host.spec.ts",
+      "line": 662,
+      "match": "sekr************.com",
+      "context": "const settings = fakeSettings({ aliyun: { api: 'openai-completions', baseURL: 'https://user:sekr************.com/v1', m"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.en.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Its Web counterpart is [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite). There the `bin/m"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.en.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.en.md",
+      "line": 42,
+      "match": "hzxw*nder",
+      "context": "dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.en.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "`members` holds unique, valid package names; `specs` may name an install target only for a configured member, and a memb"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Web 端的对应仓库是 [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)。Web 端由该仓库的 `bin/manage.mjs` "
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.md",
+      "line": 42,
+      "match": "hzxw*nder",
+      "context": "dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/README.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "`members` 必须是合法包名且不重复；`specs` 只能为 `members` 里的包名给出安装目标，未给出的成员使用 `github:hzxw*nder-dsh-plugins/<name>`。`timeoutMs` 是单次操作的"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/lib/inventory.js",
+      "line": 23,
+      "match": "hzxw*nder",
+      "context": "export const DEFAULT_SPEC_PREFIX = 'github:hzxw*nder-dsh-plugins/';"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/package.json",
+      "line": 30,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-suite\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-suite/test/suite.test.js",
+      "line": 71,
+      "match": "hzxw*nder",
+      "context": "assert.equal(defaultSpec('dsh-plugin-terminal'), 'github:hzxw*nder-dsh-plugins/dsh-plugin-terminal');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-workbench/README.en.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Its Web counterpart is [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench). That rep"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-workbench/README.en.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-workbench/README.md",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "Web 端的对应仓库是 [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench)。该仓库负责组合本身（官方 `time-c"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-workbench/README.md",
+      "line": 13,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-desktop-workbench/package.json",
+      "line": 29,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-workbench\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/README.en.md",
+      "line": 40,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/README.md",
+      "line": 40,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "private-ip",
+      "severity": "medium",
+      "description": "私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/package-lock.json",
+      "line": 285,
+      "match": "******",
+      "context": "\"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/package.json",
+      "line": 33,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-browser\","
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-browser/test/browser.test.js",
+      "line": 73,
+      "match": "pass********.com",
+      "context": "for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://user:pass********.com', 'data:text/html,test'])"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/README.md",
+      "line": 24,
+      "match": "hzxw*nder",
+      "context": "推荐使用 [DSH Desktop Bundle](https://github.com/hzxw*nder/dsh-desktop-bundle) 的固定版本组合。"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/README.md",
+      "line": 29,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/README.md",
+      "line": 87,
+      "match": "hzxw*nder",
+      "context": "详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://github"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/README.md",
+      "line": 87,
+      "match": "hzxw*nder",
+      "context": "详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://github"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/client/index.jsx",
+      "line": 1149,
+      "match": "git@************.com",
+      "context": "{form!==\"create\"&&<label>{form===\"overleaf\"?\"Overleaf Git 链接\":\"本地目录\"}<input autoFocus={form===\"overleaf\"} required disab"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/dist/client.js",
+      "line": 46211,
+      "match": "git@************.com",
+      "context": "/* @__PURE__ */ (0, import_jsx_runtime2.jsx)(\"input\", { autoFocus: form === \"overleaf\", required: true, disabled: busy, "
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/lib/overleaf.js",
+      "line": 10,
+      "match": "git@************.com",
+      "context": "return 'https://git@************.com'+u.pathname.replace(/\\/$/,'');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/package.json",
+      "line": 35,
+      "match": "hzxw*nder",
+      "context": "\"url\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/test/overleaf.test.js",
+      "line": 12,
+      "match": "git@************.com",
+      "context": "const store=await new Store(join(d,'data')).init(),p=await store.add({name:'Git fixture',path:root});const url='https://"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/test/overleaf.test.js",
+      "line": 37,
+      "match": "git@************.com",
+      "context": "const project=await sync.clone(undefined,'https://git@************.com/'+'b'.repeat(24));"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/test/revisions.test.js",
+      "line": 34,
+      "match": "git@************.com",
+      "context": "assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24))"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/test/revisions.test.js",
+      "line": 34,
+      "match": "git@************.com",
+      "context": "assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24))"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-latex/test/revisions.test.js",
+      "line": 35,
+      "match": "secr************.com",
+      "context": "for(const u of ['http://git.overleaf.com/'+'a'.repeat(24),'https://git.overleaf.com.evil.test/'+'a'.repeat(24),'https://"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/NOTICE",
+      "line": 2,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/NOTICE",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "hzxw*nder and distributed as part of PI-Desktop under LGPL-3.0-or-later. The"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.en.md",
+      "line": 47,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.en.md",
+      "line": 58,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.en.md",
+      "line": 78,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.md",
+      "line": 25,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.md",
+      "line": 31,
+      "match": "hzxw*nder",
+      "context": "dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/README.md",
+      "line": 43,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/package.json",
+      "line": 32,
+      "match": "hzxw*nder",
+      "context": "\"url\": \"git+https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-project-memory/store.js",
+      "line": 5,
+      "match": "hzxw*nder",
+      "context": "* Copyright (c) 2026 hzxw*nder. LGPL-3.0-or-later; see LICENSE and NOTICE."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-sidebar/README.en.md",
+      "line": 11,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-sidebar/README.md",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal)"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.en.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzx"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.en.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzx"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.en.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.en.md",
+      "line": 55,
+      "match": "hzxw*nder",
+      "context": "The model uses the ssh tool for remote files and commands. Install [DSH Terminal](https://github.com/hzxw*nder-dsh-plugi"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿主"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.md",
+      "line": 12,
+      "match": "hzxw*nder",
+      "context": "- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿主"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/README.md",
+      "line": 55,
+      "match": "hzxw*nder",
+      "context": "模型通过 ssh 工具访问远程文件和运行命令。交互式 shell 由 [终端插件](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal) 提供。普通本机文件和 shell"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/client.js",
+      "line": 291,
+      "match": "user*****.com",
+      "context": "field('host','主机名','host.com 或 user*****.com'),"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/package.json",
+      "line": 16,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-ssh\","
+    },
+    {
+      "rule": "credential-file",
+      "severity": "critical",
+      "description": "凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/test/ssh.test.js",
+      "line": 193,
+      "match": "pass************ist'",
+      "context": "const sanitized = normalizeConnection({...valid, pass************ist', token: 'must-not-persist', action: 'save_"
+    },
+    {
+      "rule": "credential-file",
+      "severity": "critical",
+      "description": "凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-ssh/test/ssh.test.js",
+      "line": 193,
+      "match": "toke************ist'",
+      "context": "const sanitized = normalizeConnection({...valid, password: 'must-not-persist', toke************ist', action: 'save_"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-suite/README.en.md",
+      "line": 15,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite);"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-suite/README.en.md",
+      "line": 17,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-suite/README.md",
+      "line": 14,
+      "match": "hzxw*nder",
+      "context": "[`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)，"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-suite/README.md",
+      "line": 16,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)；"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-terminal/package.json",
+      "line": 38,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-terminal\","
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-terminal/test/remote.test.js",
+      "line": 57,
+      "match": "user********.com",
+      "context": "assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "email",
+      "severity": "medium",
+      "description": "邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-terminal/test/remote.test.js",
+      "line": 57,
+      "match": "user********.com",
+      "context": "assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/NOTICE",
+      "line": 1,
+      "match": "hzxw*nder",
+      "context": "Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/NOTICE",
+      "line": 7,
+      "match": "hzxw*nder",
+      "context": "https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/README.en.md",
+      "line": 21,
+      "match": "hzxw*nder",
+      "context": "[`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench)."
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/README.en.md",
+      "line": 54,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/README.md",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "- Desktop 专用的 `profile` 与服务控制放在另一个仓库 [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-work"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workbench/package.json",
+      "line": 10,
+      "match": "hzxw*nder",
+      "context": "\"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-workbench\","
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "personal-name",
+      "severity": "high",
+      "description": "维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workflow/README.md",
+      "line": 28,
+      "match": "hzxw*nder",
+      "context": "验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 [测"
+    },
+    {
+      "rule": "ssh-alias",
+      "severity": "medium",
+      "description": "SSH 主机别名或主机名",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/vendor/dsh-plugin-workflow/test/publisher.test.js",
+      "line": 9,
+      "match": "sshH************lid'",
+      "context": "const path=join(dir,'destination.json');await writeFile(path,JSON.stringify({sshH************lid',helper:'/opt/site"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@14b73842",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                  {form!==\"create\"&&<label>{form===\"overleaf\"?\"Overleaf Git 链接\":\"本地目录\"}<input autoFocus={form===\"overle"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@14b73842",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(\"input\", { autoFocus: form === \"overleaf\", required: true,"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@14b73842",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ const project=await sync.clone(undefined,'https://git@************.com/'+'b'.repeat(24));"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                      placeholder={form === \"overleaf\" ? \"https://git@************.com/项目ID\" : \"论文项目目录的完整路径\"}"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+                      placeholder: form === \"overleaf\" ? \"https://git@************.com/\\u9879\\u76EEID\" : \"\\u8BBA\\u6587\\"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+  return 'https://git@************.com'+u.pathname.replace(/\\/$/,'');"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ const store=await new Store(join(d,'data')).init(),p=await store.add({name:'Git fixture',path:root});const url='https:"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "git@************.com",
+      "context": "+ assert.equal(overleafURL('https://git@************.com/'+'a'.repeat(24)),'https://git@git.overleaf.com/'+'a'.repeat(24"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8f826da",
+      "line": 0,
+      "match": "secr************.com",
+      "context": "+ for(const u of ['http://git.overleaf.com/'+'a'.repeat(24),'https://git.overleaf.com.evil.test/'+'a'.repeat(24),'https:"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"google-auth-library\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"version\": \"******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      \"resolved\": \"https://registry.npmjs.org/google-auth-library/-/google-auth-library-******.tgz\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"decimal.js\": \"^******\","
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \">=******\""
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \">=******\""
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "192.****1.10",
+      "context": "+    expect(isSelfHostedEndpoint('http://192.****1.10:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+    expect(isSelfHostedEndpoint('http://******.5/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "172.**.0.2",
+      "context": "+    expect(isSelfHostedEndpoint('http://172.**.0.2:8000/v1')).toBe(true)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+    await handler(fakeReq({ headers: { host: '******.5:3080', 'sec-fetch-site': 'cross-site' } }), res)"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080' },"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080', 'sec-fetch-site': 'same-origin' },"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "******",
+      "context": "+      headers: { host: '******.5:3080', 'sec-fetch-site': 'same-site' },"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@f90fd6aa",
+      "line": 0,
+      "match": "sekr************.com",
+      "context": "+    const settings = fakeSettings({ aliyun: { api: 'openai-completions', baseURL: 'https://user:sekr************.com/v"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+详见 [插件说明](vendor/dsh-plugin-latex/README.md) 和 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/ma"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+推荐使用 [DSH Desktop Bundle](https://github.com/hzxw*nder/dsh-desktop-bundle) 的固定版本组合。"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+详见 [验收计划](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex/blob/main/docs/TEST-PLAN.md) 与 [验收报告](https://githu"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@2eb54b93",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"url\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-latex.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8ee831f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+本版本的插件单元测试与 Web 行为测试通过。Desktop 兼容模式的内容区恢复仍有待修复问题，完整产品验收尚未通过。详见[验收报告与截图](https://github.com/hzxw*nder-dsh-plugins/dsh-pl"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@b8ee831f",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+验证命令和逐项结果见 [验收报告](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow/blob/main/docs/acceptance-report.md) 与 ["
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@ac140050",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- 现象：审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxw*nder-dsh"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@ac140050",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      + '11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal`）——'"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@fac23bdb",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- 现象：`dsh-plugin-terminal` 仓库（远程 `github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal`）中，`docs/acceptance/2026-09-15-t"
+    },
+    {
+      "rule": "history:home-path",
+      "severity": "high",
+      "description": "历史修订中的绝对家目录路径",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@fac23bdb",
+      "line": 0,
+      "match": "/Use*****body",
+      "context": "+const PERSONAL = (process.env.HOME ?? '/Use*****body').split('/').pop()"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@fac23bdb",
+      "line": 0,
+      "match": "user********.com",
+      "context": "+    // user********.com; only a routable domain counts as personal data here."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@fac23bdb",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    symptom: '`dsh-plugin-terminal` 仓库（远程 `github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal`）中，'"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+pinned revision of [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop),"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop) 的固定 revision 编译，"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+`build-dmg.sh` 从固定 revision 的 [hzxw*nder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop)"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder/dsh-desktop-bundle.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"repository\": \"https://github.com/hzxw*nder/dsh-desktop.git\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-sidebar.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workflow.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-sessions.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      \"repository\": \"https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Its Web counterpart is [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite). There the `bin/"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+`members` holds unique, valid package names; `specs` may name an install target only for a configured member, and a mem"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Web 端的对应仓库是 [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)。Web 端由该仓库的 `bin/manage.mjs`"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-suite"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+      dsh-plugin-terminal: github:hzxw*nder-dsh-plugins/dsh-plugin-terminal#v0.5.0"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+`members` 必须是合法包名且不重复；`specs` 只能为 `members` 里的包名给出安装目标，未给出的成员使用 `github:hzxw*nder-dsh-plugins/<name>`。`timeoutMs` 是单次操作"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+export const DEFAULT_SPEC_PREFIX = 'github:hzxw*nder-dsh-plugins/';"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-suite\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  assert.equal(defaultSpec('dsh-plugin-terminal'), 'github:hzxw*nder-dsh-plugins/dsh-plugin-terminal');"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Its Web counterpart is [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench). That re"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Web 端的对应仓库是 [`dsh-plugin-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench)。该仓库负责组合本身（官方 `time-"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile desktop add github:hzxw*nder-dsh-plugins/dsh-desktop-workbench"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-desktop-workbench\","
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-browser.git"
+    },
+    {
+      "rule": "history:private-ip",
+      "severity": "medium",
+      "description": "历史修订中的私有网段地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "******",
+      "context": "+        \"node\": \"^8.16.0 || ^****** || >=11.0.0\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-browser\","
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "pass********.com",
+      "context": "+  for (const url of ['file:///etc/passwd', 'javascript:alert(1)', 'https://user:pass********.com', 'data:text/html,test"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+hzxw*nder and distributed as part of PI-Desktop under LGPL-3.0-or-later. The"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+dsh plugin --profile web add github:hzxw*nder-dsh-plugins/dsh-plugin-project-memory#v0.2.2"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+    \"url\": \"git+https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-project-memory.git\""
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+ * Copyright (c) 2026 hzxw*nder. LGPL-3.0-or-later; see LICENSE and NOTICE."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal),"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+[`dsh-plugin-terminal`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal)"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- No separate desktop repository: the plugin repository is [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hz"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+The model uses the ssh tool for remote files and commands. Install [DSH Terminal](https://github.com/hzxw*nder-dsh-plug"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- 桌面端没有独立仓库：插件仓库只有 [hzxw*nder-dsh-plugins/dsh-plugin-ssh](https://github.com/hzxwonder-dsh-plugins/dsh-plugin-ssh)，桌面端宿"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-ssh.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+模型通过 ssh 工具访问远程文件和运行命令。交互式 shell 由 [终端插件](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-terminal) 提供。普通本机文件和 shel"
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "user*****.com",
+      "context": "+                field('host','主机名','host.com 或 user*****.com'),"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-ssh\","
+    },
+    {
+      "rule": "history:credential-file",
+      "severity": "critical",
+      "description": "历史修订中的凭据文件内容",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "pass************ist'",
+      "context": "+  const sanitized = normalizeConnection({...valid, pass************ist', token: 'must-not-persist', action: 'sa"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite);"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-plugin-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-suite)，"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-suite`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-suite)；"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-terminal\","
+    },
+    {
+      "rule": "history:email",
+      "severity": "medium",
+      "description": "历史修订中的邮箱地址",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "user********.com",
+      "context": "+  assert.equal(validateRemoteHost('user********.com'), 'user@example.com');"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+Copyright (c) 2026 hzxw*nder and contributors."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+https://github.com/hzxw*nder/PI-Desktop"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-workbench)."
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+- Desktop 专用的 `profile` 与服务控制放在另一个仓库 [`dsh-desktop-workbench`](https://github.com/hzxw*nder-dsh-plugins/dsh-desktop-wor"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+git clone https://github.com/hzxw*nder-dsh-plugins/dsh-plugin-workbench.git"
+    },
+    {
+      "rule": "history:personal-name",
+      "severity": "high",
+      "description": "历史修订中的维护者个人标识",
+      "file": "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle@5da371ef",
+      "line": 0,
+      "match": "hzxw*nder",
+      "context": "+  \"repository\": \"github:hzxw*nder-dsh-plugins/dsh-plugin-workbench\","
+    }
+  ],
+  "byRule": {
+    "private-ip": 32,
+    "email": 27,
+    "history:private-ip": 52,
+    "history:email": 28,
+    "personal-name": 156,
+    "history:personal-name": 160,
+    "credential-file": 4,
+    "history:credential-file": 2,
+    "ssh-alias": 2,
+    "history:ssh-alias": 1,
+    "home-path": 1,
+    "history:home-path": 1
+  },
+  "bySeverity": {
+    "medium": 142,
+    "high": 318,
+    "critical": 6
+  }
+}

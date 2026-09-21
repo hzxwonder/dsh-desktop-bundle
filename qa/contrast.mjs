@@ -54,11 +54,23 @@ window.__contrast = {
     const darker = Math.min(first, second)
     return (lighter + 0.05) / (darker + 0.05)
   },
-  report() {
-    const root = document.documentElement
+  report(scope) {
+    // Scoping matters in a window this dense: the document's first 120 leaf nodes
+    // belong to the sidebar and the conversation, so an unscoped walk never reaches
+    // the panel whose colors are being judged.
+    const scopeRoot = typeof scope === 'string' ? document.querySelector(scope) : scope
+    const root = scopeRoot ?? document.documentElement
     const samples = []
-    const nodes = [...document.querySelectorAll('body *')]
-      .filter(el => el.childElementCount === 0 && (el.textContent || '').trim().length > 1)
+    // A node counts when it holds text of its own. Requiring a leaf element would
+    // skip every label that wraps its text in a span, which is most of a dense panel.
+    const ownText = el => [...el.childNodes]
+      .filter(node => node.nodeType === 3)
+      .map(node => node.textContent)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    const nodes = [...(scopeRoot ?? document.body).querySelectorAll('*')]
+      .filter(el => ownText(el).length > 1)
       .filter(el => {
         const rect = el.getBoundingClientRect()
         if (rect.width < 4 || rect.height < 4) return false
@@ -82,7 +94,7 @@ window.__contrast = {
         || /描述你想要构建的内容|发出消息或创建任务/.test(el.textContent || '')
       samples.push({
         role: isPlaceholder ? 'placeholder' : 'text',
-        text: (el.textContent || '').trim().slice(0, 24),
+        text: ownText(el).slice(0, 24),
         color: style.color,
         background: 'rgb(' + [background.r, background.g, background.b].map(Math.round).join(', ') + ')',
         fontSize,
