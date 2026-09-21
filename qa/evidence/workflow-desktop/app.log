@@ -1,6 +1,6 @@
 
-DevTools listening on ws://127.0.0.1:9470/devtools/browser/4716573f-f24c-4532-bcd4-f0cf0096d9f2
-dsh-plugin-desktop: child process gone (type: Utility, name: Network Service, service: network.mojom.NetworkService, reason: killed, exitCode: 15 / 0x0000000f)
-[16562:0921/153337.781508:ERROR:content/browser/network_service_instance_impl.cc:721] Network service crashed or was terminated, restarting service.
-[16562:0921/153337.782109:ERROR:content/browser/gpu/gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=15
+DevTools listening on ws://127.0.0.1:9470/devtools/browser/fbcedfa0-6e81-4c27-a857-4d72698a33d8
+[43928:0921/162829.020424:ERROR:content/browser/gpu/gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=15
 dsh-plugin-desktop: child process gone (type: GPU, service: GPU, reason: killed, exitCode: 15 / 0x0000000f)
+[43928:0921/162829.025669:ERROR:content/browser/network_service_instance_impl.cc:721] Network service crashed or was terminated, restarting service.
+dsh-plugin-desktop: child process gone (type: Utility, name: Network Service, service: network.mojom.NetworkService, reason: killed, exitCode: 15 / 0x0000000f)

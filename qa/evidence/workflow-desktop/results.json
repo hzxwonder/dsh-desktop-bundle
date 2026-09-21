@@ -5,12 +5,12 @@
     "title": "侧栏入口打开工作流面板并显示总览",
     "priority": "P0",
     "status": "pass",
-    "detail": "104ms",
+    "detail": "127ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/A-01-panel-open.png",
       "note: [\"论文精读\"]"
     ],
-    "at": "2026-09-21T07:24:58.723Z"
+    "at": "2026-09-21T08:19:43.145Z"
   },
   {
     "id": "W-A-02",
@@ -18,11 +18,11 @@
     "title": "卡片与列表两种样式切换且偏好保留",
     "priority": "P1",
     "status": "pass",
-    "detail": "1002ms",
+    "detail": "1042ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/A-02-list-view.png"
     ],
-    "at": "2026-09-21T07:24:59.726Z"
+    "at": "2026-09-21T08:19:44.190Z"
   },
   {
     "id": "W-A-03",
@@ -30,11 +30,11 @@
     "title": "空状态：搜索无结果给出解释与清除入口",
     "priority": "P1",
     "status": "pass",
-    "detail": "1504ms",
+    "detail": "1500ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/A-03-search-empty.png"
     ],
-    "at": "2026-09-21T07:25:01.231Z"
+    "at": "2026-09-21T08:19:45.691Z"
   },
   {
     "id": "W-A-04",
@@ -42,9 +42,9 @@
     "title": "搜索匹配名称与描述且大小写无关",
     "priority": "P2",
     "status": "pass",
-    "detail": "1283ms",
+    "detail": "1288ms",
     "evidence": [],
-    "at": "2026-09-21T07:25:02.516Z"
+    "at": "2026-09-21T08:19:46.981Z"
   },
   {
     "id": "W-A-05",
@@ -52,11 +52,11 @@
     "title": "归档视图为空时解释归档含义",
     "priority": "P2",
     "status": "pass",
-    "detail": "986ms",
+    "detail": "983ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/A-05-archive-empty.png"
     ],
-    "at": "2026-09-21T07:25:03.502Z"
+    "at": "2026-09-21T08:19:47.965Z"
   },
   {
     "id": "W-B-01",
@@ -64,13 +64,13 @@
     "title": "创建工作流进入对话并在输入区显示工作流标签",
     "priority": "P0",
     "status": "pass",
-    "detail": "3610ms",
+    "detail": "3605ms",
     "evidence": [
       "note: creation labels: []; workflows 1 -> 1",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-01-create-conversation.png",
       "note: workflow tag element present: true"
     ],
-    "at": "2026-09-21T07:25:07.113Z"
+    "at": "2026-09-21T08:19:51.570Z"
   },
   {
     "id": "W-B-02",
@@ -78,11 +78,11 @@
     "title": "从总览创建第二个工作流互不干扰",
     "priority": "P1",
     "status": "pass",
-    "detail": "5837ms",
+    "detail": "5825ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-02-second-create.png"
     ],
-    "at": "2026-09-21T07:25:12.950Z"
+    "at": "2026-09-21T08:19:57.395Z"
   },
   {
     "id": "W-B-03",
@@ -90,11 +90,11 @@
     "title": "拷贝工作流产生未发布草稿且不带走运行记录",
     "priority": "P1",
     "status": "pass",
-    "detail": "4816ms",
+    "detail": "4863ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-03-copy-result.png"
     ],
-    "at": "2026-09-21T07:25:17.766Z"
+    "at": "2026-09-21T08:20:02.259Z"
   },
   {
     "id": "W-B-04",
@@ -102,12 +102,12 @@
     "title": "连续创建多个工作流后列表完整且名称唯一",
     "priority": "P0",
     "status": "pass",
-    "detail": "4517ms",
+    "detail": "4529ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-04-many-workflows.png",
       "note: cards=8"
     ],
-    "at": "2026-09-21T07:25:22.283Z"
+    "at": "2026-09-21T08:20:06.789Z"
   },
   {
     "id": "W-B-05",
@@ -115,12 +115,12 @@
     "title": "列表样式在多个工作流下逐行对齐操作可用",
     "priority": "P1",
     "status": "pass",
-    "detail": "1004ms",
+    "detail": "1023ms",
     "evidence": [
       "note: 卡片操作行：0 张卡片，均为单行，最窄按钮 Infinitypx",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-05-list-many.png"
     ],
-    "at": "2026-09-21T07:25:23.287Z"
+    "at": "2026-09-21T08:20:07.812Z"
   },
   {
     "id": "W-B-06",
@@ -128,7 +128,7 @@
     "title": "超长与特殊字符名称不破坏布局",
     "priority": "P2",
     "status": "pass",
-    "detail": "1127ms",
+    "detail": "1637ms",
     "evidence": [
       "note: 卡片网格：3 列，右侧余量 0px（302.664px 302.664px 302.664px）",
       "note: 长记录卡片 253px（同屏最短 251px），标题 1 行，描述 2 行",
@@ -136,7 +136,7 @@
       "note: script text shown as text (not executed): true",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/B-06-long-name.png"
     ],
-    "at": "2026-09-21T07:25:24.416Z"
+    "at": "2026-09-21T08:20:09.450Z"
   },
   {
     "id": "W-C-01",
@@ -144,11 +144,11 @@
     "title": "再次点击入口关闭面板回到对话",
     "priority": "P0",
     "status": "pass",
-    "detail": "1897ms",
+    "detail": "1913ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-01-panel-closed.png"
     ],
-    "at": "2026-09-21T07:25:26.313Z"
+    "at": "2026-09-21T08:20:11.363Z"
   },
   {
     "id": "W-C-02",
@@ -161,7 +161,7 @@
       "note: Escape left the panel open",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-02-escape.png"
     ],
-    "at": "2026-09-21T07:25:29.837Z"
+    "at": "2026-09-21T08:20:14.886Z"
   },
   {
     "id": "W-C-03",
@@ -169,13 +169,13 @@
     "title": "隐藏窗口再恢复后面板与数据保持一致",
     "priority": "P0",
     "status": "pass",
-    "detail": "5206ms",
+    "detail": "5201ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-03-hidden.png",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-03-restored.png",
       "note: 面板 true / true，视图 grid / grid，卡片 9 / 9"
     ],
-    "at": "2026-09-21T07:25:35.043Z"
+    "at": "2026-09-21T08:20:20.088Z"
   },
   {
     "id": "W-C-04",
@@ -183,12 +183,12 @@
     "title": "页面刷新后面板与视图偏好恢复",
     "priority": "P1",
     "status": "pass",
-    "detail": "3400ms",
+    "detail": "3667ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-04-after-reload.png",
       "note: 刷新后面板自动打开：true（刷新前 true）；卡片 9 -> 9"
     ],
-    "at": "2026-09-21T07:25:38.444Z"
+    "at": "2026-09-21T08:20:23.756Z"
   },
   {
     "id": "W-C-05",
@@ -196,12 +196,12 @@
     "title": "退出并重开应用后面板状态与数据一致",
     "priority": "P0",
     "status": "pass",
-    "detail": "101681ms",
+    "detail": "102167ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-05-after-restart.png",
       "note: 重启后面板自动打开：true，卡片 9 -> 9"
     ],
-    "at": "2026-09-21T07:27:20.125Z"
+    "at": "2026-09-21T08:22:05.924Z"
   },
   {
     "id": "W-C-06",
@@ -209,11 +209,11 @@
     "title": "编辑态：切换面板视图后草稿与选中步骤保留",
     "priority": "P1",
     "status": "pass",
-    "detail": "5380ms",
+    "detail": "5349ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-06-graph-view.png"
     ],
-    "at": "2026-09-21T07:27:25.505Z"
+    "at": "2026-09-21T08:22:11.273Z"
   },
   {
     "id": "W-C-07",
@@ -221,11 +221,11 @@
     "title": "归档后从总览消失、在归档视图可恢复",
     "priority": "P1",
     "status": "pass",
-    "detail": "8487ms",
+    "detail": "8613ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/C-07-archived.png"
     ],
-    "at": "2026-09-21T07:27:33.994Z"
+    "at": "2026-09-21T08:22:19.889Z"
   },
   {
     "id": "W-C-08",
@@ -233,9 +233,9 @@
     "title": "归档状态跨应用重启保留",
     "priority": "P2",
     "status": "pass",
-    "detail": "102204ms",
+    "detail": "103551ms",
     "evidence": [],
-    "at": "2026-09-21T07:29:16.200Z"
+    "at": "2026-09-21T08:24:03.441Z"
   },
   {
     "id": "W-D-01",
@@ -243,12 +243,12 @@
     "title": "浅色主题下工作流总览可读且文字对比度达标",
     "priority": "P0",
     "status": "pass",
-    "detail": "3863ms",
+    "detail": "3995ms",
     "evidence": [
       "note: 浅色采样 5 条，最低 5.21（列表）",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/D-01-light-gallery.png"
     ],
-    "at": "2026-09-21T07:29:20.065Z"
+    "at": "2026-09-21T08:24:07.437Z"
   },
   {
     "id": "W-D-02",
@@ -256,12 +256,12 @@
     "title": "深色主题下工作流总览可读且文字对比度达标",
     "priority": "P0",
     "status": "pass",
-    "detail": "3440ms",
+    "detail": "4055ms",
     "evidence": [
       "note: 深色采样 5 条，最低 7.76（草稿 v1）",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/D-02-dark-gallery.png"
     ],
-    "at": "2026-09-21T07:29:23.505Z"
+    "at": "2026-09-21T08:24:11.493Z"
   },
   {
     "id": "W-D-03",
@@ -269,11 +269,11 @@
     "title": "面板打开时切换主题不丢状态也不残留旧配色",
     "priority": "P1",
     "status": "pass",
-    "detail": "4989ms",
+    "detail": "6029ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/D-03-theme-cycled.png"
     ],
-    "at": "2026-09-21T07:29:28.495Z"
+    "at": "2026-09-21T08:24:17.522Z"
   },
   {
     "id": "W-D-04",
@@ -281,12 +281,12 @@
     "title": "深色主题下编辑器步骤列表与设置面板对比度达标",
     "priority": "P1",
     "status": "pass",
-    "detail": "4937ms",
+    "detail": "4920ms",
     "evidence": [
       "note: 深色编辑器采样 5 条，最低 7.76（草稿 v1）",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/D-04-dark-editor.png"
     ],
-    "at": "2026-09-21T07:29:33.433Z"
+    "at": "2026-09-21T08:24:22.442Z"
   },
   {
     "id": "W-D-05",
@@ -294,11 +294,11 @@
     "title": "系统主题跟随：系统改变时应用同步且无闪烁残留",
     "priority": "P2",
     "status": "pass",
-    "detail": "12553ms",
+    "detail": "14006ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/D-05-theme-follow.png"
     ],
-    "at": "2026-09-21T07:29:45.987Z"
+    "at": "2026-09-21T08:24:36.448Z"
   },
   {
     "id": "W-E-01",
@@ -306,12 +306,12 @@
     "title": "1280×900 下总览无横向溢出、无控件重叠",
     "priority": "P0",
     "status": "pass",
-    "detail": "1335ms",
+    "detail": "1332ms",
     "evidence": [
       "note: 实际窗口 1280×886（屏幕可用 1512×886）",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-01-1280.png"
     ],
-    "at": "2026-09-21T07:29:47.323Z"
+    "at": "2026-09-21T08:24:37.781Z"
   },
   {
     "id": "W-E-02",
@@ -319,12 +319,12 @@
     "title": "1024×768 下操作入口仍可达",
     "priority": "P1",
     "status": "pass",
-    "detail": "1312ms",
+    "detail": "1298ms",
     "evidence": [
       "note: 实际窗口 1024×768",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-02-1024.png"
     ],
-    "at": "2026-09-21T07:29:48.635Z"
+    "at": "2026-09-21T08:24:39.080Z"
   },
   {
     "id": "W-E-03",
@@ -332,14 +332,14 @@
     "title": "窗口收窄到应用下限时侧栏与面板不重叠且主要操作可见",
     "priority": "P0",
     "status": "pass",
-    "detail": "2999ms",
+    "detail": "3015ms",
     "evidence": [
       "note: 请求 640px，实际 900×720（应用自身的最小宽度）",
       "note: narrow geometry: {\"panelOpen\":true,\"panelLeft\":90,\"sidebarRight\":57,\"viewport\":[900,720],\"createVisible\":true,\"clipped\":900}",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-03-640.png",
       "note: overlaps=[]"
     ],
-    "at": "2026-09-21T07:29:51.635Z"
+    "at": "2026-09-21T08:24:42.095Z"
   },
   {
     "id": "W-E-04",
@@ -347,13 +347,13 @@
     "title": "请求极窄宽度时窗口停在下限且无横向滚动",
     "priority": "P2",
     "status": "pass",
-    "detail": "3122ms",
+    "detail": "3121ms",
     "evidence": [
       "note: 请求 420px，实际 900×780",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-04-narrow.png",
       "note: 420px overflow: {\"horizontalScroll\":false,\"offenders\":0}"
     ],
-    "at": "2026-09-21T07:29:54.759Z"
+    "at": "2026-09-21T08:24:45.218Z"
   },
   {
     "id": "W-E-05",
@@ -361,11 +361,11 @@
     "title": "编辑器在两栏布局下资源面板与步骤列表不重叠",
     "priority": "P1",
     "status": "pass",
-    "detail": "2633ms",
+    "detail": "2607ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-05-editor-1280.png"
     ],
-    "at": "2026-09-21T07:29:57.394Z"
+    "at": "2026-09-21T08:24:47.826Z"
   },
   {
     "id": "W-E-06",
@@ -373,12 +373,12 @@
     "title": "关键控件触达尺寸不低于 32px 且图标按钮有可访问名称",
     "priority": "P1",
     "status": "pass",
-    "detail": "4532ms",
+    "detail": "4514ms",
     "evidence": [
       "note: controls=58, small=0, unnamed=0",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/E-06-control-sizes.png"
     ],
-    "at": "2026-09-21T07:30:01.927Z"
+    "at": "2026-09-21T08:24:52.340Z"
   },
   {
     "id": "W-F-01",
@@ -386,12 +386,12 @@
     "title": "从卡片运行工作流进入绑定会话",
     "priority": "P0",
     "status": "pass",
-    "detail": "15915ms",
+    "detail": "15896ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-01-run-bound.png",
-      "note: bindings=[\"session-381f\"]"
+      "note: bindings=[\"session-9efe\"]"
     ],
-    "at": "2026-09-21T07:30:17.842Z"
+    "at": "2026-09-21T08:25:08.237Z"
   },
   {
     "id": "W-F-02",
@@ -399,12 +399,12 @@
     "title": "运行会话在工作流对话列表中可重新打开",
     "priority": "P1",
     "status": "pass",
-    "detail": "4951ms",
+    "detail": "5004ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-02-sessions.png",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-03-conversation-open.png"
     ],
-    "at": "2026-09-21T07:30:22.794Z"
+    "at": "2026-09-21T08:25:13.241Z"
   },
   {
     "id": "W-F-03",
@@ -412,13 +412,13 @@
     "title": "编辑器修改任务说明后未保存提示与保存生效",
     "priority": "P1",
     "status": "pass",
-    "detail": "9476ms",
+    "detail": "9463ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-04-dirty-editor.png",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-03-saved-editor.png",
       "note: 保存后版本 1 -> 2"
     ],
-    "at": "2026-09-21T07:30:32.270Z"
+    "at": "2026-09-21T08:25:22.705Z"
   },
   {
     "id": "W-F-04",
@@ -426,12 +426,12 @@
     "title": "对话修改入口打开创作会话并标注工作流",
     "priority": "P2",
     "status": "pass",
-    "detail": "11066ms",
+    "detail": "11074ms",
     "evidence": [
-      "note: 创作模式绑定 0 -> 1；标签 {\"mode\":\"author\",\"workflowId\":\"accept-many-muax4xj1-5\",\"label\":\"正在修改工作流 · 验收-批量5-muax4xj1\"}",
+      "note: 创作模式绑定 0 -> 1；标签 {\"mode\":\"author\",\"workflowId\":\"accept-many-muaz3bmp-5\",\"label\":\"正在修改工作流 · 验收-批量5-muaz3bmp\"}",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/F-05-authoring.png"
     ],
-    "at": "2026-09-21T07:30:43.337Z"
+    "at": "2026-09-21T08:25:33.780Z"
   },
   {
     "id": "W-R-01",
@@ -439,11 +439,11 @@
     "title": "狂点创建入口不会重复创建或卡死",
     "priority": "P0",
     "status": "pass",
-    "detail": "8389ms",
+    "detail": "8378ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-01-rapid-create.png"
     ],
-    "at": "2026-09-21T07:30:51.726Z"
+    "at": "2026-09-21T08:25:42.159Z"
   },
   {
     "id": "W-R-02",
@@ -451,11 +451,11 @@
     "title": "创建过程中关闭面板不产生半成品或报错",
     "priority": "P1",
     "status": "pass",
-    "detail": "5042ms",
+    "detail": "5004ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-02-interrupt-create.png"
     ],
-    "at": "2026-09-21T07:30:56.769Z"
+    "at": "2026-09-21T08:25:47.163Z"
   },
   {
     "id": "W-R-03",
@@ -465,10 +465,10 @@
     "status": "pass",
     "detail": "9118ms",
     "evidence": [
-      "note: 离线时面板文本: 工作流 创建工作流 Failed to fetch 重试 9 个工作流 已归档 卡片 列表 验收-长名称-muax4xj1-很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称",
+      "note: 离线时面板文本: 工作流 创建工作流 Failed to fetch 重试 9 个工作流 已归档 卡片 列表 验收-长名称-muaz3bmp-很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称段落很长的中国語名称",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-03-offline-recovered.png"
     ],
-    "at": "2026-09-21T07:31:05.888Z"
+    "at": "2026-09-21T08:25:56.282Z"
   },
   {
     "id": "W-R-04",
@@ -476,11 +476,11 @@
     "title": "搜索框输入正则与超长文本不崩溃",
     "priority": "P1",
     "status": "pass",
-    "detail": "24721ms",
+    "detail": "23868ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-04-search-fuzz.png"
     ],
-    "at": "2026-09-21T07:31:30.609Z"
+    "at": "2026-09-21T08:26:20.151Z"
   },
   {
     "id": "W-R-05",
@@ -488,12 +488,12 @@
     "title": "重复点击卡片动作不会重复执行",
     "priority": "P1",
     "status": "pass",
-    "detail": "5140ms",
+    "detail": "5144ms",
     "evidence": [
       "note: bindings 1 -> 6 after 5 rapid run clicks",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-05-rapid-run.png"
     ],
-    "at": "2026-09-21T07:31:35.750Z"
+    "at": "2026-09-21T08:26:25.296Z"
   },
   {
     "id": "W-R-06",
@@ -501,7 +501,7 @@
     "title": "窗口在面板打开时连续缩放不残留布局错误",
     "priority": "P2",
     "status": "pass",
-    "detail": "8408ms",
+    "detail": "8453ms",
     "evidence": [
       "note: 900px -> 实际 900px",
       "note: 1200px -> 实际 1200px",
@@ -510,7 +510,7 @@
       "note: 1280px -> 实际 1280px",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-06-resize-cycle.png"
     ],
-    "at": "2026-09-21T07:31:44.158Z"
+    "at": "2026-09-21T08:26:33.749Z"
   },
   {
     "id": "W-R-07",
@@ -518,12 +518,12 @@
     "title": "面板打开时退出应用不产生未捕获错误",
     "priority": "P1",
     "status": "pass",
-    "detail": "98666ms",
+    "detail": "100301ms",
     "evidence": [
       "note: console errors before=0 after=0",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-07-reopen.png"
     ],
-    "at": "2026-09-21T07:33:22.824Z"
+    "at": "2026-09-21T08:28:14.051Z"
   },
   {
     "id": "W-R-08",
@@ -531,12 +531,12 @@
     "title": "打开不存在的运行记录不破坏面板",
     "priority": "P2",
     "status": "pass",
-    "detail": "83ms",
+    "detail": "82ms",
     "evidence": [
       "note: 未知运行标识 -> {\"ok\":true,\"value\":{\"run\":null,\"events\":[],\"artifacts\":[]}}",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-08-bad-run.png"
     ],
-    "at": "2026-09-21T07:33:22.908Z"
+    "at": "2026-09-21T08:28:14.134Z"
   },
   {
     "id": "W-R-09",
@@ -544,11 +544,11 @@
     "title": "损坏的工作流定义不阻塞总览加载",
     "priority": "P2",
     "status": "pass",
-    "detail": "2712ms",
+    "detail": "2718ms",
     "evidence": [
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-09-degenerate.png"
     ],
-    "at": "2026-09-21T07:33:25.620Z"
+    "at": "2026-09-21T08:28:16.852Z"
   },
   {
     "id": "W-R-10",
@@ -556,11 +556,11 @@
     "title": "后台标签页期间面板不高频轮询（可见性节流）",
     "priority": "P1",
     "status": "pass",
-    "detail": "12118ms",
+    "detail": "12116ms",
     "evidence": [
       "note: 隐藏 6s 内请求 0 次，恢复 6s 内 4 次",
       "/Users/huangzixiao/Documents/code/dsh/dsh-plugins/distribution/dsh-desktop-bundle/qa/evidence/workflow-desktop/R-10-visibility.png"
     ],
-    "at": "2026-09-21T07:33:37.738Z"
+    "at": "2026-09-21T08:28:28.968Z"
   }
 ]

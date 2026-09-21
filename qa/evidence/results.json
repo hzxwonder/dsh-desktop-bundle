@@ -5,12 +5,12 @@
     "title": "冷启动进入主界面且输入框可用",
     "priority": "P0",
     "status": "pass",
-    "detail": "65ms",
+    "detail": "81ms",
     "evidence": [
       "qa/evidence/A-01-boot.png",
-      "note: viewport 1280x840, theme light"
+      "note: viewport 1280x820, theme light"
     ],
-    "at": "2026-09-21T07:07:26.151Z"
+    "at": "2026-09-21T08:04:37.775Z"
   },
   {
     "id": "A-02",
@@ -18,11 +18,11 @@
     "title": "首次运行的欢迎浮层可关闭且不阻塞输入",
     "priority": "P1",
     "status": "pass",
-    "detail": "1ms",
+    "detail": "20ms",
     "evidence": [
       "note: welcome overlay already dismissed in this home"
     ],
-    "at": "2026-09-21T07:07:26.156Z"
+    "at": "2026-09-21T08:04:37.799Z"
   },
   {
     "id": "A-03",
@@ -30,11 +30,11 @@
     "title": "新建会话进入可输入状态",
     "priority": "P0",
     "status": "pass",
-    "detail": "2756ms",
+    "detail": "2725ms",
     "evidence": [
       "qa/evidence/A-03-new-conversation.png"
     ],
-    "at": "2026-09-21T07:07:28.913Z"
+    "at": "2026-09-21T08:04:40.524Z"
   },
   {
     "id": "A-04",
@@ -42,12 +42,12 @@
     "title": "发出消息后收到回复且会话被记录",
     "priority": "P0",
     "status": "pass",
-    "detail": "21231ms",
+    "detail": "21194ms",
     "evidence": [
       "qa/evidence/A-04-first-reply.png",
       "note: sidebar rows: 1"
     ],
-    "at": "2026-09-21T07:07:50.146Z"
+    "at": "2026-09-21T08:05:01.720Z"
   },
   {
     "id": "A-05",
@@ -55,12 +55,12 @@
     "title": "连续创建 3 个会话各自独立",
     "priority": "P1",
     "status": "pass",
-    "detail": "61832ms",
+    "detail": "61726ms",
     "evidence": [
       "qa/evidence/A-05-three-conversations.png",
       "note: sidebar rows after three conversations: 4"
     ],
-    "at": "2026-09-21T07:08:51.979Z"
+    "at": "2026-09-21T08:06:03.446Z"
   },
   {
     "id": "A-06",
@@ -68,12 +68,12 @@
     "title": "快速连点新建会话不产生重复会话",
     "priority": "P1",
     "status": "pass",
-    "detail": "5897ms",
+    "detail": "5888ms",
     "evidence": [
       "qa/evidence/A-06-rapid-new-conversation.png",
       "note: rows before=4 after=5"
     ],
-    "at": "2026-09-21T07:08:57.876Z"
+    "at": "2026-09-21T08:06:09.334Z"
   },
   {
     "id": "A-07",
@@ -81,11 +81,11 @@
     "title": "会话之间切换内容不串",
     "priority": "P1",
     "status": "pass",
-    "detail": "5150ms",
+    "detail": "5135ms",
     "evidence": [
       "qa/evidence/A-07-switched.png"
     ],
-    "at": "2026-09-21T07:09:03.026Z"
+    "at": "2026-09-21T08:06:14.470Z"
   },
   {
     "id": "A-08",
@@ -93,11 +93,11 @@
     "title": "刷新渲染进程后会话记录保持",
     "priority": "P1",
     "status": "pass",
-    "detail": "13111ms",
+    "detail": "13096ms",
     "evidence": [
       "qa/evidence/A-08-after-reload.png"
     ],
-    "at": "2026-09-21T07:09:16.137Z"
+    "at": "2026-09-21T08:06:27.567Z"
   },
   {
     "id": "A-09",
@@ -105,11 +105,11 @@
     "title": "工作区菜单可打开并给出工作区入口",
     "priority": "P2",
     "status": "pass",
-    "detail": "1767ms",
+    "detail": "1757ms",
     "evidence": [
       "qa/evidence/A-09-workspace-menu.png"
     ],
-    "at": "2026-09-21T07:09:17.905Z"
+    "at": "2026-09-21T08:06:29.325Z"
   },
   {
     "id": "A-10",
@@ -117,11 +117,11 @@
     "title": "输入超长草稿不卡死",
     "priority": "P2",
     "status": "pass",
-    "detail": "8827ms",
+    "detail": "8621ms",
     "evidence": [
       "qa/evidence/A-10-long-input.png"
     ],
-    "at": "2026-09-21T07:09:26.733Z"
+    "at": "2026-09-21T08:06:37.948Z"
   },
   {
     "id": "A-11",
@@ -129,12 +129,12 @@
     "title": "首轮对话全程无失败请求与控制台错误",
     "priority": "P1",
     "status": "pass",
-    "detail": "20661ms",
+    "detail": "20576ms",
     "evidence": [
       "qa/evidence/A-11-network-clean.png",
       "note: observed 13 responses, 0 failed, 0 console errors"
     ],
-    "at": "2026-09-21T07:09:57.193Z"
+    "at": "2026-09-21T08:07:07.180Z"
   },
   {
     "id": "B-01",
@@ -144,7 +144,7 @@
     "status": "skip",
     "detail": "the window server did not deliver the close request, so the window never closed",
     "evidence": [],
-    "at": "2026-09-21T07:10:21.047Z"
+    "at": "2026-09-21T08:07:31.006Z"
   },
   {
     "id": "B-02",
@@ -154,7 +154,7 @@
     "status": "skip",
     "detail": "the window never closed, so reopening it cannot be verified",
     "evidence": [],
-    "at": "2026-09-21T07:10:21.049Z"
+    "at": "2026-09-21T08:07:31.008Z"
   },
   {
     "id": "B-03",
@@ -164,7 +164,7 @@
     "status": "skip",
     "detail": "the window never closed, so its reopening cannot be verified",
     "evidence": [],
-    "at": "2026-09-21T07:10:21.050Z"
+    "at": "2026-09-21T08:07:31.009Z"
   },
   {
     "id": "B-04",
@@ -174,7 +174,7 @@
     "status": "skip",
     "detail": "the window server did not deliver the close request, so the window never closed",
     "evidence": [],
-    "at": "2026-09-21T07:10:24.055Z"
+    "at": "2026-09-21T08:07:34.015Z"
   },
   {
     "id": "B-05",
@@ -182,9 +182,9 @@
     "title": "收到退出请求后进程干净退出",
     "priority": "P1",
     "status": "pass",
-    "detail": "8081ms",
+    "detail": "8067ms",
     "evidence": [],
-    "at": "2026-09-21T07:10:32.138Z"
+    "at": "2026-09-21T08:07:42.083Z"
   },
   {
     "id": "B-06",
@@ -192,12 +192,12 @@
     "title": "重启后会话记录与几何恢复",
     "priority": "P1",
     "status": "pass",
-    "detail": "13500ms",
+    "detail": "13513ms",
     "evidence": [
       "qa/evidence/B-06-after-restart.png",
-      "note: rows 2 -> 2, frame {\"x\":0,\"y\":33,\"width\":1280,\"height\":840,\"innerWidth\":1280,\"innerHeight\":840}"
+      "note: rows 2 -> 2, frame {\"x\":0,\"y\":33,\"width\":1280,\"height\":820,\"innerWidth\":1280,\"innerHeight\":820}"
     ],
-    "at": "2026-09-21T07:10:45.639Z"
+    "at": "2026-09-21T08:07:55.597Z"
   },
   {
     "id": "B-07",
@@ -205,13 +205,13 @@
     "title": "窗口尺寸变更后重启仍保持",
     "priority": "P1",
     "status": "pass",
-    "detail": "14825ms",
+    "detail": "14744ms",
     "evidence": [
       "qa/evidence/B-07-resized-before-restart.png",
       "qa/evidence/B-07-resized-after-restart.png",
       "note: frame after restart: {\"x\":0,\"y\":33,\"width\":1024,\"height\":700,\"innerWidth\":1024,\"innerHeight\":700}"
     ],
-    "at": "2026-09-21T07:11:00.465Z"
+    "at": "2026-09-21T08:08:10.341Z"
   },
   {
     "id": "B-08",
@@ -219,11 +219,11 @@
     "title": "后台冻结后恢复内容与输入都正常",
     "priority": "P1",
     "status": "pass",
-    "detail": "7085ms",
+    "detail": "7089ms",
     "evidence": [
       "qa/evidence/B-08-after-background-return.png"
     ],
-    "at": "2026-09-21T07:11:07.550Z"
+    "at": "2026-09-21T08:08:17.431Z"
   },
   {
     "id": "B-09",
@@ -231,12 +231,12 @@
     "title": "应用已运行时再次启动不产生第二实例",
     "priority": "P1",
     "status": "pass",
-    "detail": "4398ms",
+    "detail": "4441ms",
     "evidence": [
       "qa/evidence/B-09-second-instance.png",
       "note: second launch exit code 0; processes 5 -> 5"
     ],
-    "at": "2026-09-21T07:11:11.949Z"
+    "at": "2026-09-21T08:08:21.873Z"
   },
   {
     "id": "B-10",
@@ -244,11 +244,11 @@
     "title": "强制结束后重启数据仍可读",
     "priority": "P2",
     "status": "pass",
-    "detail": "15972ms",
+    "detail": "15816ms",
     "evidence": [
       "qa/evidence/B-10-after-forced-kill.png"
     ],
-    "at": "2026-09-21T07:11:27.921Z"
+    "at": "2026-09-21T08:08:37.689Z"
   },
   {
     "id": "D-01",
@@ -256,11 +256,11 @@
     "title": "启动主题与系统外观一致",
     "priority": "P1",
     "status": "pass",
-    "detail": "217ms",
+    "detail": "223ms",
     "evidence": [
       "qa/evidence/D-01-boot-light.png"
     ],
-    "at": "2026-09-21T07:11:37.140Z"
+    "at": "2026-09-21T08:08:47.503Z"
   },
   {
     "id": "D-02",
@@ -268,11 +268,11 @@
     "title": "系统外观变化时界面即时跟随",
     "priority": "P1",
     "status": "pass",
-    "detail": "5866ms",
+    "detail": "6356ms",
     "evidence": [
       "qa/evidence/D-02-switched-dark.png"
     ],
-    "at": "2026-09-21T07:11:43.007Z"
+    "at": "2026-09-21T08:08:53.860Z"
   },
   {
     "id": "D-03",
@@ -280,12 +280,12 @@
     "title": "浅色主题下不存在残留的深色大色块",
     "priority": "P1",
     "status": "pass",
-    "detail": "1847ms",
+    "detail": "1806ms",
     "evidence": [
       "qa/evidence/D-03-light-surfaces.png",
       "note: surfaces: [{\"color\":\"rgb(255, 255, 255)\",\"luminance\":1,\"area\":1327946,\"samples\":[\"dshDesktopMacCaptionRow\",\"dshDesktopConversationSu\"]}]"
     ],
-    "at": "2026-09-21T07:11:44.856Z"
+    "at": "2026-09-21T08:08:55.668Z"
   },
   {
     "id": "D-04",
@@ -293,12 +293,12 @@
     "title": "深色主题下不存在残留的浅色大色块",
     "priority": "P1",
     "status": "pass",
-    "detail": "7091ms",
+    "detail": "7722ms",
     "evidence": [
       "qa/evidence/D-04-dark-surfaces.png",
       "note: surfaces: [{\"color\":\"rgb(21, 21, 23)\",\"luminance\":0.008,\"area\":1247918,\"samples\":[\"dshDesktopMacCaptionRow\",\"dshDesktopConversationSu\"]},{\"color\":\"rgb(44, 44, 46)\",\"luminance\":0.025,\"area\":80028,\"samples\":[\"p_FcLG_card\"]}]"
     ],
-    "at": "2026-09-21T07:11:51.947Z"
+    "at": "2026-09-21T08:09:03.391Z"
   },
   {
     "id": "D-05",
@@ -306,12 +306,12 @@
     "title": "快速反复切换主题 10 次后界面正常",
     "priority": "P2",
     "status": "pass",
-    "detail": "13062ms",
+    "detail": "16872ms",
     "evidence": [
       "qa/evidence/D-05-after-theme-cycles.png",
       "note: theme after ten switches: {\"dark\":false,\"colorScheme\":\"light\",\"background\":\"rgba(0, 0, 0, 0)\"}"
     ],
-    "at": "2026-09-21T07:12:05.010Z"
+    "at": "2026-09-21T08:09:20.265Z"
   },
   {
     "id": "D-06",
@@ -319,12 +319,12 @@
     "title": "切换主题不丢失当前会话内容",
     "priority": "P1",
     "status": "pass",
-    "detail": "26719ms",
+    "detail": "27565ms",
     "evidence": [
       "qa/evidence/D-06-conversation-after-theme.png",
       "note: transcript length before=324 light=324 dark=324"
     ],
-    "at": "2026-09-21T07:12:31.730Z"
+    "at": "2026-09-21T08:09:47.834Z"
   },
   {
     "id": "L-01",
@@ -332,12 +332,12 @@
     "title": "基准窗口无横向溢出与意外滚动条",
     "priority": "P1",
     "status": "pass",
-    "detail": "56ms",
+    "detail": "67ms",
     "evidence": [
       "qa/evidence/L-01-baseline.png",
       "note: viewport 1024x700, elements 417"
     ],
-    "at": "2026-09-21T07:12:40.645Z"
+    "at": "2026-09-21T08:09:57.670Z"
   },
   {
     "id": "L-02",
@@ -349,7 +349,7 @@
     "evidence": [
       "note: regions {\"sidebar\":{\"x\":0,\"y\":20,\"width\":280,\"height\":680,\"bottom\":700,\"right\":280},\"composer\":{\"x\":296,\"y\":347,\"width\":698,\"height\":52,\"bottom\":399,\"right\":994},\"composerBox\":{\"x\":280,\"y\":247,\"width\":734,\"height\":238,\"bottom\":485,\"right\":1014},\"send\":{\"x\":956,\"y\":411,\"width\":34,\"height\":34,\"bottom\":445,\"right\":990},\"dock\":null,\"rightbar\":{\"x\":1024,\"y\":32,\"width\":0,\"height\":668,\"bottom\":700,\"right\":1024},\"browserColumn\":null}"
     ],
-    "at": "2026-09-21T07:12:40.647Z"
+    "at": "2026-09-21T08:09:57.672Z"
   },
   {
     "id": "L-03",
@@ -357,11 +357,11 @@
     "title": "交互元素之间无遮挡重叠",
     "priority": "P1",
     "status": "pass",
-    "detail": "43ms",
+    "detail": "45ms",
     "evidence": [
       "qa/evidence/L-03-overlap-check.png"
     ],
-    "at": "2026-09-21T07:12:40.691Z"
+    "at": "2026-09-21T08:09:57.718Z"
   },
   {
     "id": "L-04",
@@ -371,7 +371,7 @@
     "status": "pass",
     "detail": "1ms",
     "evidence": [],
-    "at": "2026-09-21T07:12:40.692Z"
+    "at": "2026-09-21T08:09:57.720Z"
   },
   {
     "id": "L-05",
@@ -384,10 +384,9 @@
       "qa/evidence/L-05-light-theme.png",
       "note: light theme worst=2.13 placeholder=2.13 checked=16",
       "note: light theme below 4.5: [{\"role\":\"text\",\"text\":\"Medium\",\"color\":\"rgb(173, 178, 184)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":13,\"large\":false,\"ratio\":2.13},{\"role\":\"text\",\"text\":\"工作区\",\"color\":\"rgb(129, 133, 140)\",\"background\":\"rgb(255, 255, 255)\",\"fontSize\":14,\"large\":false,\"ratio\":3.71}]",
-      "note: light theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":2.13}]",
-      "qa/evidence/L-05-failure.png"
+      "note: light theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":2.13}]"
     ],
-    "at": "2026-09-21T07:12:46.234Z"
+    "at": "2026-09-21T08:10:04.621Z"
   },
   {
     "id": "L-06",
@@ -400,10 +399,9 @@
       "qa/evidence/L-06-dark-theme.png",
       "note: dark theme worst=3.76 placeholder=3.76 checked=16",
       "note: dark theme below 4.5: [{\"role\":\"text\",\"text\":\"Medium\",\"color\":\"rgb(129, 133, 140)\",\"background\":\"rgb(44, 44, 46)\",\"fontSize\":13,\"large\":false,\"ratio\":3.76}]",
-      "note: dark theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":3.76}]",
-      "qa/evidence/L-06-failure.png"
+      "note: dark theme placeholders: [{\"text\":\"描述你想要构建的内容, / 调用指令, @ 文件\",\"ratio\":3.76}]"
     ],
-    "at": "2026-09-21T07:12:46.577Z"
+    "at": "2026-09-21T08:10:04.986Z"
   },
   {
     "id": "L-07",
@@ -411,9 +409,9 @@
     "title": "主题切换即时生效且可回退",
     "priority": "P1",
     "status": "pass",
-    "detail": "5695ms",
+    "detail": "6757ms",
     "evidence": [],
-    "at": "2026-09-21T07:12:52.311Z"
+    "at": "2026-09-21T08:10:11.787Z"
   },
   {
     "id": "L-08",
@@ -421,12 +419,12 @@
     "title": "窗口放大到 1600×1000 布局自适应",
     "priority": "P1",
     "status": "pass",
-    "detail": "2099ms",
+    "detail": "2109ms",
     "evidence": [
       "qa/evidence/L-08-window-1600x1000.png",
       "note: regions at 1600x1000 {\"sidebar\":{\"x\":0,\"y\":20,\"width\":280,\"height\":866,\"bottom\":886,\"right\":280},\"composer\":{\"x\":480.7578125,\"y\":440,\"width\":816.4765625,\"height\":52,\"bottom\":492,\"right\":1297.234375},\"composerBox\":{\"x\":464.7578125,\"y\":340,\"width\":852.4765625,\"height\":238,\"bottom\":578,\"right\":1317.234375},\"send\":{\"x\":1259.234375,\"y\":504,\"width\":34,\"height\":34,\"bottom\":538,\"right\":1293.234375},\"dock\":null,\"rightbar\":{\"x\":1512,\"y\":32,\"width\":0,\"height\":854,\"bottom\":886,\"right\":1512},\"browserColumn\":null}"
     ],
-    "at": "2026-09-21T07:12:54.411Z"
+    "at": "2026-09-21T08:10:13.898Z"
   },
   {
     "id": "L-09",
@@ -434,11 +432,11 @@
     "title": "窗口缩小到 900×600 关键控件仍可用",
     "priority": "P1",
     "status": "pass",
-    "detail": "2074ms",
+    "detail": "2060ms",
     "evidence": [
       "qa/evidence/L-09-window-900x600.png"
     ],
-    "at": "2026-09-21T07:12:56.485Z"
+    "at": "2026-09-21T08:10:15.959Z"
   },
   {
     "id": "L-10",
@@ -450,7 +448,7 @@
     "evidence": [
       "qa/evidence/L-10-window-640x480.png"
     ],
-    "at": "2026-09-21T07:12:58.559Z"
+    "at": "2026-09-21T08:10:18.032Z"
   },
   {
     "id": "L-11",
@@ -458,11 +456,11 @@
     "title": "恢复基准尺寸后布局回到原状",
     "priority": "P2",
     "status": "pass",
-    "detail": "2580ms",
+    "detail": "2655ms",
     "evidence": [
       "qa/evidence/L-11-window-restored.png"
     ],
-    "at": "2026-09-21T07:13:01.140Z"
+    "at": "2026-09-21T08:10:20.688Z"
   },
   {
     "id": "L-12",
@@ -470,14 +468,14 @@
     "title": "侧边栏收起与展开后几何稳定",
     "priority": "P2",
     "status": "pass",
-    "detail": "3375ms",
+    "detail": "3394ms",
     "evidence": [
       "qa/evidence/L-12-sidebar-collapsed.png",
       "qa/evidence/L-12-sidebar-expanded.png",
       "note: controls used: 收起侧边栏 then 打开侧边栏",
       "note: sidebar widths: {\"before\":280,\"collapsed\":56,\"restored\":280}"
     ],
-    "at": "2026-09-21T07:13:04.515Z"
+    "at": "2026-09-21T08:10:24.082Z"
   },
   {
     "id": "L-13",
@@ -485,12 +483,12 @@
     "title": "侧边栏收起为图标栏时布局正常",
     "priority": "P2",
     "status": "pass",
-    "detail": "3293ms",
+    "detail": "3310ms",
     "evidence": [
       "qa/evidence/L-13-sidebar-rail.png",
       "note: collapsed sidebar width 56, composer {\"x\":283.203125,\"y\":417,\"width\":789.59375,\"height\":52,\"bottom\":469,\"right\":1072.796875}"
     ],
-    "at": "2026-09-21T07:13:07.808Z"
+    "at": "2026-09-21T08:10:27.393Z"
   },
   {
     "id": "L-14",
@@ -498,11 +496,11 @@
     "title": "终端面板打开后输入框仍完整可见",
     "priority": "P1",
     "status": "pass",
-    "detail": "4ms",
+    "detail": "2ms",
     "evidence": [
       "note: no terminal control in this profile; covered by group T"
     ],
-    "at": "2026-09-21T07:13:07.814Z"
+    "at": "2026-09-21T08:10:27.396Z"
   },
   {
     "id": "L-15",
@@ -510,11 +508,11 @@
     "title": "多次开合侧边栏后几何无累积偏移",
     "priority": "P2",
     "status": "pass",
-    "detail": "8223ms",
+    "detail": "8148ms",
     "evidence": [
       "qa/evidence/L-15-after-sidebar-cycles.png"
     ],
-    "at": "2026-09-21T07:13:16.038Z"
+    "at": "2026-09-21T08:10:35.544Z"
   },
   {
     "id": "F-01",
@@ -522,12 +520,12 @@
     "title": "工作区列表与新建会话入口可用",
     "priority": "P1",
     "status": "pass",
-    "detail": "67ms",
+    "detail": "75ms",
     "evidence": [
       "qa/evidence/F-01-sidebar-surface.png",
       "note: workspaces=1 conversations=1"
     ],
-    "at": "2026-09-21T07:13:25.062Z"
+    "at": "2026-09-21T08:10:44.930Z"
   },
   {
     "id": "F-02",
@@ -535,11 +533,11 @@
     "title": "工作区切换菜单可打开并列出工作区",
     "priority": "P1",
     "status": "pass",
-    "detail": "2495ms",
+    "detail": "2498ms",
     "evidence": [
       "qa/evidence/F-02-workspace-selector.png"
     ],
-    "at": "2026-09-21T07:13:27.557Z"
+    "at": "2026-09-21T08:10:47.428Z"
   },
   {
     "id": "F-03",
@@ -547,11 +545,11 @@
     "title": "搜索会话入口可与输入框交互",
     "priority": "P1",
     "status": "pass",
-    "detail": "2405ms",
+    "detail": "2414ms",
     "evidence": [
       "qa/evidence/F-03-search-open.png"
     ],
-    "at": "2026-09-21T07:13:29.962Z"
+    "at": "2026-09-21T08:10:49.843Z"
   },
   {
     "id": "F-04",
@@ -559,11 +557,11 @@
     "title": "插件市场面板可打开",
     "priority": "P1",
     "status": "pass",
-    "detail": "2522ms",
+    "detail": "2524ms",
     "evidence": [
       "qa/evidence/F-04-plugin-market.png"
     ],
-    "at": "2026-09-21T07:13:32.486Z"
+    "at": "2026-09-21T08:10:52.369Z"
   },
   {
     "id": "F-05",
@@ -571,11 +569,11 @@
     "title": "设置面板可打开",
     "priority": "P1",
     "status": "pass",
-    "detail": "2513ms",
+    "detail": "2532ms",
     "evidence": [
       "qa/evidence/F-05-settings.png"
     ],
-    "at": "2026-09-21T07:13:34.999Z"
+    "at": "2026-09-21T08:10:54.902Z"
   },
   {
     "id": "F-06",
@@ -583,11 +581,11 @@
     "title": "视图选项菜单可打开",
     "priority": "P1",
     "status": "pass",
-    "detail": "2502ms",
+    "detail": "2486ms",
     "evidence": [
       "qa/evidence/F-06-view-options.png"
     ],
-    "at": "2026-09-21T07:13:37.502Z"
+    "at": "2026-09-21T08:10:57.389Z"
   },
   {
     "id": "F-07",
@@ -595,11 +593,11 @@
     "title": "模型选择器列出已配置模型",
     "priority": "P1",
     "status": "pass",
-    "detail": "2424ms",
+    "detail": "2423ms",
     "evidence": [
       "qa/evidence/F-07-model-picker.png"
     ],
-    "at": "2026-09-21T07:13:39.926Z"
+    "at": "2026-09-21T08:10:59.813Z"
   },
   {
     "id": "F-08",
@@ -607,11 +605,11 @@
     "title": "访问模式菜单可打开并列出模式",
     "priority": "P1",
     "status": "pass",
-    "detail": "2398ms",
+    "detail": "2400ms",
     "evidence": [
       "qa/evidence/F-08-access-mode.png"
     ],
-    "at": "2026-09-21T07:13:42.326Z"
+    "at": "2026-09-21T08:11:02.215Z"
   },
   {
     "id": "F-09",
@@ -619,12 +617,12 @@
     "title": "指令入口可打开",
     "priority": "P2",
     "status": "pass",
-    "detail": "2416ms",
+    "detail": "2428ms",
     "evidence": [
       "qa/evidence/F-09-commands.png",
       "note: command surface text: 新会话 工作流 1 工作区 对话 新会话 论文工作台 插件市场 设置 探索未至之境 预览版 对话 标准模式 指令 compact 压缩以上对话内容 desktop-suite Inspect or manage the maintained"
     ],
-    "at": "2026-09-21T07:13:44.744Z"
+    "at": "2026-09-21T08:11:04.645Z"
   },
   {
     "id": "F-10",
@@ -632,11 +630,11 @@
     "title": "斜杠指令在输入框中给出候选",
     "priority": "P2",
     "status": "pass",
-    "detail": "2715ms",
+    "detail": "2733ms",
     "evidence": [
       "qa/evidence/F-10-slash-command.png"
     ],
-    "at": "2026-09-21T07:13:47.460Z"
+    "at": "2026-09-21T08:11:07.380Z"
   },
   {
     "id": "F-11",
@@ -644,13 +642,13 @@
     "title": "右侧边栏与终端面板可开合",
     "priority": "P1",
     "status": "pass",
-    "detail": "4464ms",
+    "detail": "4463ms",
     "evidence": [
       "qa/evidence/F-11-terminal-open.png",
       "qa/evidence/F-11-terminal-closed.png",
       "note: elements 422 -> 422 (terminal false) -> 422 (closed false)"
     ],
-    "at": "2026-09-21T07:13:51.925Z"
+    "at": "2026-09-21T08:11:11.846Z"
   },
   {
     "id": "F-12",
@@ -658,12 +656,12 @@
     "title": "附件入口可用",
     "priority": "P1",
     "status": "pass",
-    "detail": "2398ms",
+    "detail": "2384ms",
     "evidence": [
       "qa/evidence/F-12-attachment-menu.png",
       "note: attachment surface text: 新会话 工作流 1 工作区 对话 新会话 论文工作台 插件市场 设置 探索未至之境 预览版 对话 标准模式 描述你想要构建的内容, / 调用指令, @ 文件或对话 添加附件 工作区内修改 QA Mock Model Medium"
     ],
-    "at": "2026-09-21T07:13:54.324Z"
+    "at": "2026-09-21T08:11:14.231Z"
   },
   {
     "id": "F-13",
@@ -671,12 +669,12 @@
     "title": "连续打开并关闭各入口后应用仍可用",
     "priority": "P2",
     "status": "pass",
-    "detail": "10766ms",
+    "detail": "10750ms",
     "evidence": [
       "qa/evidence/F-13-after-panel-cycles.png",
       "note: the market panel answers with a designed error body while no catalog source is configured"
     ],
-    "at": "2026-09-21T07:14:05.091Z"
+    "at": "2026-09-21T08:11:24.982Z"
   },
   {
     "id": "R-01",
@@ -684,11 +682,11 @@
     "title": "空输入回车不产生空会话",
     "priority": "P0",
     "status": "pass",
-    "detail": "5172ms",
+    "detail": "5147ms",
     "evidence": [
       "qa/evidence/R-01-empty-enter.png"
     ],
-    "at": "2026-09-21T07:14:18.827Z"
+    "at": "2026-09-21T08:11:39.082Z"
   },
   {
     "id": "R-02",
@@ -696,12 +694,12 @@
     "title": "粘贴超长文本不崩溃且可继续操作",
     "priority": "P1",
     "status": "pass",
-    "detail": "4861ms",
+    "detail": "4852ms",
     "evidence": [
       "qa/evidence/R-02-huge-paste.png",
       "note: composer holds 40007 characters after pasting 40k"
     ],
-    "at": "2026-09-21T07:14:23.689Z"
+    "at": "2026-09-21T08:11:43.935Z"
   },
   {
     "id": "R-03",
@@ -709,12 +707,12 @@
     "title": "表情、CJK 与控制字符混合输入正确回显",
     "priority": "P1",
     "status": "pass",
-    "detail": "3165ms",
+    "detail": "3164ms",
     "evidence": [
       "qa/evidence/R-03-unicode-input.png",
       "note: composer text: \"QA🙂中文テスト​零宽\""
     ],
-    "at": "2026-09-21T07:14:26.854Z"
+    "at": "2026-09-21T08:11:47.100Z"
   },
   {
     "id": "R-04",
@@ -722,11 +720,11 @@
     "title": "发送过程中重复回车不产生重复消息",
     "priority": "P1",
     "status": "pass",
-    "detail": "22978ms",
+    "detail": "22944ms",
     "evidence": [
       "qa/evidence/R-04-duplicate-guard.png"
     ],
-    "at": "2026-09-21T07:14:49.832Z"
+    "at": "2026-09-21T08:12:10.044Z"
   },
   {
     "id": "R-05",
@@ -734,11 +732,11 @@
     "title": "模型服务不可用时错误可见且界面可继续使用",
     "priority": "P0",
     "status": "pass",
-    "detail": "24258ms",
+    "detail": "24207ms",
     "evidence": [
       "qa/evidence/R-05-provider-offline.png"
     ],
-    "at": "2026-09-21T07:15:14.091Z"
+    "at": "2026-09-21T08:12:34.252Z"
   },
   {
     "id": "R-06",
@@ -746,11 +744,11 @@
     "title": "模型服务恢复后可以继续发送",
     "priority": "P1",
     "status": "pass",
-    "detail": "20792ms",
+    "detail": "20747ms",
     "evidence": [
       "qa/evidence/R-06-provider-recovered.png"
     ],
-    "at": "2026-09-21T07:15:34.884Z"
+    "at": "2026-09-21T08:12:55.002Z"
   },
   {
     "id": "R-07",
@@ -758,11 +756,11 @@
     "title": "回答生成中关闭窗口后重启无损坏",
     "priority": "P1",
     "status": "pass",
-    "detail": "18522ms",
+    "detail": "18117ms",
     "evidence": [
       "qa/evidence/R-07-after-mid-answer-kill.png"
     ],
-    "at": "2026-09-21T07:15:53.407Z"
+    "at": "2026-09-21T08:13:13.119Z"
   },
   {
     "id": "R-08",
@@ -770,12 +768,12 @@
     "title": "连续刷新 5 次无错误且状态保持一致",
     "priority": "P1",
     "status": "pass",
-    "detail": "25614ms",
+    "detail": "25620ms",
     "evidence": [
       "qa/evidence/R-08-after-five-reloads.png",
-      "note: observed 192 responses across the reloads"
+      "note: observed 204 responses across the reloads"
     ],
-    "at": "2026-09-21T07:16:19.022Z"
+    "at": "2026-09-21T08:13:38.741Z"
   },
   {
     "id": "R-09",
@@ -783,11 +781,11 @@
     "title": "快速切换会话 20 次不崩溃",
     "priority": "P2",
     "status": "pass",
-    "detail": "49848ms",
+    "detail": "49823ms",
     "evidence": [
       "qa/evidence/R-09-after-rapid-switching.png"
     ],
-    "at": "2026-09-21T07:17:08.871Z"
+    "at": "2026-09-21T08:14:28.564Z"
   },
   {
     "id": "R-10",
@@ -795,12 +793,12 @@
     "title": "控件快速连点 20 次不产生异常状态",
     "priority": "P1",
     "status": "pass",
-    "detail": "9720ms",
+    "detail": "9668ms",
     "evidence": [
       "qa/evidence/R-10-after-rapid-control-clicks.png",
       "note: the market panel answers with a designed error body while no catalog source is configured"
     ],
-    "at": "2026-09-21T07:17:18.591Z"
+    "at": "2026-09-21T08:14:38.235Z"
   },
   {
     "id": "R-11",
@@ -808,12 +806,12 @@
     "title": "空数据目录启动进入可引导状态",
     "priority": "P1",
     "status": "pass",
-    "detail": "18661ms",
+    "detail": "18144ms",
     "evidence": [
       "qa/evidence/R-11-empty-home-boot.png",
       "note: composer=false addWorkspace=true"
     ],
-    "at": "2026-09-21T07:17:37.253Z"
+    "at": "2026-09-21T08:14:56.379Z"
   },
   {
     "id": "R-12",
@@ -821,12 +819,12 @@
     "title": "全新 Profile 首次启动的桌面设置向导可跳过",
     "priority": "P1",
     "status": "pass",
-    "detail": "30522ms",
+    "detail": "30507ms",
     "evidence": [
       "qa/evidence/R-12-fresh-profile.png",
-      "note: setup outcome for the new profile: {\"version\":2,\"profileHash\":\"70c9b45991742f713aa79f3eb07d39a3892df06e5eccde5c860ab90d44c61bfc\",\"outcome\":\"skipped\",\"desktopVersion\":\"2.0.13\",\"dshVersion\":\"0.1.5-rc.2\",\"setupRevision\":1,\"recordedAt\":\"2026-09-21T07:17:48.099Z\"}"
+      "note: setup outcome for the new profile: {\"version\":2,\"profileHash\":\"70c9b45991742f713aa79f3eb07d39a3892df06e5eccde5c860ab90d44c61bfc\",\"outcome\":\"skipped\",\"desktopVersion\":\"2.0.14\",\"dshVersion\":\"0.1.5-rc.2\",\"setupRevision\":1,\"recordedAt\":\"2026-09-21T08:15:07.229Z\"}"
     ],
-    "at": "2026-09-21T07:18:07.775Z"
+    "at": "2026-09-21T08:15:26.886Z"
   },
   {
     "id": "R-13",
@@ -834,12 +832,12 @@
     "title": "配置损坏时进入恢复模式而不是空白页",
     "priority": "P1",
     "status": "pass",
-    "detail": "22076ms",
+    "detail": "22833ms",
     "evidence": [
       "qa/evidence/R-13-broken-settings-boot.png",
-      "note: url=file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/native-ui/recovery.html?state=eyJsb2NhbGUiOiJ6aCIsImZhaWx1cmVTdGFnZSI6InByb2ZpbGUtY29tcG9zaXRpb24iLCJmYWlsdXJlRGV0YWlsIjoiZHNoLXBsdWdpbi1kZXNrdG9wOiBpbnZhbGlkIHNldHRpbmdzIGRvY3VtZW50IGF0IC9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZS9zZXR0aW5ncy55YW1sOiBJbXBsaWNpdCBrZXlzIG9mIGZsb3cgc2VxdWVuY2UgcGFpcnMgbmVlZCB0byBiZSBvbiBhIHNpbmdsZSBsaW5lIGF0IGxpbmUgMSwgY29sdW1uIDE1OlxuXG5kc2gtZGVza3RvcDogW3VuY2xvc2VkXG4gICAgICAgICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gODpcblxuICBiYWQ6IDogOlxuICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gMTA6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgIF5cbjsgRmxvdyBzZXF1ZW5jZSBpbiBibG9jayBjb2xsZWN0aW9uIG11c3QgYmUgc3VmZmljaWVudGx5IGluZGVudGVkIGFuZCBlbmQgd2l0aCBhIF0gYXQgbGluZSAyLCBjb2x1bW4gMTE6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgICBeXG4iLCJzbmFwc2hvdCI6eyJwcm9maWxlTmFtZSI6ImRlc2t0b3AiLCJidW5kbGVzIjpbeyJidW5kbGVJZCI6ImJ1bmRsZV9oNDBCdHBZbzVVMS0zWDM0Vl9yY01zV29IcUhpVFktUCIsInBhY2thZ2VOYW1lIjoiQGRlZXBzZWVrLWFpL2RzaC1iYXNlIiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJjb3JlIiwiYWN0aW9uIjpudWxsfSx7ImJ1bmRsZUlkIjoiYnVuZGxlX2NEMl9jOGRWak1oUWR0alE0TE1SN18xOU5RN29xMXlIIiwicGFja2FnZU5hbWUiOiJAZGVlcHNlZWstYWkvZHNoLXdlYi1hcHAiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6ImNvcmUiLCJhY3Rpb24iOm51bGx9LHsiYnVuZGxlSWQiOiJidW5kbGVfakRySkJnSm5uMXdvcnNYY0V1RkJWazFSeVpvYm5sZWIiLCJwYWNrYWdlTmFtZSI6ImRzaC1wbHVnaW4tc3VpdGUiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6InByb2ZpbGUiLCJhY3Rpb24iOiJ1bmluc3RhbGwifSx7ImJ1bmRsZUlkIjoiYnVuZGxlX3JXUktvc1A3cHlxbXphZm9kTzUyUmlwRDRqUFdLNl91IiwicGFja2FnZU5hbWUiOiJkc2gtZGVza3RvcC1zdWl0ZSIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfMDhOSTdOU2otay1OSDdVSGxGQnVOeWk4YXdPZUdERloiLCJwYWNrYWdlTmFtZSI6ImRzaC1kZXNrdG9wLXdvcmtiZW5jaCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfTzJKZTNmckJ4aVM1VVpKcWxTZ2dLLUpXVWFwVXBWQ0IiLCJwYWNrYWdlTmFtZSI6ImRzaC1wbHVnaW4td29ya2Zsb3ciLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6InByb2ZpbGUiLCJhY3Rpb24iOiJ1bmluc3RhbGwifSx7ImJ1bmRsZUlkIjoiYnVuZGxlX2RjV0xaajZUUF90dnNJdWNKcU5UY0ZoWGtxUFhUdzNCIiwicGFja2FnZU5hbWUiOiJkc2gtcGx1Z2luLXNlc3Npb25zIiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJwcm9maWxlIiwiYWN0aW9uIjoidW5pbnN0YWxsIn0seyJidW5kbGVJZCI6ImJ1bmRsZV9PbERHYTBBYWpKTEliTlFYV3VOVEhWWEQ0NDFsX2VZMCIsInBhY2thZ2VOYW1lIjoiZHNoLXBsdWdpbi1sYXRleCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfVHRCMFV1LTJLQ3IwVVFJOUJhYlFfdmRBdkRHTTVRNHkiLCJwYWNrYWdlTmFtZSI6ImRzaC1iZXR0ZXItcmVhc29uaW5nLWVmZm9ydCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9XSwiY2hlY2twb2ludHMiOlt7InNsb3RJZCI6InNsb3QtMSIsInN0YXR1cyI6ImF2YWlsYWJsZSIsImNhcHR1cmVkQXQiOiIyMDI2LTA5LTIxVDA3OjE1OjQ5LjU3MloiLCJhcHBWZXJzaW9uIjoiMi4wLjEzIiwicHJvdmlkZXIiOiJkZXNrdG9wLXByb2ZpbGUiLCJmaWxlQ291bnQiOjUsInBsdWdpbkNvdW50Ijo5LCJ0b3RhbEJ5dGVzIjo0NTYzOX0seyJzbG90SWQiOiJzbG90LTIiLCJzdGF0dXMiOiJhdmFpbGFibGUiLCJjYXB0dXJlZEF0IjoiMjAyNi0wOS0yMVQwNzoxODowNC4wNTlaIiwiYXBwVmVyc2lvbiI6IjIuMC4xMyIsInByb3ZpZGVyIjoiZGVza3RvcC1wcm9maWxlIiwiZmlsZUNvdW50Ijo1LCJwbHVnaW5Db3VudCI6OSwidG90YWxCeXRlcyI6NDU2Mzl9LHsic2xvdElkIjoic2xvdC0zIiwic3RhdHVzIjoiYXZhaWxhYmxlIiwiY2FwdHVyZWRBdCI6IjIwMjYtMDktMjFUMDc6MTQ6MTMuMTgyWiIsImFwcFZlcnNpb24iOiIyLjAuMTMiLCJwcm92aWRlciI6ImRlc2t0b3AtcHJvZmlsZSIsImZpbGVDb3VudCI6NSwicGx1Z2luQ291bnQiOjksInRvdGFsQnl0ZXMiOjQ1NjM5fV19LCJkaWFnbm9zdGljcyI6eyJzdGF0dXMiOiJzYXZlZCIsImZpbGVuYW1lIjoiZGlhZ25vc3RpY3MtMTc4OTk3NTA5MTAwNS1lN2NjNzVkMS0wYmNlLTRjOWMtYmNlMy0xZDlkMGFkOWJmODMuemlwIn0sImJ1c3kiOmZhbHNlLCJyZXN0YXJ0UmVhZHkiOmZhbHNlLCJhY3RpdmVUYWIiOiJxdWljayIsImNvbmZpZ3VyYXRpb25BdmFpbGFibGUiOnRydWUsInByb2ZpbGVEaXJlY3RvcnkiOiIvVXNlcnMvaHVhbmd6aXhpYW8vRG9jdW1lbnRzL2NvZGUvZHNoLy5xYS9maXh0dXJlLWhvbWUvcHJvZmlsZXMvZGVza3RvcCIsImRhdGFEaXJlY3RvcnkiOnsiY3VycmVudERpcmVjdG9yeSI6Ii9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZSIsInVzaW5nRGVmYXVsdERpcmVjdG9yeSI6ZmFsc2UsImVkaXRpbmciOmZhbHNlfSwicHJvZmlsZXMiOlt7Im5hbWUiOiJkZXNrdG9wIiwiY3VycmVudCI6dHJ1ZSwic2VsZWN0YWJsZSI6dHJ1ZX1dLCJwcm9maWxlQWN0aW9uVG9rZW4iOiI5MDFlNGE3NC0yMDIyLTRmMzctOGNiZS0yMzdhMDBiNTg0ZDIiLCJ0ZXJtaW5hbEF2YWlsYWJsZSI6dHJ1ZSwicHJvZmlsZUNyZWF0b3JBdmFpbGFibGUiOnRydWUsInNhZmVNb2RlQXZhaWxhYmxlIjp0cnVlfQ&locale=zh&platform=darwin&frame=true text=打开 DSH 终端 进入恢复模式的原因 当前 Profile: desktop Profile 目录: /Users/<user>/Documents/code/dsh/.qa/fixtur"
+      "note: url=file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/native-ui/recovery.html?state=eyJsb2NhbGUiOiJ6aCIsImZhaWx1cmVTdGFnZSI6InByb2ZpbGUtY29tcG9zaXRpb24iLCJmYWlsdXJlRGV0YWlsIjoiZHNoLXBsdWdpbi1kZXNrdG9wOiBpbnZhbGlkIHNldHRpbmdzIGRvY3VtZW50IGF0IC9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZS9zZXR0aW5ncy55YW1sOiBJbXBsaWNpdCBrZXlzIG9mIGZsb3cgc2VxdWVuY2UgcGFpcnMgbmVlZCB0byBiZSBvbiBhIHNpbmdsZSBsaW5lIGF0IGxpbmUgMSwgY29sdW1uIDE1OlxuXG5kc2gtZGVza3RvcDogW3VuY2xvc2VkXG4gICAgICAgICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gODpcblxuICBiYWQ6IDogOlxuICAgICAgIF5cbjsgVW5leHBlY3RlZCA6IGluIGZsb3cgc2VxdWVuY2UgYXQgbGluZSAyLCBjb2x1bW4gMTA6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgIF5cbjsgRmxvdyBzZXF1ZW5jZSBpbiBibG9jayBjb2xsZWN0aW9uIG11c3QgYmUgc3VmZmljaWVudGx5IGluZGVudGVkIGFuZCBlbmQgd2l0aCBhIF0gYXQgbGluZSAyLCBjb2x1bW4gMTE6XG5cbiAgYmFkOiA6IDpcbiAgICAgICAgICBeXG4iLCJzbmFwc2hvdCI6eyJwcm9maWxlTmFtZSI6ImRlc2t0b3AiLCJidW5kbGVzIjpbeyJidW5kbGVJZCI6ImJ1bmRsZV9FZFFpMlhHYjVwOTg1dXRDdTM3WWVGM3dEcXZZb2pnNSIsInBhY2thZ2VOYW1lIjoiQGRlZXBzZWVrLWFpL2RzaC1iYXNlIiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJjb3JlIiwiYWN0aW9uIjpudWxsfSx7ImJ1bmRsZUlkIjoiYnVuZGxlX1BxT0NWeDhTOU5DTUMxSzdPS05jRm1nWlF1b2gwVzBJIiwicGFja2FnZU5hbWUiOiJAZGVlcHNlZWstYWkvZHNoLXdlYi1hcHAiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6ImNvcmUiLCJhY3Rpb24iOm51bGx9LHsiYnVuZGxlSWQiOiJidW5kbGVfTnhyQ0I4VjBVWXdXWVREV0ctdmxwTi1MU1Bmd3pVMWgiLCJwYWNrYWdlTmFtZSI6ImRzaC1wbHVnaW4tc3VpdGUiLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6InByb2ZpbGUiLCJhY3Rpb24iOiJ1bmluc3RhbGwifSx7ImJ1bmRsZUlkIjoiYnVuZGxlX2xlM3BoWThLVGppQk5oZEprSGpkZVdxbkUyZGRHY1BhIiwicGFja2FnZU5hbWUiOiJkc2gtZGVza3RvcC1zdWl0ZSIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfQkptWUJWbVZkS1FRbTBoWlYwMWsyY3lsdHp4dmZqYXIiLCJwYWNrYWdlTmFtZSI6ImRzaC1kZXNrdG9wLXdvcmtiZW5jaCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfTGxIbnhmcnlKQkg0MV9LeE56QVg2ZWhNbTBkejhMSUsiLCJwYWNrYWdlTmFtZSI6ImRzaC1wbHVnaW4td29ya2Zsb3ciLCJzdGF0dXMiOiJhY3RpdmUiLCJvd25lciI6InByb2ZpbGUiLCJhY3Rpb24iOiJ1bmluc3RhbGwifSx7ImJ1bmRsZUlkIjoiYnVuZGxlX29vdzZ0aWhubmJtMll3SDlzMG9Wam8ybVIzMFZkVVg0IiwicGFja2FnZU5hbWUiOiJkc2gtcGx1Z2luLXNlc3Npb25zIiwic3RhdHVzIjoiYWN0aXZlIiwib3duZXIiOiJwcm9maWxlIiwiYWN0aW9uIjoidW5pbnN0YWxsIn0seyJidW5kbGVJZCI6ImJ1bmRsZV9keWxteXFNR2RyNGN0LW1GQkk2UXQ3ekd3N2U3S2d1NyIsInBhY2thZ2VOYW1lIjoiZHNoLXBsdWdpbi1sYXRleCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9LHsiYnVuZGxlSWQiOiJidW5kbGVfeFZHMjBJdVI2MDdaYnRYQjhXNlhoaWt2QXBsN1o5NVAiLCJwYWNrYWdlTmFtZSI6ImRzaC1iZXR0ZXItcmVhc29uaW5nLWVmZm9ydCIsInN0YXR1cyI6ImFjdGl2ZSIsIm93bmVyIjoicHJvZmlsZSIsImFjdGlvbiI6InVuaW5zdGFsbCJ9XSwiY2hlY2twb2ludHMiOlt7InNsb3RJZCI6InNsb3QtMSIsInN0YXR1cyI6ImF2YWlsYWJsZSIsImNhcHR1cmVkQXQiOiIyMDI2LTA5LTIxVDA4OjEzOjA5LjgxOFoiLCJhcHBWZXJzaW9uIjoiMi4wLjE0IiwicHJvdmlkZXIiOiJkZXNrdG9wLXByb2ZpbGUiLCJmaWxlQ291bnQiOjUsInBsdWdpbkNvdW50Ijo5LCJ0b3RhbEJ5dGVzIjo0NTYzOX0seyJzbG90SWQiOiJzbG90LTIiLCJzdGF0dXMiOiJhdmFpbGFibGUiLCJjYXB0dXJlZEF0IjoiMjAyNi0wOS0yMVQwODoxNToyMy42ODVaIiwiYXBwVmVyc2lvbiI6IjIuMC4xNCIsInByb3ZpZGVyIjoiZGVza3RvcC1wcm9maWxlIiwiZmlsZUNvdW50Ijo1LCJwbHVnaW5Db3VudCI6OSwidG90YWxCeXRlcyI6NDU2Mzl9LHsic2xvdElkIjoic2xvdC0zIiwic3RhdHVzIjoiYXZhaWxhYmxlIiwiY2FwdHVyZWRBdCI6IjIwMjYtMDktMjFUMDg6MTE6MzMuNDY2WiIsImFwcFZlcnNpb24iOiIyLjAuMTQiLCJwcm92aWRlciI6ImRlc2t0b3AtcHJvZmlsZSIsImZpbGVDb3VudCI6NSwicGx1Z2luQ291bnQiOjksInRvdGFsQnl0ZXMiOjQ1NjM5fV19LCJkaWFnbm9zdGljcyI6eyJzdGF0dXMiOiJzYXZlZCIsImZpbGVuYW1lIjoiZGlhZ25vc3RpY3MtMTc4OTk3ODUzMDE5Ny1hNTBiYjFmNS05MTFmLTQ4NjMtYWNlMS05NmQ1ZTkxZWJiY2MuemlwIn0sImJ1c3kiOmZhbHNlLCJyZXN0YXJ0UmVhZHkiOmZhbHNlLCJhY3RpdmVUYWIiOiJxdWljayIsImNvbmZpZ3VyYXRpb25BdmFpbGFibGUiOnRydWUsInByb2ZpbGVEaXJlY3RvcnkiOiIvVXNlcnMvaHVhbmd6aXhpYW8vRG9jdW1lbnRzL2NvZGUvZHNoLy5xYS9maXh0dXJlLWhvbWUvcHJvZmlsZXMvZGVza3RvcCIsImRhdGFEaXJlY3RvcnkiOnsiY3VycmVudERpcmVjdG9yeSI6Ii9Vc2Vycy9odWFuZ3ppeGlhby9Eb2N1bWVudHMvY29kZS9kc2gvLnFhL2ZpeHR1cmUtaG9tZSIsInVzaW5nRGVmYXVsdERpcmVjdG9yeSI6ZmFsc2UsImVkaXRpbmciOmZhbHNlfSwicHJvZmlsZXMiOlt7Im5hbWUiOiJkZXNrdG9wIiwiY3VycmVudCI6dHJ1ZSwic2VsZWN0YWJsZSI6dHJ1ZX1dLCJwcm9maWxlQWN0aW9uVG9rZW4iOiIyYTJlNWE1NS04ZjI5LTRhNjYtYTE2ZC1mZjNmYTA3ZDUzMWEiLCJ0ZXJtaW5hbEF2YWlsYWJsZSI6dHJ1ZSwicHJvZmlsZUNyZWF0b3JBdmFpbGFibGUiOnRydWUsInNhZmVNb2RlQXZhaWxhYmxlIjp0cnVlfQ&locale=zh&platform=darwin&frame=true text=打开 DSH 终端 进入恢复模式的原因 当前 Profile: desktop Profile 目录: /Users/<user>/Documents/code/dsh/.qa/fixtur"
     ],
-    "at": "2026-09-21T07:18:29.852Z"
+    "at": "2026-09-21T08:15:49.721Z"
   },
   {
     "id": "R-14",
@@ -847,11 +845,11 @@
     "title": "长时间空转后仍能响应输入",
     "priority": "P2",
     "status": "pass",
-    "detail": "48184ms",
+    "detail": "48147ms",
     "evidence": [
       "qa/evidence/R-14-after-idle.png"
     ],
-    "at": "2026-09-21T07:19:18.037Z"
+    "at": "2026-09-21T08:16:37.869Z"
   },
   {
     "id": "P-01",
@@ -859,11 +857,11 @@
     "title": "工作区文件不含个人路径与用户名",
     "priority": "P0",
     "status": "pass",
-    "detail": "472ms",
+    "detail": "604ms",
     "evidence": [
       "note: local private terms configured: 5"
     ],
-    "at": "2026-09-21T07:34:52.112Z"
+    "at": "2026-09-21T08:16:40.036Z"
   },
   {
     "id": "P-02",
@@ -871,11 +869,11 @@
     "title": "全部提交历史不含个人路径与用户名",
     "priority": "P0",
     "status": "pass",
-    "detail": "31479ms",
+    "detail": "33123ms",
     "evidence": [
-      "note: scanned 291 commits and 1976 committed blobs"
+      "note: scanned 292 commits and 2009 committed blobs"
     ],
-    "at": "2026-09-21T07:35:23.592Z"
+    "at": "2026-09-21T08:17:13.160Z"
   },
   {
     "id": "P-03",
@@ -883,11 +881,11 @@
     "title": "没有任何凭据文件被提交",
     "priority": "P0",
     "status": "pass",
-    "detail": "486ms",
+    "detail": "426ms",
     "evidence": [
       "note: no .credentials.yaml, .env, id_rsa, .netrc or key material in any tracked file or commit; .npmrc files are judged by the npm-token rule"
     ],
-    "at": "2026-09-21T07:35:24.078Z"
+    "at": "2026-09-21T08:17:13.587Z"
   },
   {
     "id": "P-04",
@@ -895,9 +893,9 @@
     "title": "不含真实密钥、私有端点或私有项目名",
     "priority": "P1",
     "status": "pass",
-    "detail": "521ms",
+    "detail": "404ms",
     "evidence": [],
-    "at": "2026-09-21T07:35:24.599Z"
+    "at": "2026-09-21T08:17:13.991Z"
   },
   {
     "id": "P-05",
@@ -905,12 +903,13 @@
     "title": "发布磁盘镜像内不含用户数据",
     "priority": "P1",
     "status": "pass",
-    "detail": "1495ms",
+    "detail": "2375ms",
     "evidence": [
       "note: DSH-Desktop-2.0.10-arm64.dmg: 22362 payload files inspected",
-      "note: DSH-Desktop-2.0.13-arm64.dmg: 22376 payload files inspected"
+      "note: DSH-Desktop-2.0.13-arm64.dmg: 22376 payload files inspected",
+      "note: DSH-Desktop-2.0.14-arm64.dmg: 22376 payload files inspected"
     ],
-    "at": "2026-09-21T07:35:26.094Z"
+    "at": "2026-09-21T08:17:16.366Z"
   },
   {
     "id": "P-06",
@@ -918,11 +917,11 @@
     "title": "仓库不引入遥测或第三方上报",
     "priority": "P2",
     "status": "pass",
-    "detail": "244ms",
+    "detail": "249ms",
     "evidence": [
       "note: checked 14 repositories for telemetry SDKs"
     ],
-    "at": "2026-09-21T07:35:26.338Z"
+    "at": "2026-09-21T08:17:16.615Z"
   },
   {
     "id": "P-07",
@@ -930,11 +929,11 @@
     "title": "验收证据本身不泄露个人数据",
     "priority": "P1",
     "status": "pass",
-    "detail": "4ms",
+    "detail": "3ms",
     "evidence": [
       "note: all text evidence is free of personal paths, identities and secrets"
     ],
-    "at": "2026-09-21T07:35:26.342Z"
+    "at": "2026-09-21T08:17:16.619Z"
   },
   {
     "id": "P-08",
@@ -942,10 +941,10 @@
     "title": "验收过程未触碰真实用户数据目录",
     "priority": "P1",
     "status": "pass",
-    "detail": "52ms",
+    "detail": "47ms",
     "evidence": [
       "note: launcher home: /Users/<user>/Documents/code/dsh/.qa/fixture-home"
     ],
-    "at": "2026-09-21T07:35:26.394Z"
+    "at": "2026-09-21T08:17:16.668Z"
   }
 ]

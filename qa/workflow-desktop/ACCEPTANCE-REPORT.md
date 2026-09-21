@@ -1,6 +1,6 @@
 # DSH Desktop 工作流插件验收报告
 
-生成时间：2026-09-21 15:34　应用：DSH Desktop 2.0.13（运行时 0.1.5-rc.2）　被测插件：dsh-plugin-workflow 0.3.0 (f7eef1d)
+生成时间：2026-09-21 16:31　应用：DSH Desktop 2.0.14（运行时 0.1.5-rc.2）　被测插件：dsh-plugin-workflow 0.3.0 (f7eef1d)
 
 运行环境：macOS 26.5.1 (25F80)　Apple M2 Pro　Node v24.11.1
 
@@ -43,80 +43,80 @@
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-A-01 | P0 | 侧栏入口打开工作流面板并显示总览 | 通过 | 104ms | [图](../evidence/workflow-desktop/A-01-panel-open.png) |
-| W-A-02 | P1 | 卡片与列表两种样式切换且偏好保留 | 通过 | 1002ms | [图](../evidence/workflow-desktop/A-02-list-view.png) |
-| W-A-03 | P1 | 空状态：搜索无结果给出解释与清除入口 | 通过 | 1504ms | [图](../evidence/workflow-desktop/A-03-search-empty.png) |
-| W-A-04 | P2 | 搜索匹配名称与描述且大小写无关 | 通过 | 1283ms | — |
-| W-A-05 | P2 | 归档视图为空时解释归档含义 | 通过 | 986ms | [图](../evidence/workflow-desktop/A-05-archive-empty.png) |
+| W-A-01 | P0 | 侧栏入口打开工作流面板并显示总览 | 通过 | 127ms | [图](../evidence/workflow-desktop/A-01-panel-open.png) |
+| W-A-02 | P1 | 卡片与列表两种样式切换且偏好保留 | 通过 | 1042ms | [图](../evidence/workflow-desktop/A-02-list-view.png) |
+| W-A-03 | P1 | 空状态：搜索无结果给出解释与清除入口 | 通过 | 1500ms | [图](../evidence/workflow-desktop/A-03-search-empty.png) |
+| W-A-04 | P2 | 搜索匹配名称与描述且大小写无关 | 通过 | 1288ms | — |
+| W-A-05 | P2 | 归档视图为空时解释归档含义 | 通过 | 983ms | [图](../evidence/workflow-desktop/A-05-archive-empty.png) |
 
 ### B. 创建与多实例（6/6 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-B-01 | P0 | 创建工作流进入对话并在输入区显示工作流标签 | 通过 | 3610ms | [图](../evidence/workflow-desktop/B-01-create-conversation.png) |
-| W-B-02 | P1 | 从总览创建第二个工作流互不干扰 | 通过 | 5837ms | [图](../evidence/workflow-desktop/B-02-second-create.png) |
-| W-B-03 | P1 | 拷贝工作流产生未发布草稿且不带走运行记录 | 通过 | 4816ms | [图](../evidence/workflow-desktop/B-03-copy-result.png) |
-| W-B-04 | P0 | 连续创建多个工作流后列表完整且名称唯一 | 通过 | 4517ms | [图](../evidence/workflow-desktop/B-04-many-workflows.png) |
-| W-B-05 | P1 | 列表样式在多个工作流下逐行对齐操作可用 | 通过 | 1004ms | [图](../evidence/workflow-desktop/B-05-list-many.png) |
-| W-B-06 | P2 | 超长与特殊字符名称不破坏布局 | 通过 | 1127ms | [图](../evidence/workflow-desktop/B-06-long-name.png) |
+| W-B-01 | P0 | 创建工作流进入对话并在输入区显示工作流标签 | 通过 | 3605ms | [图](../evidence/workflow-desktop/B-01-create-conversation.png) |
+| W-B-02 | P1 | 从总览创建第二个工作流互不干扰 | 通过 | 5825ms | [图](../evidence/workflow-desktop/B-02-second-create.png) |
+| W-B-03 | P1 | 拷贝工作流产生未发布草稿且不带走运行记录 | 通过 | 4863ms | [图](../evidence/workflow-desktop/B-03-copy-result.png) |
+| W-B-04 | P0 | 连续创建多个工作流后列表完整且名称唯一 | 通过 | 4529ms | [图](../evidence/workflow-desktop/B-04-many-workflows.png) |
+| W-B-05 | P1 | 列表样式在多个工作流下逐行对齐操作可用 | 通过 | 1023ms | [图](../evidence/workflow-desktop/B-05-list-many.png) |
+| W-B-06 | P2 | 超长与特殊字符名称不破坏布局 | 通过 | 1637ms | [图](../evidence/workflow-desktop/B-06-long-name.png) |
 
 ### C. 生命周期（关闭、隐藏、重开）（8/8 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-C-01 | P0 | 再次点击入口关闭面板回到对话 | 通过 | 1897ms | [图](../evidence/workflow-desktop/C-01-panel-closed.png) |
+| W-C-01 | P0 | 再次点击入口关闭面板回到对话 | 通过 | 1913ms | [图](../evidence/workflow-desktop/C-01-panel-closed.png) |
 | W-C-02 | P1 | Escape 关闭面板且不误触其他操作 | 通过 | 3523ms | [图](../evidence/workflow-desktop/C-02-escape.png) |
-| W-C-03 | P0 | 隐藏窗口再恢复后面板与数据保持一致 | 通过 | 5206ms | [1](../evidence/workflow-desktop/C-03-hidden.png) [2](../evidence/workflow-desktop/C-03-restored.png) |
-| W-C-04 | P1 | 页面刷新后面板与视图偏好恢复 | 通过 | 3400ms | [图](../evidence/workflow-desktop/C-04-after-reload.png) |
-| W-C-05 | P0 | 退出并重开应用后面板状态与数据一致 | 通过 | 101681ms | [图](../evidence/workflow-desktop/C-05-after-restart.png) |
-| W-C-06 | P1 | 编辑态：切换面板视图后草稿与选中步骤保留 | 通过 | 5380ms | [图](../evidence/workflow-desktop/C-06-graph-view.png) |
-| W-C-07 | P1 | 归档后从总览消失、在归档视图可恢复 | 通过 | 8487ms | [图](../evidence/workflow-desktop/C-07-archived.png) |
-| W-C-08 | P2 | 归档状态跨应用重启保留 | 通过 | 102204ms | — |
+| W-C-03 | P0 | 隐藏窗口再恢复后面板与数据保持一致 | 通过 | 5201ms | [1](../evidence/workflow-desktop/C-03-hidden.png) [2](../evidence/workflow-desktop/C-03-restored.png) |
+| W-C-04 | P1 | 页面刷新后面板与视图偏好恢复 | 通过 | 3667ms | [图](../evidence/workflow-desktop/C-04-after-reload.png) |
+| W-C-05 | P0 | 退出并重开应用后面板状态与数据一致 | 通过 | 102167ms | [图](../evidence/workflow-desktop/C-05-after-restart.png) |
+| W-C-06 | P1 | 编辑态：切换面板视图后草稿与选中步骤保留 | 通过 | 5349ms | [图](../evidence/workflow-desktop/C-06-graph-view.png) |
+| W-C-07 | P1 | 归档后从总览消失、在归档视图可恢复 | 通过 | 8613ms | [图](../evidence/workflow-desktop/C-07-archived.png) |
+| W-C-08 | P2 | 归档状态跨应用重启保留 | 通过 | 103551ms | — |
 
 ### D. 主题与视觉（5/5 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-D-01 | P0 | 浅色主题下工作流总览可读且文字对比度达标 | 通过 | 3863ms | [图](../evidence/workflow-desktop/D-01-light-gallery.png) |
-| W-D-02 | P0 | 深色主题下工作流总览可读且文字对比度达标 | 通过 | 3440ms | [图](../evidence/workflow-desktop/D-02-dark-gallery.png) |
-| W-D-03 | P1 | 面板打开时切换主题不丢状态也不残留旧配色 | 通过 | 4989ms | [图](../evidence/workflow-desktop/D-03-theme-cycled.png) |
-| W-D-04 | P1 | 深色主题下编辑器步骤列表与设置面板对比度达标 | 通过 | 4937ms | [图](../evidence/workflow-desktop/D-04-dark-editor.png) |
-| W-D-05 | P2 | 系统主题跟随：系统改变时应用同步且无闪烁残留 | 通过 | 12553ms | [图](../evidence/workflow-desktop/D-05-theme-follow.png) |
+| W-D-01 | P0 | 浅色主题下工作流总览可读且文字对比度达标 | 通过 | 3995ms | [图](../evidence/workflow-desktop/D-01-light-gallery.png) |
+| W-D-02 | P0 | 深色主题下工作流总览可读且文字对比度达标 | 通过 | 4055ms | [图](../evidence/workflow-desktop/D-02-dark-gallery.png) |
+| W-D-03 | P1 | 面板打开时切换主题不丢状态也不残留旧配色 | 通过 | 6029ms | [图](../evidence/workflow-desktop/D-03-theme-cycled.png) |
+| W-D-04 | P1 | 深色主题下编辑器步骤列表与设置面板对比度达标 | 通过 | 4920ms | [图](../evidence/workflow-desktop/D-04-dark-editor.png) |
+| W-D-05 | P2 | 系统主题跟随：系统改变时应用同步且无闪烁残留 | 通过 | 14006ms | [图](../evidence/workflow-desktop/D-05-theme-follow.png) |
 
 ### E. 布局与样式校验（6/6 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-E-01 | P0 | 1280×900 下总览无横向溢出、无控件重叠 | 通过 | 1335ms | [图](../evidence/workflow-desktop/E-01-1280.png) |
-| W-E-02 | P1 | 1024×768 下操作入口仍可达 | 通过 | 1312ms | [图](../evidence/workflow-desktop/E-02-1024.png) |
-| W-E-03 | P0 | 窗口收窄到应用下限时侧栏与面板不重叠且主要操作可见 | 通过 | 2999ms | [图](../evidence/workflow-desktop/E-03-640.png) |
-| W-E-04 | P2 | 请求极窄宽度时窗口停在下限且无横向滚动 | 通过 | 3122ms | [图](../evidence/workflow-desktop/E-04-narrow.png) |
-| W-E-05 | P1 | 编辑器在两栏布局下资源面板与步骤列表不重叠 | 通过 | 2633ms | [图](../evidence/workflow-desktop/E-05-editor-1280.png) |
-| W-E-06 | P1 | 关键控件触达尺寸不低于 32px 且图标按钮有可访问名称 | 通过 | 4532ms | [图](../evidence/workflow-desktop/E-06-control-sizes.png) |
+| W-E-01 | P0 | 1280×900 下总览无横向溢出、无控件重叠 | 通过 | 1332ms | [图](../evidence/workflow-desktop/E-01-1280.png) |
+| W-E-02 | P1 | 1024×768 下操作入口仍可达 | 通过 | 1298ms | [图](../evidence/workflow-desktop/E-02-1024.png) |
+| W-E-03 | P0 | 窗口收窄到应用下限时侧栏与面板不重叠且主要操作可见 | 通过 | 3015ms | [图](../evidence/workflow-desktop/E-03-640.png) |
+| W-E-04 | P2 | 请求极窄宽度时窗口停在下限且无横向滚动 | 通过 | 3121ms | [图](../evidence/workflow-desktop/E-04-narrow.png) |
+| W-E-05 | P1 | 编辑器在两栏布局下资源面板与步骤列表不重叠 | 通过 | 2607ms | [图](../evidence/workflow-desktop/E-05-editor-1280.png) |
+| W-E-06 | P1 | 关键控件触达尺寸不低于 32px 且图标按钮有可访问名称 | 通过 | 4514ms | [图](../evidence/workflow-desktop/E-06-control-sizes.png) |
 
 ### F. 创建—运行—对话链路（4/4 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-F-01 | P0 | 从卡片运行工作流进入绑定会话 | 通过 | 15915ms | [图](../evidence/workflow-desktop/F-01-run-bound.png) |
-| W-F-02 | P1 | 运行会话在工作流对话列表中可重新打开 | 通过 | 4951ms | [1](../evidence/workflow-desktop/F-02-sessions.png) [2](../evidence/workflow-desktop/F-03-conversation-open.png) |
-| W-F-03 | P1 | 编辑器修改任务说明后未保存提示与保存生效 | 通过 | 9476ms | [1](../evidence/workflow-desktop/F-04-dirty-editor.png) [2](../evidence/workflow-desktop/F-03-saved-editor.png) |
-| W-F-04 | P2 | 对话修改入口打开创作会话并标注工作流 | 通过 | 11066ms | [图](../evidence/workflow-desktop/F-05-authoring.png) |
+| W-F-01 | P0 | 从卡片运行工作流进入绑定会话 | 通过 | 15896ms | [图](../evidence/workflow-desktop/F-01-run-bound.png) |
+| W-F-02 | P1 | 运行会话在工作流对话列表中可重新打开 | 通过 | 5004ms | [1](../evidence/workflow-desktop/F-02-sessions.png) [2](../evidence/workflow-desktop/F-03-conversation-open.png) |
+| W-F-03 | P1 | 编辑器修改任务说明后未保存提示与保存生效 | 通过 | 9463ms | [1](../evidence/workflow-desktop/F-04-dirty-editor.png) [2](../evidence/workflow-desktop/F-03-saved-editor.png) |
+| W-F-04 | P2 | 对话修改入口打开创作会话并标注工作流 | 通过 | 11074ms | [图](../evidence/workflow-desktop/F-05-authoring.png) |
 
 ### R. 鲁棒性与反常行为（10/10 通过）
 
 | 用例 | 优先级 | 标题 | 结果 | 说明 | 截图 |
 | --- | --- | --- | --- | --- | --- |
-| W-R-01 | P0 | 狂点创建入口不会重复创建或卡死 | 通过 | 8389ms | [图](../evidence/workflow-desktop/R-01-rapid-create.png) |
-| W-R-02 | P1 | 创建过程中关闭面板不产生半成品或报错 | 通过 | 5042ms | [图](../evidence/workflow-desktop/R-02-interrupt-create.png) |
+| W-R-01 | P0 | 狂点创建入口不会重复创建或卡死 | 通过 | 8378ms | [图](../evidence/workflow-desktop/R-01-rapid-create.png) |
+| W-R-02 | P1 | 创建过程中关闭面板不产生半成品或报错 | 通过 | 5004ms | [图](../evidence/workflow-desktop/R-02-interrupt-create.png) |
 | W-R-03 | P1 | 后端不可用时报错可读且清空输入可恢复 | 通过 | 9118ms | [图](../evidence/workflow-desktop/R-03-offline-recovered.png) |
-| W-R-04 | P1 | 搜索框输入正则与超长文本不崩溃 | 通过 | 24721ms | [图](../evidence/workflow-desktop/R-04-search-fuzz.png) |
-| W-R-05 | P1 | 重复点击卡片动作不会重复执行 | 通过 | 5140ms | [图](../evidence/workflow-desktop/R-05-rapid-run.png) |
-| W-R-06 | P2 | 窗口在面板打开时连续缩放不残留布局错误 | 通过 | 8408ms | [图](../evidence/workflow-desktop/R-06-resize-cycle.png) |
-| W-R-07 | P1 | 面板打开时退出应用不产生未捕获错误 | 通过 | 98666ms | [图](../evidence/workflow-desktop/R-07-reopen.png) |
-| W-R-08 | P2 | 打开不存在的运行记录不破坏面板 | 通过 | 83ms | [图](../evidence/workflow-desktop/R-08-bad-run.png) |
-| W-R-09 | P2 | 损坏的工作流定义不阻塞总览加载 | 通过 | 2712ms | [图](../evidence/workflow-desktop/R-09-degenerate.png) |
-| W-R-10 | P1 | 后台标签页期间面板不高频轮询（可见性节流） | 通过 | 12118ms | [图](../evidence/workflow-desktop/R-10-visibility.png) |
+| W-R-04 | P1 | 搜索框输入正则与超长文本不崩溃 | 通过 | 23868ms | [图](../evidence/workflow-desktop/R-04-search-fuzz.png) |
+| W-R-05 | P1 | 重复点击卡片动作不会重复执行 | 通过 | 5144ms | [图](../evidence/workflow-desktop/R-05-rapid-run.png) |
+| W-R-06 | P2 | 窗口在面板打开时连续缩放不残留布局错误 | 通过 | 8453ms | [图](../evidence/workflow-desktop/R-06-resize-cycle.png) |
+| W-R-07 | P1 | 面板打开时退出应用不产生未捕获错误 | 通过 | 100301ms | [图](../evidence/workflow-desktop/R-07-reopen.png) |
+| W-R-08 | P2 | 打开不存在的运行记录不破坏面板 | 通过 | 82ms | [图](../evidence/workflow-desktop/R-08-bad-run.png) |
+| W-R-09 | P2 | 损坏的工作流定义不阻塞总览加载 | 通过 | 2718ms | [图](../evidence/workflow-desktop/R-09-degenerate.png) |
+| W-R-10 | P1 | 后台标签页期间面板不高频轮询（可见性节流） | 通过 | 12116ms | [图](../evidence/workflow-desktop/R-10-visibility.png) |
 
 ## 四、问题与修复
 

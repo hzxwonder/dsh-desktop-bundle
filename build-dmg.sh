@@ -107,6 +107,14 @@ else
   corepack yarn workspace dsh-plugin-desktop prepare:electron-native
 fi
 
+# Yarn's frozen install can re-extract the bundled uv binaries without their
+# executable bit. Upstream's packaged-runtime verifier reads them during
+# afterPack and aborts packaging when they are not executable, so restore the
+# mode before packaging instead of shipping an app that fails its own check.
+if [ -d "${FORK}/dsh-plugin-desktop/node_modules/@dataiku" ]; then
+  find "${FORK}/dsh-plugin-desktop/node_modules/@dataiku" -path '*/bin/uv' -exec chmod +x {} +
+fi
+
 step "4/6 package (${ARCH})"
 rm -rf "${STAGE}"
 mkdir -p "${STAGE}"
