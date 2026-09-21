@@ -13,7 +13,7 @@ pnpm -v      # 没有就 npm i -g pnpm
 从 Release 下载 `DSH-Desktop-<版本>-arm64.dmg`，然后：
 
 ```bash
-./setup.sh --app ~/Downloads/DSH-Desktop-2.0.10-arm64.dmg
+./setup.sh --app ~/Downloads/DSH-Desktop-2.0.13-arm64.dmg
 ```
 
 脚本会挂载 dmg、用 `ditto` 把 `DSH Desktop.app` 复制进 `/Applications`

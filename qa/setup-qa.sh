@@ -89,6 +89,13 @@ do_fixture() {
   printf 'alpha project fixture\n' > "${FIXTURE_WORKSPACE}/alpha/README.md"
   printf 'export const beta = 1\n' > "${FIXTURE_WORKSPACE}/beta/index.ts"
 
+  # Registering first writes the fixture home's settings document, which the
+  # provider below merges into; composing a fresh home skips registration, so
+  # the settings file would otherwise not exist yet.
+  log "pointing the launcher at the fixture home"
+  node "${BUNDLE_DIR}/scripts/register-home.mjs" \
+    --home "${FIXTURE_HOME}" --app "${APP}" --user-data "${LIVE_USER_DATA}" --port "${QA_PORT}"
+
   log "installing the local mock model provider into the fixture settings"
   node "${BUNDLE_DIR}/qa/configure-provider.mjs"
 
@@ -100,10 +107,6 @@ do_fixture() {
       > "${QA_DIR}/mock-llm.log" 2>&1 &
     sleep 1
   fi
-
-  log "pointing the launcher at the fixture home"
-  node "${BUNDLE_DIR}/scripts/register-home.mjs" \
-    --home "${FIXTURE_HOME}" --app "${APP}" --user-data "${LIVE_USER_DATA}" --port "${QA_PORT}"
 }
 
 do_status() {

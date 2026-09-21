@@ -196,10 +196,11 @@ groups.F = {
         await clickLabel(session, '新建会话')
         await prepare(session)
         const composer = await session.eval('!!window.__qa.composer()')
-        const errors = session.consoleErrors()
+        const errors = session.unexpectedConsoleErrors([/\/api\/community-market\//u])
         await assert.screenshot(session, 'after-panel-cycles')
         assert.check(composer, 'composer gone after cycling through the panels')
         assert.check(errors.length === 0, `console errors while cycling panels: ${errors.slice(0, 3).join(' | ')}`)
+        assert.note('the market panel answers with a designed error body while no catalog source is configured')
       },
     },
   ],

@@ -137,6 +137,7 @@ groups.L = {
       id: 'L-05', group: 'L', priority: 'P1', title: '浅色主题正文对比度达到 4.5:1',
       async run(context, assert) {
         const result = await context.withAppearance(false, async session => {
+          await context.waitForTheme('light')
           await session.eval(L)
           await session.eval(CONTRAST_HELPERS)
           await assert.screenshot(session, 'light-theme')
@@ -153,6 +154,7 @@ groups.L = {
       id: 'L-06', group: 'L', priority: 'P1', title: '深色主题正文对比度达到 4.5:1',
       async run(context, assert) {
         const result = await context.withAppearance(true, async session => {
+          await context.waitForTheme('dark')
           await session.eval(L)
           await session.eval(CONTRAST_HELPERS)
           await assert.screenshot(session, 'dark-theme')
@@ -168,9 +170,9 @@ groups.L = {
     {
       id: 'L-07', group: 'L', priority: 'P1', title: '主题切换即时生效且可回退',
       async run(context, assert) {
-        const dark = await context.withAppearance(true, session => session.eval('window.__qa.theme()'))
-        const light = await context.withAppearance(false, session => session.eval('window.__qa.theme()'))
-        const back = await context.withAppearance(true, session => session.eval('window.__qa.theme()'))
+        const dark = await context.withAppearance(true, () => context.waitForTheme('dark'))
+        const light = await context.withAppearance(false, () => context.waitForTheme('light'))
+        const back = await context.withAppearance(true, () => context.waitForTheme('dark'))
         assert.check(dark.colorScheme === 'dark' && light.colorScheme === 'light' && back.colorScheme === 'dark',
           `theme did not follow the system appearance: ${JSON.stringify({ dark, light, back })}`)
       },

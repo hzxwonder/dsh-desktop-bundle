@@ -57,9 +57,14 @@ QA_PRIVATE_TERMS="term-a,term-b" node qa/run-cases.mjs run P
 
 没有配置词表时 `private-project` 规则不生效，其余规则照常执行。
 
+规则的适用边界写在 `qa/privacy-scan.mjs` 顶部：`vendor/` 与测试目录里的保留示例域名（`example.com` 及其子域）
+和 RFC 1918 示例地址属于上游发布物自带的样例，这两条形态规则在那里不生效；身份、家目录、凭据、
+私有项目名与会话 id 规则对所有文件一视同仁。`.npmrc` 按内容判定（`npm-token` 规则），
+因为供应商包需要它声明对等依赖策略，而凭据本身仍然会被抓出。
+
 ## 结果
 
-- `evidence/results.json`：每条用例的状态、耗时与断言细节
+- `evidence/results.json`：每条用例的状态、耗时与断言细节（家目录在写入时即被掩码）
 - `evidence/<用例号>-<名称>.png`：失败现场与关键流程截图
 - `evidence/privacy.json`：隐私扫描的逐条命中（含仓库、修订、路径、行号）
 - `ACCEPTANCE-REPORT.md`：可直接阅读的验收报告
@@ -83,5 +88,8 @@ node qa/workflow-desktop/report.mjs            # 生成 workflow-desktop/ACCEPTA
 
 - macOS，已安装 `/Applications/DSH Desktop.app`
 - Node.js 20 以上（使用内置 `WebSocket` 与 `fetch`）
-- 无需 macOS 辅助功能权限：窗口尺寸、关闭与后台化通过 DevTools 协议与进程信号驱动，
-  因此原生菜单快捷键（⌘Q/⌘W/⌘M/⌘H）不在自动化覆盖范围内，报告里列为手工核对项
+- 无需 macOS 辅助功能权限：窗口尺寸、后台冻结与进程退出通过 DevTools 协议与进程信号驱动。
+  关闭窗口是唯一的例外——它由窗口服务器投递（红灯或 ⌘W），测试进程没有辅助功能权限时
+  `B-01`…`B-04` 报“未验证”而不是失败；套件不会改用渲染进程的 `window.close()` 顶替，
+  因为那条路径会销毁 web contents 且不经过应用的关闭处理器，是用户到不了的状态。
+  原生菜单快捷键（⌘Q/⌘W/⌘M/⌘H）同样列为手工核对项。

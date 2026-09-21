@@ -206,9 +206,10 @@ groups.R = {
           await sleep(800)
         }
         await sleep(2500)
-        const errors = session.consoleErrors()
+        const errors = session.unexpectedConsoleErrors([/\/api\/community-market\//u])
         await assert.screenshot(session, 'after-rapid-control-clicks')
         assert.check(errors.length === 0, `console errors while rapidly clicking controls: ${errors.slice(0, 3).join(' | ')}`)
+        assert.note('the market panel answers with a designed error body while no catalog source is configured')
         assert.check(await session.eval('!!window.__qa.composer()'), 'composer gone after rapidly clicking controls')
       },
     },

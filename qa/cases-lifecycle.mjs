@@ -1,11 +1,15 @@
 // Group A (startup and conversation lifecycle) and group B (closing, backgrounding,
 // reopening and process behaviour).
 //
-// The environment cannot inject native menu keystrokes (macOS Accessibility is not
-// granted to the test process), so the closing and backgrounding cases drive the
-// window through the DevTools protocol and the application's own shutdown path
-// instead. Every such substitution is named in the case title.
+// A person closes the window through the application's own close path — the red
+// button or Command-W — which hides the window and keeps the application
+// resident. Both are delivered by the window server, which macOS only exposes to
+// a process it trusts with Accessibility; where that is withheld the close cases
+// have no stimulus to exercise and report themselves as unverified, and the
+// group never substitutes a renderer window.close(), which destroys the web
+// contents without ever reaching the application's close handler.
 import { execFileSync } from 'node:child_process'
+import { StimulusUnavailable } from './driver.mjs'
 import {
   activateApp, activationCrash, appProcessCount, clickLabel, dismissWelcome, focusComposer,
   killApp, mainProcessId, prepare, requestQuitBySignal, sendMessage, sleep, startConversation,
@@ -198,7 +202,11 @@ groups.B = {
         context.state.rows = await session.eval('window.__qa.conversationRows().length')
         context.state.frame = await session.eval('window.__qa.frame()')
         const before = appProcessCount()
+        // Raises StimulusUnavailable when this host cannot deliver the close at
+        // all, so the case reports an unverified stimulus instead of a pass on a
+        // window that never closed.
         await session.closeWindow()
+        context.state.closed = true
         await sleep(6000)
         const after = appProcessCount()
         assert.note(`frame before close: ${JSON.stringify(context.state.frame)}; processes ${before} -> ${after}`)
@@ -209,6 +217,7 @@ groups.B = {
     {
       id: 'B-02', group: 'B', priority: 'P0', title: '再次启动应用后窗口与会话列表恢复',
       async run(context, assert) {
+        if (context.state.closed !== true) throw new StimulusUnavailable('the window never closed, so reopening it cannot be verified')
         const before = appProcessCount()
         const exit = await startSecondInstance()
         await sleep(5000)
@@ -227,6 +236,7 @@ groups.B = {
     {
       id: 'B-03', group: 'B', priority: 'P1', title: '重开后窗口几何保持',
       async run(context, assert) {
+        if (context.state.closed !== true) throw new StimulusUnavailable('the window never closed, so its reopening cannot be verified')
         const frame = await context.session.eval('window.__qa.frame()')
         assert.note(`frame before=${JSON.stringify(context.state.frame)} after=${JSON.stringify(frame)}`)
         assert.check(frame.width > 0 && frame.height > 0, `window frame unreadable after reopening: ${JSON.stringify(frame)}`)

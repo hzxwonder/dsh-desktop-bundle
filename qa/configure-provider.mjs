@@ -8,7 +8,7 @@
 //
 //   node qa/configure-provider.mjs            # write provider + credentials
 //   node qa/configure-provider.mjs --show     # print the resulting settings
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { chmodSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { BUNDLE } from './driver.mjs'
 
@@ -55,8 +55,12 @@ function main() {
   writeFileSync(SETTINGS, `${base}\n\n${PROVIDER}`)
 
   // A local stand-in key: the mock endpoint ignores it, and it is not a secret.
+  // The credentials plugin loads an owner-only document, so a missing file is
+  // created with that mode instead of being fixed up after the first boot.
   if (!existsSync(CREDENTIALS)) {
-    writeFileSync(CREDENTIALS, `version: 1\nrefs:\n  ${CREDENTIAL_REF}: qa-local-mock-key\n`)
+    writeFileSync(CREDENTIALS, `version: 1\nrefs:\n  ${CREDENTIAL_REF}: qa-local-mock-key\n`, { mode: 0o600 })
+  } else {
+    chmodSync(CREDENTIALS, 0o600)
   }
 
   if (process.argv.includes('--show')) console.log(readFileSync(SETTINGS, 'utf8'))

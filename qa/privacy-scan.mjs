@@ -22,9 +22,11 @@ const RULES = [
   {
     id: 'email',
     description: '带有真实域名的邮箱地址',
-    // Documentation and tests spell out placeholder addresses such as
-    // user@example.com; only a routable domain counts as personal data here.
-    pattern: /\b[A-Za-z0-9._%+-]+@(?!example\.(com|org|net)\b)(?!host\.com\b)(?!jump\.host\b)(?!localhost\b)(?!test\.com\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/,
+    // Documentation and tests spell out placeholder addresses: the reserved
+    // domains of RFC 2606/6761 (example.com and its subdomains, .test,
+    // .invalid, .localhost) and the VCS account names a git remote uses
+    // (git@host, ssh@host) are not personal data.
+    pattern: /\b(?<!\/\/)(?!(?:git|ssh|hg|svn)@)[A-Za-z0-9._%+-]+@(?!(?:[A-Za-z0-9-]+\.)*(?:example\.(?:com|org|net)|invalid|test|localhost|host|host\.com)\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/,
   },
   { id: 'private-project', description: '私有项目名与内部别名', pattern: privateTermPattern() },
   { id: 'ssh-alias', description: 'SSH 连接标识', pattern: /alias-[0-9a-f]{8,}/ },
@@ -36,6 +38,14 @@ const RULES = [
     description: '源码里写死的密钥赋值',
     pattern: /\b[A-Z][A-Z0-9_]*(API_KEY|TOKEN|SECRET|PASSWORD)[A-Z0-9_]*\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/,
   },
+  {
+    id: 'npm-token',
+    description: 'npm 注册表凭据',
+    // npm keeps its registry credential in .npmrc. The file itself is ordinary
+    // configuration — vendored packages need one to install their peer closure —
+    // so what this rule looks for is the credential inside it.
+    pattern: /^\s*\/\/[^\s=]+\/:(_authToken|_auth|_password)\s*=\s*\S{8,}/m,
+  },
 ]
 
 /** Credential-bearing files that must never be tracked in any revision. */
@@ -44,7 +54,6 @@ const FORBIDDEN_PATHS = [
   /(^|\/)\.env$/,
   /(^|\/)\.env\.(local|production)$/,
   /(^|\/)id_(rsa|ed25519|ecdsa)$/,
-  /(^|\/)\.npmrc$/,
   /(^|\/)\.netrc$/,
   /(^|\/)[^/]*\.(pem|p12|pfx|key)$/,
 ]
@@ -60,6 +69,18 @@ const ALLOWED_PATHS = [
   /(^|\/)qa\/cases-privacy\.mjs$/, // and so does the privacy case group
   /(^|\/)qa\/evidence\//,
 ]
+
+/**
+ * Vendored trees hold byte-identical snapshots of published upstream packages,
+ * resynchronised by scripts/vendor.mjs, and test trees hold the fixtures those
+ * packages exercise themselves with. The two specimen rules below match shapes
+ * such code writes on purpose — reserved example domains, RFC 1918 addresses
+ * used as inputs — rather than data that ever described this machine, so they
+ * are not applied there. Every identity, path, credential and private-project
+ * rule still is.
+ */
+const SPECIMEN_TREES = /(^|\/)(vendor|tests?|__tests__|spec)\//
+const SPECIMEN_RULES = new Set(['email', 'private-endpoint'])
 
 const TEXT_LIMIT = 2 * 1024 * 1024
 const BINARY = /\.(png|jpg|jpeg|gif|webp|ico|icns|dmg|zip|gz|zst|woff2?|ttf|otf|node|wasm|pdf|mp4|mov)$/i
@@ -84,6 +105,7 @@ function scanText(repository, revision, path, text, findings) {
   for (let index = 0; index < lines.length; index += 1) {
     const hit = ruleFor(lines[index])
     if (hit === null) continue
+    if (SPECIMEN_TREES.test(path) && SPECIMEN_RULES.has(hit.rule.id)) continue
     findings.push({
       repository: repository.replace(`${WORKSPACE}/`, ''),
       revision,

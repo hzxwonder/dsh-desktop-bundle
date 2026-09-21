@@ -12,6 +12,10 @@
 - 首次构建会联网下载 Electron、原生模块头文件与 Yarn 依赖；
 - 磁盘：构建目录 3–4 GB，暂存目录约 1.5 GB。
 
+应用图标是一份 Icon Composer 文档，由 Xcode 26 的 `actool` 编译。只装了
+Command Line Tools、或 `actool` 低于 26 的机器改用该文档已提交的 `.icns`
+旧版导出（同一份图稿），脚本会自动选择，无需额外配置。
+
 ## 用法
 
 ```bash

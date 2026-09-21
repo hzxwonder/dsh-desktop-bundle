@@ -1,40 +1,22 @@
 [
   {
     "label": "running",
-    "processes": 6,
-    "mainPid": 91686,
-    "targets": [
-      "http://127.0.0.1:43790/?dsh-desktop-mode=advanced&"
-    ]
-  },
-  {
-    "label": "after window.close()",
     "processes": 5,
-    "mainPid": 91686,
-    "targets": []
+    "pageTargets": [
+      "http://127.0.0.1:43790/?dsh-desktop-mode=advanced&..."
+    ],
+    "cdp": "reachable"
   },
   {
-    "label": "after open -a (Dock activation)",
+    "label": "after renderer window.close()",
+    "processes": 4,
+    "pageTargets": [],
+    "cdp": "browser endpoint reachable, no page target"
+  },
+  {
+    "label": "after open -a (activation)",
     "processes": 0,
-    "mainPid": 0,
-    "targets": [
-      "<no debugger endpoint>"
-    ]
-  },
-  {
-    "label": "dock activation reopened a window",
-    "value": false
-  },
-  {
-    "label": "after launching the app again",
-    "processes": 0,
-    "mainPid": 0,
-    "targets": [
-      "<no debugger endpoint>"
-    ]
-  },
-  {
-    "label": "second launch reopened a window",
-    "value": false
+    "pageTargets": [],
+    "cdp": "no debugger endpoint: the process exited"
   }
 ]

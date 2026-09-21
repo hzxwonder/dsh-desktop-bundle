@@ -1,9 +1,14 @@
 {
-  "generatedAt": "2026-09-18T06:08:33.802Z",
+  "generatedAt": "2026-09-21T07:34:51.244Z",
   "summary": [
     {
       "repository": "dsh-plugins/distribution/dsh-desktop-bundle",
-      "commits": 8,
+      "commits": 39,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-better-reasoning-effort",
+      "commits": 158,
       "findings": 0
     },
     {
@@ -18,7 +23,12 @@
     },
     {
       "repository": "dsh-plugins/repositories/dsh-plugin-browser",
-      "commits": 10,
+      "commits": 13,
+      "findings": 0
+    },
+    {
+      "repository": "dsh-plugins/repositories/dsh-plugin-latex",
+      "commits": 16,
       "findings": 0
     },
     {
@@ -58,7 +68,7 @@
     },
     {
       "repository": "dsh-plugins/repositories/dsh-plugin-workflow",
-      "commits": 4,
+      "commits": 21,
       "findings": 0
     }
   ],

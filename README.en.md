@@ -33,7 +33,7 @@ git clone https://github.com/hzxwonder/dsh-desktop-bundle.git
 cd dsh-desktop-bundle
 
 # 3. one command
-./setup.sh --app ~/Downloads/DSH-Desktop-2.0.10-arm64.dmg
+./setup.sh --app ~/Downloads/DSH-Desktop-2.0.13-arm64.dmg
 ```
 
 `setup.sh` installs the application (when `--app` points at a dmg), installs each
@@ -133,4 +133,4 @@ under the upstream MIT license.
 
 Type `/prompt` in the composer and choose a saved template directly from the suggestion menu to insert its text. Choose “新建 Prompt 模板” to open the two-pane template editor: select or create templates on the left, edit their name and body on the right, and duplicate, delete, or save from the footer. Duplicating immediately creates and selects a saved template named “Original - copy” with the current body; matching copy names receive a numeric suffix. Includes retryable saves, deletion confirmation, and unsaved edit protection.
 
-The complete Desktop 2.0.11 application includes the paired client and Host API. Builds use the exact manifest commit and verify both prompt components in the packaged application.
+The complete Desktop 2.0.13 application includes the paired client and Host API. Builds use the exact manifest commit and verify both prompt components in the packaged application.

@@ -19,21 +19,43 @@ const RULES = [
   { id: 'home-path', pattern: /\/Users\/[A-Za-z0-9._-]+\// },
   {
     id: 'email',
-    pattern: /\b[A-Za-z0-9._%+-]+@(?!example\.(com|org|net)\b)(?!host\.com\b)(?!jump\.host\b)(?!localhost\b)(?!test\.com\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/,
+    pattern: /\b(?<!\/\/)(?!(?:git|ssh|hg|svn)@)[A-Za-z0-9._%+-]+@(?!(?:[A-Za-z0-9-]+\.)*(?:example\.(?:com|org|net)|invalid|test|localhost|host|host\.com)\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/,
   },
   { id: 'private-project', pattern: privateTermPattern() },
   { id: 'ssh-alias', pattern: /alias-[0-9a-f]{8,}/ },
   { id: 'session-id', pattern: /session-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/ },
   { id: 'api-key', pattern: /\b(sk-[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|xox[baprs]-[A-Za-z0-9-]{10,})\b/ },
+  {
+    id: 'npm-token',
+    // An .npmrc is ordinary configuration; only the registry credential in it
+    // is private, so the file is judged by content rather than by name.
+    pattern: /^\s*\/\/[^\s=]+\/:(_authToken|_auth|_password)\s*=\s*\S{8,}/,
+  },
   { id: 'private-endpoint', pattern: /\b(43\.132\.189\.25|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})\b/ },
 ]
 
-const FORBIDDEN_FILES = [/(^|\/)\.credentials\.yaml$/, /(^|\/)\.env$/, /(^|\/)id_(rsa|ed25519)$/, /(^|\/)\.npmrc$/, /(^|\/)\.netrc$/]
+const FORBIDDEN_FILES = [
+  /(^|\/)\.credentials\.yaml$/,
+  /(^|\/)\.env$/,
+  /(^|\/)id_(rsa|ed25519)$/,
+  /(^|\/)\.netrc$/,
+  /(^|\/)[^/]*\.(pem|p12|pfx|key)$/,
+]
 
 const TELEMETRY = /\b(posthog|sentry\.io|google-analytics|googletagmanager|umami\.is|mixpanel|amplitude\.com|segment\.io|bugsnag|datadog)\b/i
 
 /** Files whose text legitimately contains such shapes without carrying private data. */
 const ALLOWED = [/(^|\/)package-lock\.json$/, /(^|\/)pnpm-lock\.yaml$/, /(^|\/)qa\//, /\.(png|jpg|webp|icns|dmg|zip)$/i]
+
+/**
+ * Vendored snapshots of published packages and the test trees that exercise
+ * them write specimen addresses on purpose: reserved example domains and
+ * RFC 1918 ranges that never described this machine. Only the two specimen
+ * rules stand down there; identity, path, credential and private-project
+ * rules keep applying to the same files.
+ */
+const SPECIMEN_TREES = /(^|\/)(vendor|tests?|__tests__|spec)\//
+const SPECIMEN_RULES = new Set(['email', 'private-endpoint'])
 
 const git = (repository, args, options = {}) =>
   execFileSync('/usr/bin/git', ['-C', repository, ...args], { encoding: 'utf8', maxBuffer: 512 * 1024 * 1024, ...options })
@@ -54,6 +76,7 @@ function scanLines(text, path, findings) {
   for (let index = 0; index < lines.length; index += 1) {
     for (const rule of RULES) {
       if (rule.pattern.test(lines[index])) {
+        if (SPECIMEN_TREES.test(path) && SPECIMEN_RULES.has(rule.id)) break
         findings.push({ path, line: index + 1, rule: rule.id })
         break
       }
@@ -169,7 +192,7 @@ export const privacyCases = [
         }
       }
       assert.check(offenders.length === 0, `credential files committed: ${JSON.stringify(offenders.slice(0, 6))}`)
-      assert.note('no .credentials.yaml, .env, id_rsa, .npmrc or .netrc in any tracked file or commit')
+      assert.note('no .credentials.yaml, .env, id_rsa, .netrc or key material in any tracked file or commit; .npmrc files are judged by the npm-token rule')
     },
   },
   {

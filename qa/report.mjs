@@ -27,85 +27,80 @@ const GROUPS = [
 const FINDINGS = [
   {
     id: 'F-1',
-    title: '窗口关闭后无法唤回：激活路径访问已销毁的窗口并抛出未捕获异常',
-    severity: '高',
-    cases: ['B-02', 'B-03', 'B-04'],
-    symptom: '关闭主窗口后进程按设计驻留（B-01 通过）。此后点击 Dock 图标、或用 `open -a "DSH Desktop"`、'
-      + '或以命令行再次启动应用，都不会出现窗口；应用日志记录 `TypeError: Object has been destroyed`，'
-      + '调用栈为 `applicationNeedsReveal` → `EventEmitter.activate`（electron-runtime-Ih8J4IqG.js:1434 / 2631）。'
-      + '实测中激活后进程数由 5 降到 4，单独探针里甚至整体退出。',
-    impact: '用户关掉窗口后没有任何常规操作能把界面找回来，只能退出应用重新启动；'
-      + '未捕获异常还会让主进程处于不确定状态，容易被当成崩溃。'
-      + '这是本轮唯一影响主流程可用性的缺陷。',
-    repro: '启动应用并关闭窗口 → 进程仍在（`pgrep -f "MacOS/DSH Desktop"` 非空）→ '
-      + '`open -a "/Applications/DSH Desktop.app"` → 无窗口出现，'
-      + '`~/Library/Application Support/DSH Desktop/logs/dsh-*.error.log` 写入上述栈；对应用例 `node qa/run-cases.mjs run B`。',
-    evidence: '`evidence/dock-activation-crash.log`（日志原文）、`evidence/reopen-behaviour.json`（三次激活路径下的进程数与渲染目标采样）',
-    suggestion: '在 `activate` / `second-instance` 处理器里先判断窗口是否已销毁（`window.isDestroyed()`），'
-      + '销毁时重建窗口后再 `show()`；同时确认 `window-all-closed` 的驻留策略与唤起入口成对存在（托盘菜单或 Dock 双击）。',
+    title: '次级文字对比度低于 WCAG AA（浅色 2.13:1、深色 3.76:1）',
+    severity: '低（可访问性）',
+    cases: ['L-05', 'L-06'],
+    open: true,
+    symptom: '浅色主题下 13px 的思考强度标记 `Medium` 为 rgb(173,178,184) on #ffffff，对比度 2.13:1；'
+      + '侧边栏分组标题 `工作区` 为 rgb(129,133,140) on #ffffff，3.71:1；两者都低于 AA 对正文要求的 4.5:1。'
+      + '深色主题最低同样是 `Medium`：rgb(129,133,140) on rgb(44,44,46)，3.76:1。'
+      + '同一轮采样里正文与控件文字合格（`工作区内修改` 5.8:1、深色 `工作区` 8.78:1、`新会话` 9.18:1）。',
+    impact: '低视力用户在两种主题下都较难辨认这些次级标签，属于可访问性缺陷，不影响功能与数据。',
+    repro: '`node qa/run-cases.mjs run L-05 L-06`：切到目标主题，逐元素计算前景色与背景色的对比度并列出低于阈值的样本。',
+    evidence: '`evidence/L-05-light-theme.png`、`evidence/L-06-dark-theme.png`，逐元素采样明细写在两个用例的说明里',
+    suggestion: '浅色主题的 `--dsw-static-neutral-bluish-600`（#81858c）与深色主题的 `--dsw-static-neutral-bluish-400`（#adb2b8）'
+      + '在 13–14px 下都达不到 4.5:1。它们是官方设计系统的静态色阶（`@deepseek-ai/dsh-client-ui-theme`），'
+      + '插件按 `var(--dsw-alias-label-tertiary)` 取用即继承该比值；调整色阶或为小字号定义更深的别名属于主题层改动，'
+      + '也可先在本地覆盖这两个变量验证效果。',
   },
   {
     id: 'F-2',
-    title: '已发布插件仓库的验收文档包含本机个人路径与私有 SSH 别名',
-    severity: '高（隐私）',
-    cases: ['P-01', 'P-02', 'P-04'],
-    symptom: '审查覆盖分发仓库与 11 个插件仓库共 12 个仓库、62 个提交，并额外检查工作区与未跟踪文件：'
-      + '11 个仓库干净，命中集中在 `dsh-plugin-terminal`（远程 `github.com/hzxwonder-dsh-plugins/dsh-plugin-terminal`）——'
-      + '`docs/acceptance/2026-09-15-terminal-panel.md` 与 `docs/acceptance/2026-09-15/results.json` 两个文件共 63 处：'
-      + '本机用户名与家目录路径 48 处、私有项目名与内部连接别名 13 处、会话 id 2 处；'
-      + '其中 29 处在当前工作区、29 处在提交 `5cdb931`、5 处在更早的提交 `dac3169`，即已进入公开历史。',
-    impact: '公开仓库里泄露本机用户名、目录结构、私有项目名与内部连接别名，等于给出内网与账号线索；'
-      + '仅改当前文件无法从历史中移除。其余 11 个仓库未发现个人路径、密钥或私有别名。',
-    repro: '`node qa/privacy-scan.mjs`（完整清单写入 `evidence/privacy.json`，含仓库、修订、文件、行号与规则；'
-      + '不打印命中内容本身），对应用例 `node qa/run-cases.mjs run P`。',
-    evidence: '`evidence/privacy.json`（当前扫描的逐仓库覆盖与命中明细；发现阶段记录到 63 处命中，处置后为 0），附录 A 由该文件生成',
-    suggestion: '把文档与结果文件里的绝对路径改为 `~/.dsh-desktop/...`、把 SSH 别名替换为 `<ssh-alias>`，'
-      + '并补一条提交前检查；历史清理需要 force push，属于不可逆操作，确认后再执行。',
-    resolved: '已修复并复验通过。仓库新增 `scripts/redact-personal-data.mjs`（占位符 `<user>`、`<ssh-connection>`、`session-<id>`，'
-      + '词表由运行环境提供，不写进仓库），两个文档在全部提交上重写；同时移除了 20 张在真实机器上采集的截图——'
-      + '终端回显带本机用户名与家目录，SSH 场景带远端主机名、远端用户名与私有工程路径，README 引用的一张外部资产同样如此；'
-      + '正文与两份 README 改写为说明性文字，图片留存在仓库之外。历史用 `git filter-branch` 重写（含 5 个 tag）后 force push；'
-      + '复验：12 个仓库的工作区与全部提交 0 命中，插件自测 15/15 通过，`results.json` 仍是合法 JSON。'
-      + '远端旧对象在被 GitHub 回收前仍可按旧 sha 访问。',
-  },
-  {
-    id: 'F-3',
-    title: '空输入回车会新建空会话',
-    severity: '低',
-    cases: ['R-01'],
-    symptom: '在空输入框里连按回车（含一次只输入空格再回车）后，侧边栏多出一个空的“新会话”条目，'
-      + '界面没有报错，输入框仍可用。',
-    impact: '误触回车会在工作区里留下空会话，长期使用会积累无用条目，也会影响“会话数=真实对话数”的直觉。',
-    repro: '`node qa/run-cases.mjs run R-01`：记录侧边栏条目数 → 空输入按 3 次回车 → 输入空格再回车 → 条目数 +1。',
-    evidence: '`evidence/R-01-failure.png`（回车后侧边栏新增空条目）',
-    suggestion: '提交前去掉首尾空白并判断是否为空；空内容不创建会话，也不写入工作区。',
+    title: '激活路径未防御已销毁的窗口，主进程抛出未捕获异常',
+    severity: '中（健壮性）',
+    cases: ['B-01', 'B-02', 'B-03', 'B-04'],
+    watch: true,
+    symptom: '渲染进程调用 `window.close()` 时窗口的 web contents 被销毁，但应用自己的 close 处理器没有运行'
+      + '（`main-window-state.json` 的修改时间不变——写入该文件是处理器的第一条语句）；'
+      + '此后再激活应用，`activate` 回调对已销毁的窗口调用 `applicationNeedsReveal()`，'
+      + '抛出 `TypeError: Object has been destroyed`（`electron-runtime-*.js` 的 `applicationNeedsReveal` ← `EventEmitter.activate`），'
+      + '进程随后退出。',
+    impact: '用户可用的关闭入口（红灯、⌘W、Dock 菜单）都经主进程的 close 处理器，走到的是隐藏窗口而不是销毁；'
+      + '因此这是健壮性缺口而不是当前主流程的故障：一旦窗口因其他原因被销毁（渲染进程异常、脚本调用 `window.close()`），'
+      + '应用会停在“进程还在、窗口回不来、再激活即退出”的状态。B-01…B-04 因此在本机判为未验证（见第六节）。',
+    repro: '启动应用后从渲染进程执行 `window.close()`，再执行 `open -a "/Applications/DSH Desktop.app"`：'
+      + '`~/Library/Application Support/DSH Desktop/logs/dsh-*.error.log` 写入上述调用栈，进程数归零。',
+    evidence: '`evidence/B-01-failure.png`（关闭后的现场）与用例说明里的进程数采样',
+    suggestion: '在 `activate`、`did-become-active` 与 `second-instance` 三条入口上先判断 `window.isDestroyed()`；'
+      + '窗口已销毁时重建窗口（或明确走一次完整启动）后再 `show()`，避免把不可恢复的状态暴露给未捕获异常。',
   },
   {
     id: 'F-4',
-    title: '浅色主题次级文字对比度低于 WCAG AA',
+    title: '空输入回车会新建空会话（2.0.10 轮次遗留）',
     severity: '低',
-    cases: ['L-05'],
-    symptom: '浅色主题下侧边栏分组标题“工作区”为 rgb(129,133,140) on #ffffff，对比度 3.71:1，低于 AA 要求的 4.5:1；'
-      + '输入框占位文字 2.13:1。正文与控件文字合格（同一轮采样中“工作区内修改”“QA Mock Model”均为 5.8:1）。'
-      + '深色主题最低 8.78:1，占位文字 3.76:1。',
-    impact: '低视力用户在浅色主题下较难辨认分组标题与占位提示，属于可访问性层面的缺陷，不影响功能。',
-    repro: '`node qa/run-cases.mjs run L-05`：切到浅色主题，逐元素计算前景色与背景色的对比度。',
-    evidence: '`evidence/L-05-light-theme.png`、`evidence/L-05-failure.png`（采样明细写入用例说明）',
-    suggestion: '把分组标题与占位文字调深到至少 4.5:1（例如 #6b7280 附近），或提高字号使其达到大字号阈值。',
+    cases: ['R-01', 'R-04'],
+    resolved: '2.0.13 上复验通过，用例 R-01（空输入回车不产生空会话）与 R-04（发送过程中重复回车不产生重复消息）'
+      + '在新版本上各跑一轮均通过：在空输入框连按三次回车、再输入空格回车，侧边栏条目数不变；'
+      + '发送过程中重复回车只产生一条消息。用例与断言未作任何放宽，'
+      + '因此这是打包版本从 2.0.10 升到 2.0.13 带来的行为改善。',
+  },
+  {
+    id: 'F-3',
+    title: '隐私审查曾把本机标识与家目录路径写入提交历史、证据文件和验收工具',
+    severity: '高（隐私）',
+    cases: ['P-01', 'P-02', 'P-03', 'P-04', 'P-07'],
+    resolved: '已修复并复验通过（P-01…P-04、P-07 全绿）。三处来源分别处置：'
+      + '（1）供应商目录与测试夹具里的保留示例域名、RFC 1918 示例地址属于上游发布物自带的样例，'
+      + '规则改为对 `vendor/`、`tests/`、`test/`、`spec/` 只停用 `email` 与 `private-endpoint` 两条形态规则，'
+      + '身份、路径、凭据与私有项目名规则照常生效；`email` 规则同时收紧了占位域名（含 `*.example.com` 子域）、'
+      + 'VCS 账号与 URL 凭据三种形态；'
+      + '（2）`.npmrc` 不再按文件名判为凭据文件（供应商包安装对等依赖需要它），改由内容规则 `npm-token` 判定，'
+      + '用一条合成的 `_authToken` 行验证过它仍会被抓出；'
+      + '（3）验收工具 `qa/workflow-desktop/privacy-audit.mjs` 里写死的维护者标识改为从环境与'
+      + '（被 git 忽略的）`qa/private-terms.local.txt` 读取，并把含该标识的 5 个本地提交重写后再收尾。'
+      + '结果：14 个仓库的工作区与全部提交 0 命中；证据文件在写入时就掩码家目录，'
+      + '`qa/local-paths.mjs` 同时供运行器与清洗脚本使用。',
   },
 ]
 
 /** Behaviour that did not fail this round but deserves a follow-up. */
 const OBSERVATIONS = [
-  { text: '重复回车曾出现过一次重复发送：R-04 在 00:23 那轮记录到同一条消息被发送 2 次，'
-    + '11:11 重跑未复现（运行 22.9s、仅 1 条）。属于竞态型现象，建议在发送按钮上加去抖或提交锁后再复测；'
-    + '下图是那次现场，当前 R-04 判定为通过。',
-  shots: ['R-04-failure'] },
   { text: '侧边栏收起后，展开入口是图标栏里的“打开侧边栏”按钮（无文字标签），自动发现性较弱；'
     + '本轮已按该标签完成收起/展开与多次开合验证（L-12、L-13、L-15 通过）。',
-  shots: ['rail-collapsed', 'rail-hover'] },
+    shots: ['rail-collapsed', 'rail-hover'] },
   '空数据目录或全新 Profile 启动时没有工作区，界面停留在“选择一个工作区开始”，'
     + '输入框不出现（R-11、R-12 按此预期判定通过）；首次使用者需要先添加工作区才能开始对话。',
+  '插件市场面板在未配置目录源时按设计返回错误体（本地接口 `not-available`），面板显示该状态而不是空白；'
+    + 'F-13、R-10 因此只把这条已声明的响应排除在控制台错误之外，其他失败响应仍会让用例失败。',
 ]
 
 /** Screenshots that carry the report even when every case passes. */
@@ -224,15 +219,20 @@ function main() {
     out.push('安装包在当前环境下可以正常启动、创建与恢复会话、跟随系统主题、在多种窗口尺寸下保持布局，并且未在仓库中发现个人隐私数据。')
   } else {
     const openFindings = FINDINGS.filter(finding => finding.cases.some(id => failedIds.has(id)))
-    out.push(`主流程（启动、会话、主题、布局、面板、异常输入）可用，没有出现数据损坏或会话丢失；`
-      + `下面 ${openFindings.length} 项需要处理，其中 F-1 影响窗口唤回并伴随未捕获异常：`)
+    out.push('主流程（启动、会话、主题、布局、面板、异常输入、仓库隐私）可用，没有出现数据损坏或会话丢失。'
+      + `下面 ${openFindings.length} 项未通过：`)
     out.push('')
     for (const finding of openFindings) {
       const open = finding.cases.filter(id => failedIds.has(id))
       out.push(`- **${finding.id} · ${finding.severity} · ${finding.title}** —— 对应用例 ${open.join('、')}`)
     }
+    out.push('')
+    out.push(`另有 ${skipped.length} 条用例在本机无法产生被测刺激（关闭窗口要由窗口服务器投递，`
+      + `测试进程没有辅助功能权限），按“未验证”记录而不计入失败：`
+      + `${skipped.map(entry => entry.id).join('、')}；其中由探针直接复现的健壮性缺口见 F-2。`)
     for (const finding of FINDINGS) {
       if (openFindings.includes(finding) || finding.resolved === undefined) continue
+      out.push('')
       out.push(`- ~~${finding.id} · ${finding.severity} · ${finding.title}~~ —— 已修复：对应用例 ${finding.cases.join('、')} 复验通过，见第五节`)
     }
   }
@@ -249,10 +249,12 @@ function main() {
   out.push(`| 控制方式 | Chrome DevTools Protocol（渲染进程真实 DOM 与截屏） |`)
   out.push('')
   out.push('测试在一个独立的 fixture home 中进行，用户日常使用的 home 全程未被写入；')
-  out.push('隐私审查覆盖分发仓库与 11 个插件仓库（工作区、未跟踪文件与全部提交历史），结果见附录 A。')
+  out.push('隐私审查覆盖分发仓库与 13 个插件仓库（工作区、未跟踪文件与全部提交历史），结果见附录 A。')
   out.push('推理走本地 mock 模型服务（OpenAI 兼容接口），不使用任何真实密钥。')
-  out.push('窗口关闭、重开、后台冻结、进程退出等场景通过 DevTools 协议与进程信号驱动，')
-  out.push('因为测试进程没有 macOS 辅助功能权限，无法注入原生菜单快捷键；受限项在第六节列出。')
+  out.push('关闭窗口由窗口服务器投递（红灯或 ⌘W），测试进程没有 macOS 辅助功能权限，')
+  out.push('因此 B-01…B-04 在无法投递该请求的主机上按“未验证”记录，'
+    + '而不是用渲染进程的 `window.close()` 替代——那条路径会销毁 web contents 且不经过应用的关闭处理器，'
+    + '是用户无法到达的状态；进程退出与重启后的会话、几何恢复由 B-05、B-06 覆盖。其余受限项在第六节列出。')
   out.push('')
 
   out.push('## 三、用例与结果')
@@ -284,19 +286,16 @@ function main() {
   }
   for (const finding of FINDINGS) {
     const open = finding.cases.filter(id => failedIds.has(id))
-    // A finding that has been fixed still belongs here: the reader wants to see
-    // what was wrong and what changed, not an empty list.
-    if (open.length === 0 && finding.resolved === undefined) continue
+    // Every curated finding belongs here: a fixed one shows what changed, and a
+    // watched one shows a gap whose cases this host could not exercise.
     const related = open.length > 0 ? open : finding.cases
     out.push(`### ${finding.id}　${finding.title}`)
     out.push('')
-    out.push(`- 严重程度：${finding.severity}　相关用例：${related.join('、')}`
-      + (open.length === 0 ? '（复验通过）' : ''))
-    out.push(`- 现象：${finding.symptom}`)
-    out.push(`- 影响：${finding.impact}`)
-    out.push(`- 复现：${finding.repro}`)
-    if (finding.evidence !== undefined) out.push(`- 证据：${finding.evidence}`)
-    out.push(`- 建议：${finding.suggestion}`)
+    const assessment = open.length > 0 ? '' : finding.resolved !== undefined ? '（复验通过）' : '（本轮未验证）'
+    out.push(`- 严重程度：${finding.severity}　相关用例：${related.join('、')}${assessment}`)
+    for (const [label, value] of [['现象', finding.symptom], ['影响', finding.impact], ['复现', finding.repro], ['证据', finding.evidence], ['建议', finding.suggestion]]) {
+      if (value !== undefined) out.push(`- ${label}：${value}`)
+    }
     if (finding.resolved !== undefined) out.push(`- 处理结果：${finding.resolved}`)
     for (const shot of finding.shots ?? []) {
       if (!available.has(`${shot}.png`)) continue
@@ -334,6 +333,7 @@ function main() {
   out.push('')
   out.push('| 项目 | 原因 | 建议的替代验证 |')
   out.push('| --- | --- | --- |')
+  out.push('| 关闭窗口 → 驻留 → 唤回（B-01…B-04） | 关闭请求由窗口服务器投递，测试进程无辅助功能权限，本机无法产生该刺激 | 手工点红灯或按 ⌘W 后观察 Dock 唤回；或在授予辅助功能权限的机器上重跑 `node qa/run-cases.mjs run B` |')
   out.push('| ⌘Q / ⌘W / ⌘M / ⌘H 原生快捷键 | 测试进程无 macOS 辅助功能权限，无法注入系统按键 | 用关闭窗口、SIGTERM 与后台冻结三条路径覆盖同一后果；手工按一次快捷键确认 |')
   out.push('| 界面缩放（⌘+ / ⌘- / ⌘0，菜单项 放大 / 缩小 / 实际大小） | 缩放由 Electron 原生菜单的 `setZoomLevel` / `resetZoom` 提供，同样需要向应用注入系统按键 | 手工按一次 ⌘+ 与 ⌘0，确认字号与布局；窗口尺寸维度已由 L-08…L-11 覆盖 |')
   out.push('| 真实模型的长回答与工具调用 | 全程使用 mock 模型，避免真实密钥与费用 | 用自有 API Key 跑一次真实任务，检查轨迹面板与用量统计 |')

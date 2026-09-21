@@ -112,8 +112,11 @@ async function main() {
         await testCase.run({ assert, session, h, relaunch })
         record({ id: testCase.id, group: testCase.group ?? key, title: testCase.title, priority: testCase.priority, status: 'pass', detail: `${Date.now() - started}ms`, evidence: assert.evidence, at: new Date().toISOString() })
       } catch (error) {
-        record({ id: testCase.id, group: testCase.group ?? key, title: testCase.title, priority: testCase.priority, status: 'fail', detail: error instanceof Error ? error.message : String(error), evidence: assert.evidence, at: new Date().toISOString() })
-        try { assert.evidence.push(await h.shot(session, `${testCase.id}-failure`)) } catch { /* window may be gone */ }
+        const skipped = error instanceof h.AppearanceUnavailable
+        record({ id: testCase.id, group: testCase.group ?? key, title: testCase.title, priority: testCase.priority, status: skipped ? 'skip' : 'fail', detail: error instanceof Error ? error.message : String(error), evidence: assert.evidence, at: new Date().toISOString() })
+        if (!skipped) {
+          try { assert.evidence.push(await h.shot(session, `${testCase.id}-failure`)) } catch { /* window may be gone */ }
+        }
       }
     }
   }

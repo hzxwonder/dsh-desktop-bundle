@@ -33,7 +33,7 @@ git clone https://github.com/hzxwonder/dsh-desktop-bundle.git
 cd dsh-desktop-bundle
 
 # 3. 一条命令装配
-./setup.sh --app ~/Downloads/DSH-Desktop-2.0.10-arm64.dmg
+./setup.sh --app ~/Downloads/DSH-Desktop-2.0.13-arm64.dmg
 ```
 
 `setup.sh` 顺序完成：安装应用（`--app` 给出 dmg 时）、安装每个插件的依赖、
@@ -141,4 +141,4 @@ node scripts/vendor.mjs --check                   # 只报告偏差
 
 在聊天框输入 `/prompt`，直接从候选菜单选择已保存的模板，将正文添加到聊天框。选择“新建 Prompt 模板”打开双栏管理窗口：左侧选择或新建模板，右侧编辑名称与正文，底部提供复制、删除和保存。复制会立即创建并选中“原名称 - copy”模板，使用当前编辑器中的正文；同名副本自动追加编号。支持保存失败重试、删除确认和未保存内容保护。
 
-Desktop 2.0.11 的完整应用提供配套的界面和数据接口。构建默认使用 `manifest.json` 的精确提交，打包后运行提示词前后端配套校验。
+Desktop 2.0.13 的完整应用提供配套的界面和数据接口。构建默认使用 `manifest.json` 的精确提交，打包后运行提示词前后端配套校验。

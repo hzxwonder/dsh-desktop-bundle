@@ -1,8 +1,10 @@
 # 来源：~/Library/Application Support/DSH Desktop/logs/dsh-*-*.error.log
-# 触发方式：关闭主窗口（进程驻留）后，用 open -a "DSH Desktop" 或点击 Dock 图标激活应用
-# 结果：activate 处理器访问已销毁的窗口对象，抛出未捕获异常，应用退出，窗口没有回来
+# 触发方式：从渲染进程调用 window.close() 销毁窗口后，用 open -a "DSH Desktop" 激活应用
+# 结果：activate 处理器访问已销毁的窗口对象，抛出未捕获异常；进程随后退出，窗口没有回来
+# 说明：红灯与 ⌘W 走主进程的 close 处理器（隐藏窗口），不会到达该状态；这里记录的是
+#       窗口因其他原因被销毁后的健壮性缺口，复现见 qa/README.md 的探针说明。
 
 TypeError: Object has been destroyed
-    at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:1434:16)
-    at EventEmitter.activate (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-Ih8J4IqG.js:2631:8)
+    at applicationNeedsReveal (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-DSXE0nu6.js:1435:16)
+    at EventEmitter.activate (file:///Applications/DSH%20Desktop.app/Contents/Resources/app/lib/electron-runtime-DSXE0nu6.js:2765:8)
     at EventEmitter.emit (node:events:521:24)

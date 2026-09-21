@@ -67,21 +67,27 @@ groups.D = {
     {
       id: 'D-02', group: 'D', priority: 'P1', title: '系统外观变化时界面即时跟随',
       async run(context, assert) {
-        const result = await context.withAppearance(false, async session => {
-          await sleep(1500)
-          const light = await session.eval('window.__qa.theme()')
-          await assert.screenshot(session, 'switched-light')
-          return light
+        // The switch is driven to the opposite of whatever the host runs, so the
+        // case exercises a real transition whatever time of day the suite runs at.
+        const ambient = context.systemAppearance()
+        const away = !ambient
+        const result = await context.withAppearance(away, async session => {
+          const followed = await context.waitForTheme(away ? 'dark' : 'light')
+          await assert.screenshot(session, `switched-${away ? 'dark' : 'light'}`)
+          return followed
         })
-        assert.check(result.colorScheme === 'light', `interface did not follow the system into light mode: ${JSON.stringify(result)}`)
-        const back = await context.session.eval('window.__qa.theme()')
-        assert.check(back.colorScheme === 'dark', `interface did not return to dark mode: ${JSON.stringify(back)}`)
+        assert.check(result.colorScheme === (away ? 'dark' : 'light'),
+          `interface did not follow the system into ${away ? 'dark' : 'light'} mode: ${JSON.stringify(result)}`)
+        const back = await context.waitForTheme(ambient ? 'dark' : 'light')
+        assert.check(back.colorScheme === (ambient ? 'dark' : 'light'),
+          `interface did not return to ${ambient ? 'dark' : 'light'} mode: ${JSON.stringify(back)}`)
       },
     },
     {
       id: 'D-03', group: 'D', priority: 'P1', title: '浅色主题下不存在残留的深色大色块',
       async run(context, assert) {
         const result = await context.withAppearance(false, async session => {
+          await context.waitForTheme('light')
           await session.eval(CONTRAST_HELPERS)
           await session.eval(PROBE)
           await sleep(1500)
@@ -97,6 +103,7 @@ groups.D = {
       id: 'D-04', group: 'D', priority: 'P1', title: '深色主题下不存在残留的浅色大色块',
       async run(context, assert) {
         const result = await context.withAppearance(true, async session => {
+          await context.waitForTheme('dark')
           await session.eval(CONTRAST_HELPERS)
           await session.eval(PROBE)
           await sleep(1500)

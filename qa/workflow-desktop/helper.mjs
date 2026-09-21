@@ -323,11 +323,52 @@ export async function frame(session) {
   return session.eval('({ w: outerWidth, h: outerHeight, iw: innerWidth, ih: innerHeight, screenSize: [screen.availWidth, screen.availHeight] })')
 }
 
-export const SYSTEM_APPEARANCE = () =>
-  execFileSync('/usr/bin/osascript', ['-e', 'tell application "System Events" to tell appearance preferences to get dark mode'], { encoding: 'utf8' }).trim() === 'true'
+/**
+ * Raised when the host driving this run may not ask System Events for the
+ * system appearance. Such a case is skipped rather than failed: the interface
+ * under test was never given the appearance it asks about.
+ */
+export class AppearanceUnavailable extends Error {}
+
+/** Live style through System Events; undefined when the host may not ask. */
+function appleScriptAppearance() {
+  try {
+    return execFileSync('/usr/bin/osascript', ['-e', 'tell application "System Events" to tell appearance preferences to get dark mode'], { encoding: 'utf8', timeout: 15000, killSignal: 'SIGKILL' }).trim() === 'true'
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * The system appearance as the global domain records it, which needs no Apple
+ * Events. Automatic switching follows the clock rather than the preference, so
+ * that mode asks System Events for the live style and keeps the raw preference
+ * when the host may not.
+ */
+export function SYSTEM_APPEARANCE() {
+  const read = key => {
+    try {
+      return execFileSync('/usr/bin/defaults', ['read', '-g', key], { encoding: 'utf8' }).trim()
+    } catch {
+      return ''
+    }
+  }
+  if (read('AppleInterfaceStyleSwitchesAutomatically') === '1') {
+    const live = appleScriptAppearance()
+    if (live !== undefined) return live
+  }
+  return read('AppleInterfaceStyle') === 'Dark'
+}
 
 export function setSystemAppearance(dark) {
-  execFileSync('/usr/bin/osascript', ['-e', `tell application "System Events" to tell appearance preferences to set dark mode to ${dark}`], { stdio: 'ignore' })
+  try {
+    execFileSync('/usr/bin/osascript', ['-e', `tell application "System Events" to tell appearance preferences to set dark mode to ${dark}`], { stdio: 'ignore', timeout: 20000, killSignal: 'SIGKILL' })
+  } catch (error) {
+    throw new AppearanceUnavailable(`the host cannot change the system appearance: ${error instanceof Error ? error.message : String(error)}`)
+  }
+  if (SYSTEM_APPEARANCE() !== dark) {
+    throw new AppearanceUnavailable('the system appearance did not follow the request')
+  }
 }
 
 /** Apply a theme through the app's own appearance setting, as a user would. */

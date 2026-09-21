@@ -110,6 +110,15 @@ fi
 step "4/6 package (${ARCH})"
 rm -rf "${STAGE}"
 mkdir -p "${STAGE}"
+# Electron Builder compiles the Icon Composer document with Xcode 26 `actool`.
+# A machine whose `actool` is missing or older packages the document's committed
+# legacy `app-icon.icns` export instead, which holds the same artwork.
+MAC_ICON=()
+if ! xcrun --find actool >/dev/null 2>&1 \
+  || ! actool --version 2>/dev/null | tr -d '\n' \
+    | grep -Eq '<key>short-bundle-version</key>[[:space:]]*<string>(2[6-9]|[3-9][0-9])'; then
+  MAC_ICON=(--config.mac.icon=build/app-icon.icns)
+fi
 (
   cd dsh-plugin-desktop
   # electron-builder resolves afterPack/afterAllArtifactBuild hooks relative to
@@ -124,7 +133,8 @@ mkdir -p "${STAGE}"
     --config.mac.notarize=false \
     --config.win.signExecutable=false \
     --config.electronDist=node_modules/electron/dist \
-    --config.directories.output="${STAGE}" || echo "electron-builder reported a failure; checking for the bundle"
+    --config.directories.output="${STAGE}" \
+    ${MAC_ICON[@]+"${MAC_ICON[@]}"} || echo "electron-builder reported a failure; checking for the bundle"
 )
 
 APP=""

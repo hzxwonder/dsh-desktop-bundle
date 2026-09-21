@@ -215,6 +215,13 @@ export async function attachSession(options = {}) {
   return buildSession({ app, home: options.home ?? launcherHome(options.userData ?? DEFAULT_USER_DATA), port, userData: options.userData ?? DEFAULT_USER_DATA, evidenceDir, client, page, logPath: options.logPath })
 }
 
+/**
+ * Raised when a case cannot reproduce the stimulus it is meant to assert on,
+ * because the host withholds the operating-system integration it needs. The
+ * case is reported as unverified rather than as a product failure.
+ */
+export class StimulusUnavailable extends Error {}
+
 /** Assemble the driving surface shared by a launched and an attached application. */
 function buildSession({ app, home, port, userData, logPath, evidenceDir, child, client, page, stop = () => {} }) {
   const session = {
@@ -317,11 +324,26 @@ function buildSession({ app, home, port, userData, logPath, evidenceDir, child, 
     },
 
     /** Close the window from inside, which is what the close control does. */
+    /**
+     * Close the window the way the application is closed by a person: the red
+     * button or Command-W goes through the main process, whose close handler
+     * hides the window and leaves the application resident. A renderer-initiated
+     * window.close() never reaches that handler — it destroys the web contents
+     * instead, a state no user can reach — so it is not used here.
+     *
+     * Both of those keystrokes are delivered by the window server, which a
+     * headless driver cannot reach; when the request has no effect the case
+     * reports that instead of asserting on a window that never closed.
+     */
     async closeWindow() {
-      try {
-        await this.eval('window.close()')
-      } catch {
-        // The renderer goes away with the window.
+      const before = await this.eval('({ hidden: document.hidden, focused: document.hasFocus() })')
+      await this.press('w', { modifiers: 4 })
+      await sleep(3000)
+      const after = await this.eval('({ hidden: document.hidden, focused: document.hasFocus() })').catch(() => undefined)
+      // An unreachable renderer means the window did go away.
+      if (after === undefined) return
+      if (after.hidden === false && after.focused === before.focused) {
+        throw new StimulusUnavailable('the window server did not deliver the close request, so the window never closed')
       }
     },
 
@@ -335,6 +357,32 @@ function buildSession({ app, home, port, userData, logPath, evidenceDir, child, 
       return client.events
         .filter(event => event.method === 'Log.entryAdded' && event.params.entry.level === 'error')
         .map(event => event.params.entry.text)
+    },
+    /**
+     * Console errors left over after the responses a case expects to fail are
+     * accounted for. Chromium logs every 4xx/5xx as a console error without the
+     * URL, so each tolerated message is matched to a response the app itself
+     * asked for — a designed error body is not an unexpected failure, and any
+     * other failing response still fails the case.
+     */
+    unexpectedConsoleErrors(tolerated = []) {
+      const budget = new Map()
+      for (const event of client.events) {
+        if (event.method !== 'Network.responseReceived') continue
+        const { status, url } = event.params.response
+        if (status < 400 || !tolerated.some(pattern => pattern.test(url))) continue
+        budget.set(status, (budget.get(status) ?? 0) + 1)
+      }
+      const remaining = []
+      for (const message of session.consoleErrors()) {
+        const status = Number(/status of (\d{3})/u.exec(message)?.[1] ?? 0)
+        if (status >= 400 && (budget.get(status) ?? 0) > 0) {
+          budget.set(status, budget.get(status) - 1)
+          continue
+        }
+        remaining.push(message)
+      }
+      return remaining
     },
     failedResponses() {
       return client.events

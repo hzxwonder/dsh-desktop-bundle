@@ -28,14 +28,24 @@ window.__qa = {
     return style.visibility !== 'hidden' && style.display !== 'none' && style.opacity !== '0'
   },
   all(selector) { return [...document.querySelectorAll(selector)].filter(el => window.__qa.visible(el)) },
+  /**
+   * Controls whose own label carries the text. A control that shows the text is
+   * preferred over one that only names it in aria-label: the sidebar brand mark
+   * doubles as a new-conversation button by label, and a case that says "click
+   * 新会话" means the control the user reads.
+   */
   byText(text, selector = 'button, [role=button], [role=menuitem], [role=tab], a[href]') {
-    return [...document.querySelectorAll(selector)].filter(el => window.__qa.visible(el)
+    const matches = [...document.querySelectorAll(selector)].filter(el => window.__qa.visible(el)
       && ((el.getAttribute('aria-label') || '') + ' ' + (el.textContent || '')).includes(text))
+    return matches.filter(el => (el.textContent || '').includes(text)).concat(matches.filter(el => !(el.textContent || '').includes(text)))
   },
+  /**
+   * Index of the preferred match within the full selector match list, which is
+   * the list the driver clicks into — the visible-only list would shift it.
+   */
   indexOfText(text, selector = 'button, [role=button], [role=menuitem], [role=tab], a[href]') {
-    return [...document.querySelectorAll(selector)]
-      .filter(el => window.__qa.visible(el))
-      .findIndex(el => ((el.getAttribute('aria-label') || '') + ' ' + (el.textContent || '')).includes(text))
+    const chosen = window.__qa.byText(text, selector)[0]
+    return chosen === undefined ? -1 : [...document.querySelectorAll(selector)].indexOf(chosen)
   },
   rect(el) {
     const rect = el.getBoundingClientRect()
@@ -163,7 +173,7 @@ export async function sendMessage(session, text, { waitMs = 18000 } = {}) {
 export const sleep = ms => new Promise(resolveSleep => setTimeout(resolveSleep, ms))
 
 export async function startConversation(session, text) {
-  await clickLabel(session, '新建会话')
+  if (!await clickLabel(session, '新会话')) throw new Error('the new-conversation control is not on screen')
   await sleep(1200)
   await clearComposer(session)
   if (text !== undefined) await sendMessage(session, text)
