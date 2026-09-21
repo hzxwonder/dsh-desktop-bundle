@@ -971,8 +971,8 @@ body[data-ds-dark-theme] .wf-run-step { background:color-mix(in srgb,hsl(var(--w
 .wf-appbar > button,.wf-appbar > .wf-segmented,.wf-appbar > .wf-chip,.wf-appbar > .wf-editor-debug { flex-shrink: 0; white-space: nowrap; }
 .wf-appbar .wf-segmented button { white-space: nowrap; flex-shrink: 0; }
 @media(max-width:700px) { .wf-appbar { flex-wrap: wrap; overflow: visible; padding: 8px; gap: 6px; } .wf-appbar-name { max-width: 150px; } }
-body[data-ds-dark-theme] .wf button:not(.wf-native-step *):not(.wf-primary) { background-color: var(--wf-bg); color: var(--wf-text); }
-body[data-ds-dark-theme] .wf button:not(.wf-native-step *):not(.wf-primary):hover { background-color: var(--wf-surface-strong); }
+body[data-ds-dark-theme] .wf button:not(.wf-native-step *):not(.wf-primary):not(.wf-run-action) { background-color: var(--wf-bg); color: var(--wf-text); }
+body[data-ds-dark-theme] .wf button:not(.wf-native-step *):not(.wf-primary):not(.wf-run-action):hover { background-color: var(--wf-surface-strong); }
 
 /* Reserve canvas space for the step palette at every viewport size. */
 .wf-canvas > .wf-flow { margin-top: 62px; }
@@ -1038,7 +1038,33 @@ body[data-ds-dark-theme] .wf button:not(.wf-native-step *):not(.wf-primary):hove
   padding-block: 4px;
 }
 .wf-card-actions > button { min-width: 0; min-height: 34px; padding-inline: 6px; font-size: 12.5px; white-space: nowrap; }
-.wf-card-actions > button:not(.wf-primary) { border-color: transparent; background: transparent; }
+.wf-card-actions > button:not(.wf-run-action) { border-color: transparent; background: transparent; }
+/* The card's run action reads as the primary affordance through tint and ink
+   rather than the near-black/near-white solid fill `.wf-primary` uses in the
+   editor: on a gallery card that fill dominated the row it sits in. The ink is
+   the palette's own brand blue instead of `--wf-accent`, which follows
+   `--dsw-alias-brand-primary` and inverts to near-white in the dark theme. */
+.wf .wf-card-actions > .wf-run-action {
+  background: color-mix(in srgb, var(--dsw-static-deepseek-500, #4176e6) 12%, transparent);
+  border-color: color-mix(in srgb, var(--dsw-static-deepseek-500, #4176e6) 30%, transparent);
+  color: var(--dsw-static-deepseek-500, #4176e6);
+  font-weight: 600;
+}
+.wf .wf-card-actions > .wf-run-action:hover {
+  background: color-mix(in srgb, var(--dsw-static-deepseek-500, #4176e6) 20%, transparent);
+  border-color: color-mix(in srgb, var(--dsw-static-deepseek-500, #4176e6) 45%, transparent);
+  color: var(--dsw-static-deepseek-500, #4176e6);
+}
+body[data-ds-dark-theme] .wf .wf-card-actions > .wf-run-action {
+  background: color-mix(in srgb, var(--dsw-static-deepseek-400, #679efe) 16%, transparent);
+  border-color: color-mix(in srgb, var(--dsw-static-deepseek-400, #679efe) 34%, transparent);
+  color: var(--dsw-static-deepseek-400, #679efe);
+}
+body[data-ds-dark-theme] .wf .wf-card-actions > .wf-run-action:hover {
+  background: color-mix(in srgb, var(--dsw-static-deepseek-400, #679efe) 24%, transparent);
+  border-color: color-mix(in srgb, var(--dsw-static-deepseek-400, #679efe) 50%, transparent);
+  color: var(--dsw-static-deepseek-400, #679efe);
+}
 .wf-card-sessions { padding-top: 10px; }
 .wf-card-sessions > summary { padding: 6px 0; font-size: 13px; color: var(--wf-text); }
 .wf-card-sessions > summary:focus-visible { outline: 2px solid var(--wf-accent); outline-offset: 3px; border-radius: 4px; }

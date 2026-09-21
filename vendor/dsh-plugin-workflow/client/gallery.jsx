@@ -313,7 +313,7 @@ export function createGallery({ctx, api, refresh, openSession, openEditor, bind,
                     打开
                   </button>
                   <button
-                    className="wf-primary"
+                    className="wf-run-action"
                     disabled={w.archived}
                     onClick={() => perform(() => bind(w))}
                   >
