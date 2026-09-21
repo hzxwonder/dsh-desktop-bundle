@@ -25,8 +25,6 @@
 | `private-terms.mjs` | 读取本机私有词表（私有项目名、内部连接别名），词表本身不入库 |
 | `sanitize-evidence.mjs` | 出报告前把证据里的本机路径改写成 `/Users/<user> |
 | `report.mjs` | 把结果与截图汇总成 `ACCEPTANCE-REPORT.md` |
-| `probe-boot.mjs` / `probe-theme.mjs` / `probe-window.mjs` | 启动、主题、窗口控制的基础探针，用于排查环境问题 |
-| `probe-rail.mjs` / `probe-reopen.mjs` | 侧边栏收起后的展开入口、关窗后的唤回路径，输出单次现场采样 |
 
 ## 运行
 
@@ -65,6 +63,21 @@ QA_PRIVATE_TERMS="term-a,term-b" node qa/run-cases.mjs run P
 - `evidence/<用例号>-<名称>.png`：失败现场与关键流程截图
 - `evidence/privacy.json`：隐私扫描的逐条命中（含仓库、修订、路径、行号）
 - `ACCEPTANCE-REPORT.md`：可直接阅读的验收报告
+
+## 工作流插件验收（`workflow-desktop/`）
+
+针对 `vendor/dsh-plugin-workflow` 的界面与行为另有一套用例，跑在同一套 fixture 现场上：
+
+```bash
+node qa/workflow-desktop/run.mjs list          # 列出 44 条用例
+node qa/workflow-desktop/run.mjs run all       # 执行并写入 evidence/workflow-desktop/results.json
+node qa/workflow-desktop/privacy-audit.mjs     # 扫描 repositories/ 与 distribution/ 下全部仓库
+node qa/workflow-desktop/report.mjs            # 生成 workflow-desktop/ACCEPTANCE-REPORT.md
+```
+
+用例分七组：入口与总览、创建与多实例、关闭与重开、主题、布局、创建—运行—对话、鲁棒性。
+判定可见性用 `Element.checkVisibility`，因为折叠 `<details>` 的子元素仍保留布局盒。
+报告里的问题叙述写在 `workflow-desktop/findings.mjs`，与自动生成的用例表分开维护。
 
 ## 环境要求
 
