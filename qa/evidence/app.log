@@ -1,2 +1,4 @@
 
-DevTools listening on ws://127.0.0.1:9470/devtools/browser/fe144499-6a15-4126-a4d2-b4547fec2fa7
+DevTools listening on ws://127.0.0.1:9444/devtools/browser/797f24ef-291a-4b56-a6ef-ada439748a6a
+[3324:0921/121100.110011:ERROR:content/browser/gpu/gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=15
+[3324:0921/121100.114549:ERROR:content/browser/network_service_instance_impl.cc:721] Network service crashed or was terminated, restarting service.
