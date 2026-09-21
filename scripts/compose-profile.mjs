@@ -82,14 +82,12 @@ function main() {
   const vendor = join(options.bundle, 'vendor')
 
   const pluginDependencies = {}
-  const bundles = []
   for (const plugin of manifest.plugins) {
     const source = join(vendor, plugin.name)
     if (!existsSync(join(source, 'package.json'))) {
       throw new Error(`vendored plugin is missing: ${source}`)
     }
     pluginDependencies[plugin.name] = `file:${source}`
-    bundles.push(plugin.name)
   }
 
   const runtimeVersion = runtimeVersionOf(options.app) ?? manifest.desktop.runtimeVersion

@@ -134,6 +134,33 @@ async function main() {
   check(bundles.includes('dsh-plugin-suite'), 'bundle list loads the plugin suite')
   check(bundles.length === manifest.profile.bundles.length, 'bundle list matches the manifest')
 
+  // A vendored plugin reaches the application in one of three ways: the profile
+  // names it as a bundle, a loaded bundle inserts it from its own patch layer,
+  // or a loaded bundle declares it as a member. A plugin that is none of the
+  // three is installed, pinned, and absent from every launch, which is silent:
+  // it never registers its commands or panels.
+  const loaded = new Set(bundles)
+  for (const name of bundles) {
+    let manifestPath
+    try {
+      manifestPath = createRequire(join(profileDir, 'package.json')).resolve(`${name}/package.json`)
+    } catch {
+      continue
+    }
+    const pkg = JSON.parse(readFileSync(manifestPath, 'utf8'))
+    for (const member of Object.keys({ ...pkg.peerDependencies, ...pkg.dependencies })) loaded.add(member)
+    const layer = pkg.dsh?.bundle?.patch
+    if (typeof layer !== 'string') continue
+    const layerPath = join(dirname(manifestPath), layer)
+    if (!existsSync(layerPath)) continue
+    for (const match of readFileSync(layerPath, 'utf8').matchAll(/^\s*name:\s*(\S+)\s*$/gm)) {
+      loaded.add(match[1].replace(/^['"]|['"]$/g, ''))
+    }
+  }
+  const unreachable = manifest.plugins.map(plugin => plugin.name).filter(name => !loaded.has(name))
+  if (unreachable.length === 0) pass(`all ${manifest.plugins.length} vendored plugins reach a launch`)
+  else fail(`vendored plugins reach no launch: ${unreachable.join(', ')}`)
+
   const patch = existsSync(join(profileDir, 'cordis.patch.yml'))
     ? readFileSync(join(profileDir, 'cordis.patch.yml'), 'utf8')
     : ''
