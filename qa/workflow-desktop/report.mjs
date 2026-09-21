@@ -119,7 +119,7 @@ function main() {
 
   if (FINDINGS.length > 0) {
     const blocking = FINDINGS.filter(item => item.severity === '高')
-    out.push(`发现 ${FINDINGS.length} 个值得修复的问题，其中高优先级 ${blocking.length} 个：`)
+    out.push(`发现 ${FINDINGS.length} 个值得修复的问题，高优先级 ${blocking.length} 个（${blocking.map(f => f.id).join('、')}）：`)
     out.push('')
     for (const finding of FINDINGS) {
       out.push(`- **${finding.id}（${finding.severity}）${finding.title}** —— 对应用例 ${finding.cases.join('、')}`)
