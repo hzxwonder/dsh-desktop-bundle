@@ -18,7 +18,8 @@
       "dsh-plugin-workflow",
       "dsh-plugin-sessions",
       "dsh-plugin-latex",
-      "dsh-better-reasoning-effort"
+      "dsh-better-reasoning-effort",
+      "dsh-pet"
     ],
     "runtimeDependencies": {
       "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2"
@@ -103,6 +104,13 @@
       "version": "0.3.10",
       "commit": "1d951a7a436dd4780aa038fb34e27c3af4d8f156",
       "repository": "https://github.com/HaoyueQin/dsh-better-reasoning-effort.git"
+    },
+    {
+      "name": "dsh-pet",
+      "version": "0.2.11",
+      "commit": "100848f3f527f17254b16b27797252a2bfa91b0c",
+      "repository": "https://github.com/PC2005-cloud/dsh-pet.git",
+      "subdir": "dsh-pet"
     }
   ]
 }

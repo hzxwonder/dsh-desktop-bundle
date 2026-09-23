@@ -53,7 +53,12 @@ function headOf(cwd) {
  */
 const EXCLUDED_ENTRIES = new Set(['.git', 'node_modules', 'docs'])
 
-function exportCommit(repository, commit, destination) {
+/**
+ * Export one commit's plugin tree. Plugins whose repository nests the package
+ * inside a subdirectory (manifest entry `subdir`) export that directory's
+ * contents, so `vendor/<name>/` is always the package root.
+ */
+function exportCommit(repository, commit, destination, subdir = undefined) {
   const isLocal = existsSync(join(repository, '.git'))
   const stashed = isLocal && git(repository, ['status', '--porcelain']) !== ''
   if (stashed) git(repository, ['stash', 'push', '--quiet', '--include-untracked'])
@@ -62,10 +67,11 @@ function exportCommit(repository, commit, destination) {
     try {
       execFileSync('git', ['clone', '--quiet', '--no-checkout', repository, staging], { stdio: 'inherit' })
       execFileSync('git', ['-C', staging, 'checkout', '--quiet', commit], { stdio: 'inherit' })
-      const entries = readdirSync(staging).filter(entry => !EXCLUDED_ENTRIES.has(entry))
+      const tree = subdir === undefined ? staging : join(staging, subdir)
+      const entries = readdirSync(tree).filter(entry => !EXCLUDED_ENTRIES.has(entry))
       rmSync(destination, { recursive: true, force: true })
       for (const entry of entries) {
-        cpSync(join(staging, entry), join(destination, entry), { recursive: true, dereference: false })
+        cpSync(join(tree, entry), join(destination, entry), { recursive: true, dereference: false })
       }
     } finally {
       rmSync(staging, { recursive: true, force: true })
@@ -110,7 +116,9 @@ function main() {
 
     const sourceCommit = localHead ?? plugin.commit
     console.log(`${plugin.name.padEnd(26)} ${sourceCommit.slice(0, 7)}`)
-    exportCommit(local === undefined ? plugin.repository : local, sourceCommit, vendorDir)
+    // A nested package (manifest `subdir`) still resolves `--from` at the
+    // repository root — that is where `.git` and the stash safety live.
+    exportCommit(local === undefined ? plugin.repository : local, sourceCommit, vendorDir, plugin.subdir)
     const version = JSON.parse(readFileSync(join(vendorDir, 'package.json'), 'utf8')).version
     if (version !== plugin.version || sourceCommit !== plugin.commit) changed += 1
     plugin.version = version

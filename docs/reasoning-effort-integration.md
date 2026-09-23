@@ -21,7 +21,7 @@
 | npm test -- --maxWorkers=1 | 18 个测试文件、325 项测试通过 |
 | 滑块键盘用例复核 | 单独执行 5/5 通过；默认并行全量首轮出现 1 项异步初始化时序失败，串行全量通过 |
 | 临时 profile 依赖安装 | pnpm install 通过 |
-| compose-profile 与 verify | 13/13 插件解析通过，0 warning |
+| compose-profile 与 verify | 14/14 插件解析通过，0 warning |
 | 插件 Host 与前端入口 | 均可解析，Host 动态导入提供 apply 函数 |
 | 上游版本固定 | vendor --check 显示 in sync |
 | 发布范围检查 | 保留上游源码、许可证和公开演示素材；不包含本机配置、凭据及依赖安装目录 |
