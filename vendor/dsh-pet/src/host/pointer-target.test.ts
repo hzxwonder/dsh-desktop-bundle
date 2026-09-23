@@ -21,9 +21,8 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const helper = '../../runtime/electron-helper/';
-const { HIT_BOX, CANVAS_H, STAGE_W, POINTER_POLL_MS, spriteHitRect, decideWindowIgnore } = require(
-  helper + 'pointer-target.js',
-);
+const { HIT_BOX, CANVAS_H, STAGE_W, POINTER_POLL_MS, spriteHitRect, spriteHitRectFromBox, decideWindowIgnore } =
+  require(helper + 'pointer-target.js');
 
 /** 包内文件源码（守卫用；相对 src/host/ 解析） */
 const readSource = (rel: string): string => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
@@ -124,6 +123,37 @@ describe('输入租约（busy）—— 0.2.10「甩快了即使没松手也会�
   });
 });
 
+describe('spriteHitRectFromBox + box 路径 —— 窗口死区跟随后按真实包围盒判定', () => {
+  /** 精灵仍钉在 margin 处时的包围盒：窗口 x=1000、margin=231 → 盒 x=1231，size 462 */
+  const pinnedBox = { x: bounds.x + 231, y: bounds.y + 231, size: 462 };
+
+  test('精灵钉在 margin 时：box 推导与窗口推导逐位一致（两条来源同源）', () => {
+    const fromWindow = spriteHitRect(bounds);
+    const fromBox = spriteHitRectFromBox(pinnedBox);
+    const near = (a: number, b: number) => Math.abs(a - b) < 0.01;
+    assert.ok(near(fromBox.left, fromWindow.left));
+    assert.ok(near(fromBox.top, fromWindow.top));
+    assert.ok(near(fromBox.right, fromWindow.right));
+    assert.ok(near(fromBox.bottom, fromWindow.bottom));
+  });
+
+  test('精灵在窗口内滑动（死区生效）时：按真实包围盒判定，旧窗口推导会错位', () => {
+    const drifted = { ...pinnedBox, x: pinnedBox.x + 40 }; // 窗口没动、精灵右滑 40px
+    const r = spriteHitRectFromBox(drifted);
+    // 取真身右缘内侧一点：它在滑动后的身体内，但已越过旧推导（钉点假设）的右边界
+    const edge = { x: r.right - 5, y: (r.top + r.bottom) / 2 };
+    assert.equal(decideWindowIgnore(bounds, edge, true, false, drifted), false, '真身内必须判可交互');
+    const legacy = spriteHitRect(bounds);
+    assert.ok(edge.x > legacy.right, '该点按旧窗口推导已出界：两条来源确实不同，测试钉住了差异');
+  });
+
+  test('未上报首帧（无 box）时退回 margin 钉点推导：旧行为不变', () => {
+    const r = spriteHitRect(bounds);
+    const center = { x: (r.left + r.right) / 2, y: (r.top + r.bottom) / 2 };
+    assert.equal(decideWindowIgnore(bounds, center, true), false);
+  });
+});
+
 describe('spriteHitRect —— 与渲染端命中判定同源（否则两条通道会互相翻回来）', () => {
   test('size 462 的真实窗口：命中区落在身体矩形内，且中心 = 窗口中心（真机实测一致）', () => {
     const r = spriteHitRect(bounds);
@@ -184,10 +214,10 @@ describe('源码守卫 —— helper 的两个兜底必须在位', () => {
     assert.ok(/const inputBusy = new Map\(\)/.test(main), '必须有每窗口的 busy 标记表');
     assert.ok(/ipcMain\.on\('pet:input-busy'/.test(main), 'busy 上报必须被接收');
     assert.ok(
-      /decideWindowIgnore\(b, screen\.getCursorScreenPoint\(\), ignoring, inputBusy\.get\(win\.id\) === true\)/.test(
+      /decideWindowIgnore\(b, screen\.getCursorScreenPoint\(\), ignoring, inputBusy\.get\(win\.id\) === true, spriteBoxes\.get\(win\.id\)\)/.test(
         main,
       ),
-      '兜底轮询必须把 busy 带进判定——这正是 0.2.10 缺的一环（拖拽中被翻回穿透）',
+      '兜底轮询必须把 busy 与真实包围盒带进判定——busy 是 0.2.10 的修复，包围盒是死区跟随的配套',
     );
     assert.ok(/inputBusy\.delete\(win\.id\)/.test(main), '窗口关闭时必须清掉 busy 标记（防 id 复用串味）');
     // busy 只能经兜底轮询生效，不得在 IPC 里直接翻窗口——否则两条通道抢着翻同一个窗口

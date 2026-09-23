@@ -67,9 +67,12 @@ const POINTER_POLL_MS = 60;
  * @param {boolean} ignoring 窗口当前是否穿透（取自主进程的 windowIgnore 镜像，不用本地副本：
  *   渲染端那条通道也在翻转它，本地副本会与之失步）
  * @param {boolean} busy 渲染端是否正在用这个窗口的鼠标输入（拖拽中/菜单开/弹窗开，见 inputBusy）
+ * @param {{x:number,y:number,size:number}} [spriteBox] 渲染端逐帧上报的宠物包围盒（屏幕 DIP）。
+ *   窗口原点带横向死区跟随（sprite 在窗口内随 winPos 滑动）后，包围盒**不再恒钉在**窗口矩形 +
+ *   margin 处，兜底判定必须改用真实包围盒；未上报首帧时退回 margin 钉点推导（与旧行为逐位一致）。
  * @returns {boolean} 新的穿透状态
  */
-function decideWindowIgnore(bounds, point, ignoring, busy) {
+function decideWindowIgnore(bounds, point, ignoring, busy, spriteBox) {
   if (busy) return false; // 渲染端正拿着输入：绝不翻回穿透（翻了就断它的输入链）
   const inWindow =
     point.x >= bounds.x &&
@@ -77,10 +80,32 @@ function decideWindowIgnore(bounds, point, ignoring, busy) {
     point.y >= bounds.y &&
     point.y < bounds.y + bounds.height;
   if (!inWindow) return true; // 窗外：恢复穿透
-  const r = spriteHitRect(bounds);
+  const r = spriteBox && spriteBox.size > 0 ? spriteHitRectFromBox(spriteBox) : spriteHitRect(bounds);
   const inSprite = point.x >= r.left && point.x <= r.right && point.y >= r.top && point.y <= r.bottom;
   if (inSprite) return false; // 宠物身上：可交互
   return ignoring; // 窗口余量区：保持（菜单/弹窗可点）
 }
 
-module.exports = { HIT_BOX, CANVAS_H, STAGE_W, POINTER_POLL_MS, spriteHitRect, decideWindowIgnore };
+/**
+ * 宠物包围盒（屏幕 DIP，{x, y, size}）→ 宠物身体命中区的屏幕矩形（DIP）。
+ * 画布按 STAGE_W 等比缩放到 size，横纵同一比例（与 spriteHitRect 的窗口推导同源）。
+ */
+function spriteHitRectFromBox(box) {
+  const k = box.size / STAGE_W;
+  return {
+    left: box.x + HIT_BOX.x0 * k,
+    top: box.y + HIT_BOX.y0 * k,
+    right: box.x + HIT_BOX.x1 * k,
+    bottom: box.y + HIT_BOX.y1 * k,
+  };
+}
+
+module.exports = {
+  HIT_BOX,
+  CANVAS_H,
+  STAGE_W,
+  POINTER_POLL_MS,
+  spriteHitRect,
+  spriteHitRectFromBox,
+  decideWindowIgnore,
+};

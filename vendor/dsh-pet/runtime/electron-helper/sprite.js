@@ -37,10 +37,18 @@ class PetSprite {
     this.sideAllow = (S.HIT_BOX.x0 / 640) * this.size;
     window.__dshPetDebug.sideAllow = this.sideAllow;
     // 窗口四周外扩（= WINDOW_MARGIN_RATIO×宠物尺寸）：sprite 钉在 (margin.l, margin.t)，
-    // 窗口 = sprite + 四边余量——气泡/未来弹窗显示在余量里；余量透明且点击穿透
+    // 窗口 = sprite + 四边余量——气泡/未来弹窗显示在余量里；余量透明且点击穿透。
+    // 混缩放多屏（如 2x 内屏 + 1x 外接）上贴身透明窗逐帧横移会反复骑上屏缝，WindowServer
+    // 每帧按两套缩放重栅格化带视频的透明层——跑动时宠物在屏缝两侧闪烁、远处留下壁纸错位残影。
+    // 因此窗口原点带**横向死区**跟随（winPos）：精灵逼近窗口左右边缘才滑动贴齐一次，其余帧
+    // 窗口完全静止（主进程按 lastRequestedBounds 去重后不再 setContentBounds）；纵向仍逐帧贴齐
+    // （气泡/弹窗竖向生长，顶部余量必须始终足额）。el 的页内坐标由 sendBounds 随 winPos 铺。
     const m = this.size * WINDOW_MARGIN_RATIO;
     this.margin = { t: m, r: m, b: m, l: m };
     window.__dshPetDebug.winMargin = this.margin;
+    this.winPos = null; // 当前窗口原点（视口坐标）；null=待贴齐（首帧/relayout 后强制滑到贴齐位）
+    this._elX = m;
+    this._elY = m;
     // 宠物包围盒左上角在【工作区】坐标系里的位置（本窗口的位置 = 宠物的位置）
     this.pos = { x: 0, y: 0 };
 
@@ -236,21 +244,42 @@ class PetSprite {
   }
 
   // 目标包围盒左上角（视口相对坐标）→ 移动窗口：窗口 = sprite + 四周外扩余量
-  // （sprite 钉在窗口 (margin.l, margin.t)，气泡/弹窗显示在余量里）。
-  // setContentBounds 要**屏幕**坐标：pos 是视口（桌面外接矩形）相对坐标，先加 VIEW.x/y
-  // 再统一 ×scale 回物理像素（§3.5 IPC 收口）——主进程收到的数字与线性化旧行为逐位一致，
-  // 主进程侧（bounds/去重/碰撞 broker）完全不用改。
+  // （sprite 的窗口内坐标随 winPos 铺，见构造处死区说明）。 setContentBounds 要**屏幕**
+  // 坐标：pos 是视口（桌面外接矩形）相对坐标，先加 VIEW.x/y 再统一 ×scale 回物理像素
+  // （§3.5 IPC 收口）——主进程收到的数字与线性化旧行为逐位一致，主进程侧（bounds/去重/
+  // 碰撞 broker）完全不用改。
   sendBounds(px, py) {
     this.pos = { x: Math.round(px), y: Math.round(py) };
     window.__dshPetDebug.dragPos = { x: this.pos.x, y: this.pos.y };
+    const wantX = this.pos.x - this.margin.l;
+    const wantY = this.pos.y - this.margin.t;
+    if (!this.winPos) {
+      this.winPos = { x: wantX, y: wantY };
+    } else {
+      // 横向死区：精灵距窗口任一直边不足 keep 才滑到贴齐位；纵向始终贴齐（气泡要顶部余量）。
+      // keep 只需兜住描边/挤压等横向效果：取 1/4 margin（≥12px），窗口滑动频率再降到原来的约 1/4。
+      const keep = Math.max(12, Math.floor(this.margin.l / 4));
+      const slackL = this.pos.x - this.winPos.x;
+      const slackR = this.winPos.x + this.size + this.margin.l + this.margin.r - (this.pos.x + this.size);
+      if (slackL < keep || slackR < keep) this.winPos.x = wantX;
+      this.winPos.y = wantY;
+    }
+    const elX = this.pos.x - this.winPos.x;
+    const elY = this.pos.y - this.winPos.y;
+    if (elX !== this._elX || elY !== this._elY) {
+      this._elX = elX;
+      this._elY = elY;
+      this.el.style.left = elX + 'px';
+      this.el.style.top = elY + 'px';
+    }
     if (window.petBridge) {
       // 完整状态一次捎带：size/bottomPad 让静止宠物从首帧起就登记进碰撞站场
       // （此前只有 report-flight 带尺寸，从没飞过的宠物 size=0 被碰撞检测直接跳过）；
       // vx/vy 带当前速度——飞行中实时值、静止/拖拽 = 0，避免落地后残留上次飞行速度干扰碰撞动量。
       const fly = this.throwState;
       window.petBridge.setBounds(
-        toScreen(this.pos.x - this.margin.l + VIEW.x),
-        toScreen(this.pos.y - this.margin.t + VIEW.y),
+        toScreen(this.winPos.x + VIEW.x),
+        toScreen(this.winPos.y + VIEW.y),
         toScreen(this.size + this.margin.l + this.margin.r),
         toScreen(this.winH + this.margin.t + this.margin.b),
         toScreen(this.pos.x), // 包围盒左上角（碰撞站场用：窗口坐标 ≠ 包围盒坐标）
@@ -308,6 +337,7 @@ class PetSprite {
    */
   relayout() {
     this.space = null;
+    this.winPos = null; // 桌面几何变了，窗口原点视口坐标作废：下一帧强制滑到贴齐位
     if (this.dragState.active || this.throwRef !== null) return;
     this.stopMove();
     const cx = this.pos.x + this.halfW;
@@ -945,13 +975,14 @@ class PetSprite {
       return;
     }
     const r = this.hitRect;
-    // forwarded 事件坐标以窗口为原点（与页坐标一致）；转换到 sprite 坐标需扣减窗口余量；
-    // 异常时退回屏幕坐标 − 窗口屏幕位置推导（hitRect/pos 均为 CSS 系）：屏幕坐标 ÷scale 后
-    // 减去窗口屏幕原点（CSS 系）即窗口内坐标
-    const wx = Number.isFinite(e.clientX) ? e.clientX : toLocal(e.screenX) - (this.pos.x + VIEW.x - this.margin.l);
-    const wy = Number.isFinite(e.clientY) ? e.clientY : toLocal(e.screenY) - (this.pos.y + VIEW.y - this.margin.t);
-    const px = wx - this.margin.l;
-    const py = wy - this.margin.t;
+    // forwarded 事件坐标以窗口为原点（与页坐标一致）；精灵的窗口内坐标 = pos − winPos
+    // （窗口原点带横向死区，不再恒等于 margin）；异常时退回屏幕坐标 − 窗口屏幕位置推导：
+    // 屏幕坐标 ÷scale 后减去窗口屏幕原点（CSS 系）即窗口内坐标
+    const winPage = this.winPos || { x: this.pos.x - this.margin.l, y: this.pos.y - this.margin.t };
+    const wx = Number.isFinite(e.clientX) ? e.clientX : toLocal(e.screenX) - (winPage.x + VIEW.x);
+    const wy = Number.isFinite(e.clientY) ? e.clientY : toLocal(e.screenY) - (winPage.y + VIEW.y);
+    const px = wx - (this.pos.x - winPage.x);
+    const py = wy - (this.pos.y - winPage.y);
     this.setInteractive(px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h);
   }
 
@@ -985,8 +1016,9 @@ class PetSprite {
     // 不属于任何显示器的区域（看不见）；菜单本来也不该跨屏显示。
     const area = S.resolveRect(AREAS, this.pos.x + this.halfW, this.pos.y + this.halfH);
     if (!area) return null;
-    const winX = this.pos.x + VIEW.x - this.margin.l;
-    const winY = this.pos.y + VIEW.y - this.margin.t;
+    const winPage = this.winPos || { x: this.pos.x - this.margin.l, y: this.pos.y - this.margin.t };
+    const winX = winPage.x + VIEW.x;
+    const winY = winPage.y + VIEW.y;
     const winW = this.size + this.margin.l + this.margin.r;
     const winH = this.winH + this.margin.t + this.margin.b;
     const ax = area.x + VIEW.x;

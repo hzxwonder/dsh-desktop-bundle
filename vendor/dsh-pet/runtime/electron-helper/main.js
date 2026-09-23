@@ -259,6 +259,13 @@ let pointerFallbackPaused = false;
 const inputBusy = new Map();
 
 /**
+ * 每窗口的**真实宠物包围盒**（屏幕 DIP，{x, y, size}）：pet:set-bounds 逐帧上报。
+ * 窗口原点带横向死区跟随（sprite 随 winPos 在窗口内滑动）后，兜底轮询不能再用
+ * 「窗口矩形 + margin 钉点」反推命中区，必须吃这里登记的真实包围盒。
+ */
+const spriteBoxes = new Map();
+
+/**
  * 桌面宠物列表（[{id,size}]）：宿主经 DSH_PET_PETS 透传（每只宠物一个窗口）。
  * 解析失败/未透传（手动 start-desktop）时回落到单个默认宠物窗口；renderer 首帧发来的
  * set-bounds 会按真实配置自校正尺寸与位置。
@@ -405,7 +412,8 @@ function createPetWindows() {
       const b = win.getBounds();
       if (b.width < 8 || b.height < 8) return; // 尺寸还没落定（renderer 首帧上报前）
       const ignoring = windowIgnore.get(win.id) !== false;
-      const next = decideWindowIgnore(b, screen.getCursorScreenPoint(), ignoring, inputBusy.get(win.id) === true);
+      // 窗口死区跟随后，命中区必须按渲染端上报的真实包围盒判定（未上报首帧时退回 margin 钉点推导）
+      const next = decideWindowIgnore(b, screen.getCursorScreenPoint(), ignoring, inputBusy.get(win.id) === true, spriteBoxes.get(win.id));
       if (next !== ignoring) setWindowIgnore(win, next);
     }, POINTER_POLL_MS);
     win.on('closed', () => {
@@ -413,6 +421,7 @@ function createPetWindows() {
       windows.delete(pet.id);
       lastRequestedBounds.delete(win.id);
       windowIgnore.delete(win.id);
+      spriteBoxes.delete(win.id);
       inputBusy.delete(win.id);
     });
     win
@@ -670,14 +679,19 @@ app.whenReady().then(() => {
       // 位置 + 尺寸 + 速度一并登记：set-bounds 是每次位置变化都会触发的全量上报
       // （此前只更新 x/y，静止宠物 size 永远为 0，跨窗碰撞检测 `!o.size` 直接跳过它）；
       // 速度取渲染端上报值（飞行中实时、静止/拖拽 = 0），落地后不再残留旧飞行速度。
+      const bx2 = Number.isFinite(bx) ? bx : x;
+      const by2 = Number.isFinite(by) ? by : y;
+      const size2 = Number.isFinite(size) && size > 0 ? size : petStates.get(petId)?.size || 0;
       updatePetState(petId, {
-        x: Number.isFinite(bx) ? bx : x,
-        y: Number.isFinite(by) ? by : y,
-        size: Number.isFinite(size) && size > 0 ? size : petStates.get(petId)?.size || 0,
+        x: bx2,
+        y: by2,
+        size: size2,
         bottomPad: Number.isFinite(bottomPad) && bottomPad > 0 ? bottomPad : petStates.get(petId)?.bottomPad || 0,
         vx: Number.isFinite(vx) ? vx : 0,
         vy: Number.isFinite(vy) ? vy : 0,
       });
+      // 兜底轮询用的真实包围盒（窗口死区跟随生效后不能再用窗口矩形反推命中区）
+      if (size2 > 0) spriteBoxes.set(win.id, { x: bx2, y: by2, size: size2 });
     }
   });
 
