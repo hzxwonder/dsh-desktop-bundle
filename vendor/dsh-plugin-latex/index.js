@@ -548,7 +548,7 @@ export async function apply(ctx, config = {}) {
   ctx.on("tools/pre-execute",async(exec,next)=>{
     const mapping = store.projects.find(p => p.chats.some(c => c.id === exec.agent?.session?.id) &&
       p.revisionReview?.owner === "mindmap");
-    if (mapping) return {kind:"deny",reason:"导图注释正在生成或等待审阅，请报告当前结果，待用户处理后继续修改。"};
+    if (mapping && !["job_output", "job_list"].includes(exec.name)) return {kind:"deny",reason:"导图注释正在生成或等待审阅，请通过 job_output 读取分析任务结果，待用户处理后继续修改。"};
     const p=projectFor(exec.agent);
     if(p && /\bgit\b[\s\S]*\b(push|commit|reset|pull)\b/.test(JSON.stringify(exec.arguments?.cmd || exec.arguments?.command || exec.arguments?.code || exec.arguments?.script || "")))return {kind:"deny",reason:"论文 Git 同步由工作台在审阅结束后执行"};
     return next();

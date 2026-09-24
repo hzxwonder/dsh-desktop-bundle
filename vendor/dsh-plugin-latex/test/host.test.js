@@ -383,6 +383,7 @@ test("mindmap launched from a chat can report results while source awaits review
  assert.equal(job.status,"completed");
  assert.equal((await h.hook({agent,messages:[]},async()=>({kind:"enter"}))).kind,"enter");
  assert.equal((await h.events.get("tools/pre-execute")({agent,arguments:{command:"edit main.tex"}},async()=>({kind:"allow"}))).kind,"deny");
+ for(const name of ["job_output","job_list"])assert.equal((await h.events.get("tools/pre-execute")({agent,name,arguments:{job_id:"analysis"}},async()=>({kind:"allow"}))).kind,"allow");
  assert.ok((await h.request({action:"status",id:p.id})).value.review.count>0);
 });
 
