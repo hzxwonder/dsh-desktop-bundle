@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, rm, readFile } from "node:fs/promises";
+import { mkdtemp, rm, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { apply } from "../index.js";
+import { verifyMindmap } from "../skills/paper-mindmap-update/verify.mjs";
 async function host(t, outputOverride) {
   const directory = await mkdtemp(join(tmpdir(), "latex-host-"));
   let hook, dispose;
@@ -97,6 +98,25 @@ test("Host routes report errors and fence conversation roots", async (t) => {
     0,
   );
   assert.equal((await h.request({ action: "unknown" })).ok, false);
+});
+test("project assets are available for safe read-only preview", async (t) => {
+  const h = await host(t);
+  const p = (await h.request({ action:"create", name:"Asset Demo" })).value;
+  await writeFile(join(p.root, "figure.png"), Buffer.from("89504e470d0a1a0a", "hex"));
+  await writeFile(join(p.root, "diagram.eps"), "EPS data");
+  const image = await h.request({ action:"asset", id:p.id, file:"figure.png" });
+  assert.equal(image.value.mime, "image/png");
+  assert.equal(image.value.data, "iVBORw0KGgo=");
+  const fallback = await h.request({ action:"asset", id:p.id, file:"diagram.eps" });
+  assert.equal(fallback.value.mime, null);
+  assert.equal(fallback.value.size, 8);
+  assert.equal((await h.request({ action:"asset", id:p.id, file:"../figure.png" })).ok, false);
+});
+test("mindmap verification rejects duplicate and incomplete semantic rows", () => {
+  const batch = [{ paragraphs:[{ hash:"a", sentences:["one", "two"] }] }];
+  assert.equal(verifyMindmap(batch, { paragraphs:[{ hash:"a", label:"作用", sentences:["一", "二"] }] }), true);
+  assert.throws(() => verifyMindmap(batch, { paragraphs:[] }), /段落覆盖不完整/);
+  assert.throws(() => verifyMindmap(batch, { paragraphs:[{ hash:"a", label:"作用", sentences:["一"] }] }), /句子数量不匹配/);
 });
 test("review material expands only for bound sessions", async (t) => {
   const h = await host(t),
@@ -281,6 +301,60 @@ test("semantic JSON block accepts a model preface", async t => {
   assert.equal((await h.request({action:"open",id:p.id})).value.project.hasMap,true);
 });
 
+test("sentence-count mismatch retries the batch and streams progress", async t => {
+  let call = 0;
+  const h = await host(t, data => {
+    call++;
+    const wrong = call === 1;
+    return JSON.stringify({
+      paragraphs: data.paragraphs.map(p => ({
+        hash: p.hash,
+        label: "Paragraph intent",
+        sentences: wrong ? [...p.sentences.map(() => "Sentence intent"), "Extra sentence"] : p.sentences.map(() => "Sentence intent"),
+      })),
+      sections: {},
+    });
+  });
+  const p=(await h.request({action:"create",name:"Retry fixture"})).value;
+  const agent={session:{id:"analysis",header:{cwd:p.root}}};
+  h.agents.set(agent.session.id,agent);
+  await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Analysis"}}});
+  await h.request({action:"analyze",id:p.id,sessionId:agent.session.id});
+  let job;
+  for(let i=0;i<100;i++) {
+    job=(await h.request({action:"job",id:p.id})).value;
+    if(job.status!=="running") break;
+    await new Promise(r=>setTimeout(r,10));
+  }
+  assert.equal(job.status,"completed", job.error);
+  assert.equal(call, 2);
+  assert.ok(Array.isArray(job.log) && job.log.length >= 2);
+  assert.ok(job.log.some(l => /重试/.test(l.message)));
+  assert.ok(job.log.some(l => /已完成/.test(l.message)));
+});
+
+test("large papers are split across bounded model batches", async t => {
+  const h = await host(t);
+  const p=(await h.request({action:"create",name:"Batch fixture"})).value;
+  const body = Array.from({length: 40}, (_, i) => `Paragraph ${i} opens the argument. Paragraph ${i} closes the argument.`).join("\n\n");
+  await h.request({action:"save",id:p.id,file:"main.tex",hash:(await h.request({action:"read",id:p.id,file:"main.tex"})).value.hash,
+    content:"\\title{Demo}\n\\begin{document}\n\\section{Intro}\n" + body + "\n\\end{document}\n"});
+  const agent={session:{id:"analysis",header:{cwd:p.root}}};
+  h.agents.set(agent.session.id,agent);
+  await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Analysis"}}});
+  await h.request({action:"analyze",id:p.id,sessionId:agent.session.id});
+  let job;
+  for(let i=0;i<200;i++) {
+    job=(await h.request({action:"job",id:p.id})).value;
+    if(job.status!=="running") break;
+    await new Promise(r=>setTimeout(r,10));
+  }
+  assert.equal(job.status,"completed", job.error);
+  assert.ok(h.calls() >= 3, "expected at least three batches, got " + h.calls());
+  assert.ok(job.log.some(l => /分 3 批/.test(l.message)), job.log?.map(l=>l.message).join(" | "));
+  assert.equal(job.result.stats.created >= 40, true);
+});
+
 test("global instructions persist and apply to subsequent paper prompts", async t => {
   const h=await host(t);
   const p=(await h.request({action:"create",name:"Settings fixture"})).value;
@@ -297,6 +371,34 @@ test("global instructions persist and apply to subsequent paper prompts", async 
   await assert.rejects(readFile(join(p.root,"AGENTS.md")),{code:"ENOENT"});
 });
 
+
+test("mindmap launched from a chat can report results while source awaits review",async t=>{
+ const h=await host(t),p=(await h.request({action:"create",name:"Chat mindmap"})).value;
+ const agent={session:{id:"map-chat",header:{cwd:p.root}}};h.agents.set(agent.session.id,agent);
+ await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Paper"}}});
+ await h.hook({agent,messages:[]},async()=>({kind:"enter"}));
+ assert.equal((await h.request({action:"analyze",id:p.id})).ok,true);
+ let job;
+ for(let i=0;i<100;i++){job=(await h.request({action:"job",id:p.id})).value;if(job.status!=="running")break;await new Promise(r=>setTimeout(r,10));}
+ assert.equal(job.status,"completed");
+ assert.equal((await h.hook({agent,messages:[]},async()=>({kind:"enter"}))).kind,"enter");
+ assert.equal((await h.events.get("tools/pre-execute")({agent,arguments:{command:"edit main.tex"}},async()=>({kind:"allow"}))).kind,"deny");
+ assert.ok((await h.request({action:"status",id:p.id})).value.review.count>0);
+});
+
+test("mindmap includes a commands-only input without requiring semantic annotations",async t=>{
+ const h=await host(t),p=(await h.request({action:"create",name:"Commands input"})).value;
+ await writeFile(join(p.root,"main.tex"),"\\documentclass{article}\n\\input{commands}\n\\begin{document}\n\\section{Introduction}\nThe method is reproducible.\n\\end{document}\n");
+ const commands="\\newcommand{\\method}{Example}\n";
+ await writeFile(join(p.root,"commands.tex"),commands);
+ const agent={session:{id:"commands-chat",header:{cwd:p.root}}};h.agents.set(agent.session.id,agent);
+ await h.request({action:"update",id:p.id,patch:{chat:{id:agent.session.id,title:"Paper"}}});
+ await h.request({action:"analyze",id:p.id});
+ let job;
+ for(let i=0;i<100;i++){job=(await h.request({action:"job",id:p.id})).value;if(job.status!=="running")break;await new Promise(r=>setTimeout(r,10));}
+ assert.equal(job.status,"completed",job.error);
+ assert.equal(await readFile(join(p.root,"commands.tex"),"utf8"),commands);
+});
 
 test("native Agent edits enter review and Git push is guarded",async t=>{
  const h=await host(t),p=(await h.request({action:"create",name:"Native lifecycle"})).value;

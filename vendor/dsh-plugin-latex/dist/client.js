@@ -302,7 +302,7 @@ var require_logic = __commonJS({
           changes,
           removed
         };
-        return { annotated, snapshot, nodes: readAnnotations(annotated, snapshot) };
+        return { annotated, snapshot, nodes: readSemanticAnnotations(annotated, snapshot) };
       }
       function readSemanticAnnotations(source, snapshot) {
         const lines = source.split("\n"), title = parse(source).title, nodes = [
@@ -44796,9 +44796,10 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-change-review > header { border-radius:8px; }
 
 /* Workspace chrome follows the selected paper theme. */
-.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { background:var(--paper-chrome,#171717); }
-.dshDesktopFrame:has(.lp) { --paper-chrome:#171717; }
+.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { background:var(--paper-chrome,#f3f3f3); }
+.dshDesktopFrame:has(.lp) { --paper-chrome:#f3f3f3; }
 .dshDesktopFrame:has(.lp-theme-light) { --paper-chrome:#f3f3f3; }
+.dshDesktopFrame:has(.lp-theme-dark) { --paper-chrome:#171717; }
 .lp-main { margin-top:0; }
 .lp-toolbar { width:calc(var(--lp-split) - 3px); gap:4px; }
 .lp-mapping .lp-toolbar, .lp-panel-closed .lp-toolbar { width:100%; }
@@ -44882,7 +44883,8 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp .lp-pdf-actions { padding-left:6px; border-left:1px solid var(--lp-line); }
 .lp .lp-back { justify-content:flex-start; color:var(--lp-muted); font-size:12px; min-height:32px; }
 .lp .lp-collapse { width:30px; height:30px; top:15px; }
-.lp .lp-nav { gap:4px; margin-top:16px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-nav { gap:4px; margin-top:12px; margin-bottom:0; padding-bottom:7px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-side-content { min-height:0; padding-top:4px; }
 .lp .lp-nav button { min-height:32px; padding:6px 8px; }
 .lp .lp-nav button[aria-pressed="true"] { background:var(--lp-hover) !important; border:0 !important; border-radius:7px !important; }
 .lp .lp-file { justify-content:flex-start; min-height:34px; gap:9px; border-radius:7px; }
@@ -44931,6 +44933,13 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp button.lp-file, .lp button.lp-back { justify-content:flex-start; }
 @container (min-width:400px) { .lp-toolbar .lp-compile .lp-label,.lp-toolbar button[aria-label="\u884C\u6587\u5BFC\u56FE"] .lp-label { display:inline; } }
 .lp-picker { scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; }
+.lp-picker { display:flex; flex-direction:column; min-height:0; height:calc(100% - 130px); overflow:hidden; margin:76px auto 32px; }
+.lp-picker > input { flex:none; }
+.lp-project-list { flex:1 1 auto; min-height:0; overflow:auto; scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; padding-right:4px; }
+.lp-picker .lp-row { flex:none; }
+.lp-file-asset { color:var(--lp-text); opacity:1; }
+.lp-file-asset .lp-icon { color:var(--lp-muted); }
+.lp-file-asset:hover { background:var(--lp-hover); }
 @media(max-height:800px) {
   .lp-settings-panel:not(.lp-project-settings) { padding:20px 24px; }
   .lp-settings-panel:not(.lp-project-settings) > header { margin-bottom:12px; }
@@ -44948,6 +44957,50 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp .lp-create-dialog .lp-error { margin: 0; overflow-wrap: anywhere; }
 .lp .lp-picker .lp-create-dialog form { background: transparent; text-align: left; }
 .lp .lp-picker .lp-create-dialog form label { align-items: stretch; margin: 0; gap: 8px; text-align: left; }
+
+/* \u884C\u6587\u5BFC\u56FE\u751F\u6210\u4EE5\u5BF9\u8BDD\u5F62\u5F0F\u5448\u73B0\u5728\u8BBA\u6587\u804A\u5929\u4E2D\u3002 */
+.lp-analyze { margin: 0 12px 8px; border: 1px solid var(--lp-line); border-radius: 12px; background: var(--lp-side); overflow: hidden; flex: none; flex-shrink: 0; }
+.lp-analyze > header { display: flex; align-items: center; gap: 9px; padding: 9px 8px 8px 10px; }
+.lp-analyze-avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--lp-hover); color: var(--lp-accent); flex: none; }
+.lp-analyze-avatar.running { color: var(--lp-bg); background: var(--lp-accent); animation: lp-analyze-pulse 1.6s ease-in-out infinite; }
+.lp-analyze-avatar.failed { color: #d65d62; }
+@keyframes lp-analyze-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.lp-analyze-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.lp-analyze-title b { font-size: 12.5px; font-weight: 600; }
+.lp-analyze-title small { color: var(--lp-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-analyze-actions { display: flex; align-items: center; gap: 2px; flex: none; }
+.lp-analyze-actions button { min-height: 26px; padding: 4px 8px !important; font-size: 11px !important; }
+.lp-analyze-log { max-height: 200px; overflow: auto; margin: 0; padding: 2px 12px 10px; display: flex; flex-direction: column; gap: 3px; border-top: 1px solid var(--lp-line); scrollbar-width: thin; scrollbar-color: var(--lp-line) transparent; }
+.lp-analyze-log p { display: flex; gap: 8px; margin: 0; font-size: 11.5px; line-height: 1.65; }
+.lp-analyze-log time { flex: none; color: var(--lp-muted); font: 10.5px/1.8 ui-monospace, monospace; }
+.lp-analyze-log span { color: var(--lp-text); overflow-wrap: anywhere; }
+
+/* \u6587\u4EF6\u6811\u652F\u6301 Overleaf \u5F0F\u76EE\u5F55\u6298\u53E0\u3002 */
+.lp-tree-dir { font-weight: 550; }
+.lp-tree-dir > .lp-icon { color: var(--lp-muted); }
+.lp-tree-caret { display: inline-flex; flex: none; transform: rotate(-90deg); transition: transform 130ms ease; color: var(--lp-muted); }
+.lp-tree-caret.open { transform: none; }
+@media(prefers-reduced-motion:reduce) { .lp-tree-caret, .lp-analyze-avatar.running { transition: none; animation: none; } }
+
+/* \u8BBA\u6587\u5BF9\u8BDD\u754C\u9762\uFF1A\u7559\u767D\u3001\u5C42\u7EA7\u4E0E\u8F93\u5165\u533A\u7EC6\u8282\u3002 */
+.lp-conversation:has([data-phase="hero"])::before { content:"\u8BBA\u6587\u5BF9\u8BDD"; margin: clamp(24px, 7vh, 64px) 16px 14px; font-size: 19px; font-weight: 600; color: var(--lp-text); }
+.lp-conversation:has([data-phase="hero"]) [data-composer-seat]::before { content:none; }
+.lp-conversation [data-conversation-scroll] { scrollbar-width: thin; scrollbar-color: var(--lp-line) transparent; }
+.lp-conversation [data-conversation-scroll] > div:first-child { max-width: 880px; margin: 0 auto; width: 100%; }
+.lp-conversation [class*="p_FcLG_card"] { border: 1px solid var(--lp-line); border-radius:8px; box-shadow: 0 5px 16px #0000000b; }
+.lp-conversation [data-composer-seat], .lp-conversation [data-conversation-scroll] { max-width: none; }
+.lp-conversation [data-composer-seat] { padding-bottom:20px; }
+.lp-asset-preview { display:flex; flex:1; min-height:0; flex-direction:column; align-items:center; overflow:auto; background:var(--lp-editor); }
+.lp-asset-preview header { width:100%; display:flex; align-items:center; gap:8px; min-height:45px; padding:8px 14px; border-bottom:1px solid var(--lp-line); }
+.lp-asset-preview header strong { font-weight:550; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lp-asset-preview header small { margin-left:auto; white-space:nowrap; color:var(--lp-muted); }
+.lp-asset-preview img { display:block; max-width:calc(100% - 32px); max-height:calc(100% - 70px); width:auto; height:auto; object-fit:contain; margin:auto; }
+.lp-asset-preview .lp-pdf-scroll { width:100%; flex:1; min-height:0; }
+.lp-asset-preview p { margin:auto; color:var(--lp-muted); text-align:center; padding:24px; }
+body:has(.lp-theme-light) .dshDesktopMacCaptionRow,
+body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopMacCaptionRow { background:#fff; }
+body:has(.lp-theme-light) .dshDesktopFrame,
+body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopFrame { background:#f3f3f3; }
 `;
 
 // client/icons.jsx
@@ -45390,6 +45443,101 @@ function MindMap({ data, onLocate }) {
     ] })
   ] });
 }
+var analyzeStateText = { running: "\u6B63\u5728\u751F\u6210\u2026", failed: "\u751F\u6210\u5931\u8D25", completed: "\u751F\u6210\u5B8C\u6210" };
+function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
+  const listRef = (0, import_react2.useRef)(null);
+  const lines = run.log || [];
+  (0, import_react2.useEffect)(() => {
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [lines.length, run.status]);
+  if (run.status === "completed" && !lines.length) return null;
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-analyze", "aria-label": "\u884C\u6587\u5BFC\u56FE\u751F\u6210\u8FDB\u5EA6", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-analyze-avatar" + (run.status === "running" ? " running" : "") + (run.status === "failed" ? " failed" : ""), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "map" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-analyze-title", children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("b", { children: "\u884C\u6587\u5BFC\u56FE" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("small", { children: [
+          analyzeStateText[run.status] || "",
+          run.status === "failed" && run.error ? " \xB7 " + run.error : ""
+        ] })
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-analyze-actions", children: [
+        run.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onCancel, children: "\u53D6\u6D88" }),
+        run.status === "failed" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onRetry, children: "\u91CD\u8BD5" }),
+        run.status === "completed" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onView, children: "\u67E5\u770B\u5BFC\u56FE" }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u6536\u8D77\u8FDB\u5EA6\u5BF9\u8BDD", title: "\u6536\u8D77\u8FDB\u5EA6\u5BF9\u8BDD", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }) })
+      ] })
+    ] }),
+    lines.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-analyze-log", ref: listRef, children: lines.map((line, i) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("time", { children: new Date(line.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: line.message })
+    ] }, line.time + ":" + i)) })
+  ] });
+}
+function FileTree({ items, active, openDirs, onToggle, onOpen, badgeOf }) {
+  const root = { dirs: /* @__PURE__ */ new Map(), files: [] };
+  for (const item of items) {
+    const parts = item.name.split("/");
+    let node = root;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!node.dirs.has(parts[i])) node.dirs.set(parts[i], { dirs: /* @__PURE__ */ new Map(), files: [] });
+      node = node.dirs.get(parts[i]);
+    }
+    node.files.push(item);
+  }
+  const byName = (a, b) => a.localeCompare(b);
+  const render = (node, prefix, depth) => {
+    const rows = [];
+    for (const [name3, child] of [...node.dirs.entries()].sort((a, b) => byName(a[0], b[0]))) {
+      const path = prefix ? prefix + "/" + name3 : name3;
+      const open = openDirs.has(path);
+      rows.push(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+          "button",
+          {
+            className: "lp-file lp-tree-dir",
+            style: { paddingLeft: 6 + depth * 14 },
+            "aria-expanded": open,
+            title: path,
+            onClick: () => onToggle(path),
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-tree-caret" + (open ? " open" : ""), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "chevron", size: 13 }) }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "folder" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: name3 })
+            ]
+          },
+          path + "/"
+        )
+      );
+      if (open) rows.push(...render(child, path, depth + 1));
+    }
+    for (const item of node.files.sort((a, b) => byName(a.name, b.name))) {
+      const badge = badgeOf(item.name);
+      rows.push(
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+          "button",
+          {
+            className: "lp-file" + (active === item.name ? " active" : "") + (!item.editable ? " lp-file-asset" : ""),
+            style: { paddingLeft: 6 + depth * 14 },
+            title: item.name,
+            onClick: () => onOpen(item.name, item),
+            children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: item.name.split("/").at(-1) }),
+              badge && (() => {
+                const kind = badge.kind;
+                return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-file-badge " + kind, title: { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], "aria-label": { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], children: { added: "A", modified: "M", deleted: "D" }[kind] });
+              })()
+            ]
+          },
+          item.name
+        )
+      );
+    }
+    return rows;
+  };
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(import_jsx_runtime2.Fragment, { children: render(root, "", 0) });
+}
 function apply(ctx) {
   let pendingDraft = null, returnSession = null;
   const draftKey = "dsh-latex-drafts-v1";
@@ -45481,9 +45629,9 @@ function apply(ctx) {
     return surface || /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u5F53\u524D Harness \u7248\u672C\u672A\u63D0\u4F9B\u5D4C\u5165\u804A\u5929\u63A5\u53E3\uFF0C\u8BF7\u8FD4\u56DE\u4E3B\u4F1A\u8BDD\u7EE7\u7EED\u3002" });
   }
   function Panel() {
-    const [projects, setProjects] = (0, import_react2.useState)([]), [p, setP] = (0, import_react2.useState)(null), [files, setFiles] = (0, import_react2.useState)([]), [file, setFile] = (0, import_react2.useState)(null), [tabs, setTabs] = (0, import_react2.useState)([]), [nav2, setNav] = (0, import_react2.useState)("files"), [chatOpen, setChatOpen] = (0, import_react2.useState)(false), [newName, setNewName] = (0, import_react2.useState)(null), [newError, setNewError] = (0, import_react2.useState)(""), [selected, setSelected] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react2.useState)(null), [comment2, setComment] = (0, import_react2.useState)(null), [commentText, setCommentText] = (0, import_react2.useState)(""), [jump, setJump] = (0, import_react2.useState)(null), [busy, setBusy] = (0, import_react2.useState)(false), [status, setStatus] = (0, import_react2.useState)(""), [error, setError] = (0, import_react2.useState)(""), [pdf, setPdf] = (0, import_react2.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react2.useState)(1), [map, setMap] = (0, import_react2.useState)(null), [view, setView] = (0, import_react2.useState)("source"), [split, setSplit] = (0, import_react2.useState)(55), [sideHidden, setSideHidden] = (0, import_react2.useState)(false), [job, setJob] = (0, import_react2.useState)(null), [showLog, setShowLog] = (0, import_react2.useState)(false), [rightOpen, setRightOpen] = (0, import_react2.useState)(true), [rightTab, setRightTab] = (0, import_react2.useState)("pdf"), [review, setReview] = (0, import_react2.useState)(null), [logs, setLogs] = (0, import_react2.useState)({}), [token, setToken] = (0, import_react2.useState)(""), [draftTheme, setDraftTheme] = (0, import_react2.useState)("system"), [formError, setFormError] = (0, import_react2.useState)(""), [form, setForm] = (0, import_react2.useState)(null), [title, setTitle] = (0, import_react2.useState)(""), [path, setPath] = (0, import_react2.useState)(""), [query, setQuery] = (0, import_react2.useState)(""), [theme2, setTheme] = (0, import_react2.useState)(
+    const [projects, setProjects] = (0, import_react2.useState)([]), [p, setP] = (0, import_react2.useState)(null), [files, setFiles] = (0, import_react2.useState)([]), [file, setFile] = (0, import_react2.useState)(null), [asset, setAsset] = (0, import_react2.useState)(null), [tabs, setTabs] = (0, import_react2.useState)([]), [nav2, setNav] = (0, import_react2.useState)("files"), [chatOpen, setChatOpen] = (0, import_react2.useState)(false), [newName, setNewName] = (0, import_react2.useState)(null), [newError, setNewError] = (0, import_react2.useState)(""), [selected, setSelected] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [selection, setSelection] = (0, import_react2.useState)(null), [comment2, setComment] = (0, import_react2.useState)(null), [commentText, setCommentText] = (0, import_react2.useState)(""), [jump, setJump] = (0, import_react2.useState)(null), [busy, setBusy] = (0, import_react2.useState)(false), [status, setStatus] = (0, import_react2.useState)(""), [error, setError] = (0, import_react2.useState)(""), [pdf, setPdf] = (0, import_react2.useState)(null), [pdfZoom, setPdfZoom] = (0, import_react2.useState)(1), [map, setMap] = (0, import_react2.useState)(null), [view, setView] = (0, import_react2.useState)("source"), [split, setSplit] = (0, import_react2.useState)(55), [sideHidden, setSideHidden] = (0, import_react2.useState)(false), [job, setJob] = (0, import_react2.useState)(null), [showLog, setShowLog] = (0, import_react2.useState)(false), [rightOpen, setRightOpen] = (0, import_react2.useState)(true), [rightTab, setRightTab] = (0, import_react2.useState)("pdf"), [review, setReview] = (0, import_react2.useState)(null), [logs, setLogs] = (0, import_react2.useState)({}), [token, setToken] = (0, import_react2.useState)(""), [draftTheme, setDraftTheme] = (0, import_react2.useState)("system"), [formError, setFormError] = (0, import_react2.useState)(""), [form, setForm] = (0, import_react2.useState)(null), [title, setTitle] = (0, import_react2.useState)(""), [path, setPath] = (0, import_react2.useState)(""), [query, setQuery] = (0, import_react2.useState)(""), [theme2, setTheme] = (0, import_react2.useState)(
       () => localStorage.getItem("dsh-latex-theme") || "system"
-    ), [settings, setSettings] = (0, import_react2.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react2.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react2.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react2.useState)(""), [conflict, setConflict] = (0, import_react2.useState)(null);
+    ), [settings, setSettings] = (0, import_react2.useState)(null), [globalConfig, setGlobalConfig] = (0, import_react2.useState)(null), [settingsBusy, setSettingsBusy] = (0, import_react2.useState)(false), [settingsMessage, setSettingsMessage] = (0, import_react2.useState)(""), [mapRun, setMapRun] = (0, import_react2.useState)(null), [openDirs, setOpenDirs] = (0, import_react2.useState)(() => /* @__PURE__ */ new Set()), [conflict, setConflict] = (0, import_react2.useState)(null);
     const formTrigger = (0, import_react2.useRef)(null);
     const openForm = (kind) => {
       formTrigger.current = document.activeElement;
@@ -45565,11 +45713,26 @@ function apply(ctx) {
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
       setFile(next);
+      setAsset(null);
       setChatOpen(false);
       setView("source");
       setTabs((v) => v.includes(name3) ? v : [...v, name3]);
       setSelection(null);
       setStatus(cache?.dirty ? "\u672A\u4FDD\u5B58" : "\u5DF2\u4FDD\u5B58");
+    }
+    async function loadAsset(name3) {
+      await save();
+      const project = pRef.current;
+      const token2 = ++serial.current;
+      setAsset({ name: name3, loading: true });
+      setChatOpen(false);
+      setView("source");
+      try {
+        const preview = await api({ action: "asset", id: project.id, file: name3 });
+        if (token2 === serial.current && pRef.current?.id === project.id) setAsset(preview);
+      } catch (e) {
+        if (token2 === serial.current) setAsset({ name: name3, error: e.message });
+      }
     }
     async function choose(project) {
       await save();
@@ -45579,6 +45742,7 @@ function apply(ctx) {
       pRef.current = project;
       activeId = project.id;
       setFile(null);
+      setAsset(null);
       fileRef.current = null;
       setPdf(null);
       setMap(null);
@@ -45594,6 +45758,22 @@ function apply(ctx) {
       setP(data.project);
       pRef.current = data.project;
       setFiles(data.files);
+      setMapRun(null);
+      const savedDirs = (() => {
+        try {
+          const v = JSON.parse(
+            localStorage.getItem("dsh-latex-tree:" + project.id)
+          );
+          return Array.isArray(v) ? new Set(v) : null;
+        } catch {
+          return null;
+        }
+      })();
+      setOpenDirs(
+        savedDirs || new Set(
+          data.files.filter((f) => f.name.includes("/")).map((f) => f.name.split("/")[0])
+        )
+      );
       await load(
         data.files.find((f) => f.name === data.project.main)?.name || data.files.find((f) => f.editable)?.name,
         data.project
@@ -45677,6 +45857,13 @@ function apply(ctx) {
           });
           if (stopped || j?.unchanged) return;
           setJob(j);
+          if (j?.kind === "analyze")
+            setMapRun({
+              status: j.status,
+              error: j.error,
+              log: j.log || [],
+              stats: j.result?.stats
+            });
           if (j?.status === "completed" && jobHandled.current !== p.id + ":" + j.version) {
             jobHandled.current = p.id + ":" + j.version;
             if (j.kind === "compile") {
@@ -45705,6 +45892,7 @@ function apply(ctx) {
                 setFile(next);
               }
               setStatus("\u884C\u6587\u5BFC\u56FE\u5DF2\u66F4\u65B0");
+              setView("map");
             }
           }
           if (j?.status === "failed") {
@@ -45821,13 +46009,34 @@ function apply(ctx) {
         return;
       }
       let sessionId;
-      if (kind === "analyze") sessionId = await ensureChat();
-      setChatOpen(false);
-      if (kind === "analyze") setView("map");
+      if (kind === "analyze") {
+        sessionId = await ensureChat();
+        setView("source");
+        setChatOpen(true);
+        setMapRun({
+          status: "running",
+          log: [{ time: Date.now(), message: "\u5DF2\u542F\u52A8\u884C\u6587\u5BFC\u56FE\u5206\u6790" }]
+        });
+      } else {
+        setChatOpen(false);
+      }
       await api({ action: kind, id: pRef.current.id, sessionId });
       setJob({ kind, status: "running" });
       setShowLog(false);
     }
+    const toggleDir = (path2) => setOpenDirs((v) => {
+      const next = new Set(v);
+      if (next.has(path2)) next.delete(path2);
+      else next.add(path2);
+      try {
+        localStorage.setItem(
+          "dsh-latex-tree:" + pRef.current.id,
+          JSON.stringify([...next])
+        );
+      } catch {
+      }
+      return next;
+    });
     async function addComment() {
       if (!commentText.trim()) return;
       const f = fileRef.current;
@@ -45910,7 +46119,7 @@ function apply(ctx) {
           "button",
           {
             className: "lp-source-tab",
-            title: file?.name || "\u6E90\u7801",
+            title: asset?.name || file?.name || "\u6E90\u7801",
             "aria-pressed": view === "source" && !chatOpen,
             onClick: () => {
               setView("source");
@@ -45918,7 +46127,7 @@ function apply(ctx) {
             },
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-filename", children: file?.name || "\u6E90\u7801" })
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-filename", children: asset?.name || file?.name || "\u6E90\u7801" })
             ]
           }
         ),
@@ -45953,8 +46162,20 @@ function apply(ctx) {
             "aria-label": "\u884C\u6587\u5BFC\u56FE",
             "aria-pressed": view === "map",
             onClick: safe(async () => {
-              setView(view === "map" ? "source" : "map");
-              if (!map && view !== "map") await start("analyze");
+              if (view === "map") {
+                setView("source");
+                return;
+              }
+              if (job?.status === "running" && job.kind === "analyze") {
+                setView("source");
+                setChatOpen(true);
+                return;
+              }
+              if (!map) {
+                await start("analyze");
+                return;
+              }
+              setView("map");
             }),
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "map" }),
@@ -46008,7 +46229,7 @@ function apply(ctx) {
         )
       ] }),
       job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-progress", children: [
-        job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
+        job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : mapRun?.log?.length ? mapRun.log[mapRun.log.length - 1].message : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
       ] })
     ] });
@@ -46130,27 +46351,29 @@ function apply(ctx) {
               onChange: (e) => setQuery(e.target.value)
             }
           ),
-          projects.filter((x) => x.name.toLowerCase().includes(query.toLowerCase())).map((x) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
-            "button",
-            {
-              className: "lp-project",
-              onClick: safe(() => choose(x)),
-              children: [
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-project-icon", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 22 }) }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-project-info", children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("b", { children: x.name }),
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { children: x.main })
-                ] }),
-                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "forward" })
-              ]
-            },
-            x.id
-          )),
-          !projects.some((x) => x.name.toLowerCase().includes(query.toLowerCase())) && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-picker-empty", children: [
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 28 }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: query ? "\u6CA1\u6709\u627E\u5230\u5339\u914D\u7684\u8BBA\u6587" : "\u5F00\u59CB\u4F60\u7684\u7B2C\u4E00\u7BC7\u8BBA\u6587" }),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: query ? "\u6362\u4E00\u4E2A\u5173\u952E\u8BCD\uFF0C\u6216\u6253\u5F00\u65B0\u7684\u8BBA\u6587\u9879\u76EE\u3002" : "\u65B0\u5EFA\u8BBA\u6587\uFF0C\u6216\u4ECE\u672C\u5730\u76EE\u5F55\u4E0E Overleaf \u5BFC\u5165\u3002" }),
-            query && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setQuery(""), children: "\u6E05\u7A7A\u641C\u7D22" })
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-project-list", children: [
+            projects.filter((x) => x.name.toLowerCase().includes(query.toLowerCase())).map((x) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
+              "button",
+              {
+                className: "lp-project",
+                onClick: safe(() => choose(x)),
+                children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-project-icon", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 22 }) }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-project-info", children: [
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("b", { children: x.name }),
+                    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { children: x.main })
+                  ] }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "forward" })
+                ]
+              },
+              x.id
+            )),
+            !projects.some((x) => x.name.toLowerCase().includes(query.toLowerCase())) && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-picker-empty", children: [
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file", size: 28 }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: query ? "\u6CA1\u6709\u627E\u5230\u5339\u914D\u7684\u8BBA\u6587" : "\u5F00\u59CB\u4F60\u7684\u7B2C\u4E00\u7BC7\u8BBA\u6587" }),
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "lp-help", children: query ? "\u6362\u4E00\u4E2A\u5173\u952E\u8BCD\uFF0C\u6216\u6253\u5F00\u65B0\u7684\u8BBA\u6587\u9879\u76EE\u3002" : "\u65B0\u5EFA\u8BBA\u6587\uFF0C\u6216\u4ECE\u672C\u5730\u76EE\u5F55\u4E0E Overleaf \u5BFC\u5165\u3002" }),
+              query && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setQuery(""), children: "\u6E05\u7A7A\u641C\u7D22" })
+            ] })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-row", children: [
             /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "lp-primary", onClick: () => openForm("create"), children: [
@@ -46318,24 +46541,20 @@ function apply(ctx) {
                 ]
               }
             ),
-            [...files, ...(review?.files || []).filter((r) => !files.some((f) => f.name === r.name)).map((r) => ({ name: r.name, editable: true }))].map((f) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
-              "button",
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+              FileTree,
               {
-                className: "lp-file " + (file?.name === f.name ? "active" : ""),
-                disabled: !f.editable,
-                title: f.name,
-                onClick: safe(() => load(f.name)),
-                children: [
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
-                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: f.name }),
-                  review?.files.find((r) => r.name === f.name && r.parts.some((h) => h.id && !h.decision)) && (() => {
-                    const kind = review.files.find((r) => r.name === f.name).kind;
-                    return /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-file-badge " + kind, title: { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], "aria-label": { added: "\u65B0\u589E", modified: "\u4FEE\u6539", deleted: "\u5220\u9664" }[kind], children: { added: "A", modified: "M", deleted: "D" }[kind] });
-                  })()
-                ]
-              },
-              f.name
-            ))
+                items: [
+                  ...files,
+                  ...(review?.files || []).filter((r) => !files.some((f) => f.name === r.name)).map((r) => ({ name: r.name, editable: true }))
+                ],
+                active: asset?.name || file?.name,
+                openDirs,
+                onToggle: toggleDir,
+                onOpen: (name3, item) => safe(() => item?.editable ? load(name3) : loadAsset(name3))(),
+                badgeOf: (name3) => review?.files.find((r) => r.name === name3 && r.parts.some((h) => h.id && !h.decision))
+              }
+            )
           ] }),
           nav2 === "chats" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(import_jsx_runtime2.Fragment, { children: [
             p.chats.map((c) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
@@ -46503,7 +46722,17 @@ function apply(ctx) {
                 /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-accept", disabled: review.active, onClick: safe(() => decide("accept")), children: "\u63A5\u53D7\u5168\u90E8" }),
                 /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: review.active, onClick: safe(() => decide("reject")), children: "\u62D2\u7EDD\u5168\u90E8" })
               ] }),
-              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-editor-wrap", children: file ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+              /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-editor-wrap", children: asset ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-asset-preview", "aria-label": "\u7D20\u6750\u9884\u89C8 " + asset.name, children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "file" }),
+                  /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: asset.name }),
+                  asset.size != null && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("small", { children: [
+                    (asset.size / 1024).toFixed(1),
+                    " KB"
+                  ] })
+                ] }),
+                asset.loading ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "status", children: "\u6B63\u5728\u8F7D\u5165\u7D20\u6750\u2026" }) : asset.error ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "alert", children: asset.error }) : asset.mime?.startsWith("image/") ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("img", { src: `data:${asset.mime};base64,${asset.data}`, alt: asset.name }) : asset.mime === "application/pdf" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PDF, { base64: asset.data }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u6B64\u6587\u4EF6\u53EF\u968F\u8BBA\u6587\u540C\u6B65\uFF0C\u5F53\u524D\u683C\u5F0F\u65E0\u6CD5\u5728\u5DE5\u4F5C\u53F0\u5185\u663E\u793A\u3002" })
+              ] }) : file ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 Editor,
                 {
                   file,
@@ -46516,6 +46745,17 @@ function apply(ctx) {
                 }
               ) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
             ] }),
+            chatOpen && mapRun && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+              AnalyzeCard,
+              {
+                run: mapRun,
+                onClose: () => setMapRun(null),
+                onView: () => setView("map"),
+                onCancel: () => api({ action: "cancel", id: p.id }).catch(() => {
+                }),
+                onRetry: () => start("analyze").catch((e) => setError(e.message))
+              }
+            ),
             p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(

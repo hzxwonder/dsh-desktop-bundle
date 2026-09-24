@@ -819,9 +819,10 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-change-review > header { border-radius:8px; }
 
 /* Workspace chrome follows the selected paper theme. */
-.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { background:var(--paper-chrome,#171717); }
-.dshDesktopFrame:has(.lp) { --paper-chrome:#171717; }
+.dshDesktopFrame:has(.lp) .dshDesktopMacCaptionRow { background:var(--paper-chrome,#f3f3f3); }
+.dshDesktopFrame:has(.lp) { --paper-chrome:#f3f3f3; }
 .dshDesktopFrame:has(.lp-theme-light) { --paper-chrome:#f3f3f3; }
+.dshDesktopFrame:has(.lp-theme-dark) { --paper-chrome:#171717; }
 .lp-main { margin-top:0; }
 .lp-toolbar { width:calc(var(--lp-split) - 3px); gap:4px; }
 .lp-mapping .lp-toolbar, .lp-panel-closed .lp-toolbar { width:100%; }
@@ -905,7 +906,8 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp .lp-pdf-actions { padding-left:6px; border-left:1px solid var(--lp-line); }
 .lp .lp-back { justify-content:flex-start; color:var(--lp-muted); font-size:12px; min-height:32px; }
 .lp .lp-collapse { width:30px; height:30px; top:15px; }
-.lp .lp-nav { gap:4px; margin-top:16px; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-nav { gap:4px; margin-top:12px; margin-bottom:0; padding-bottom:7px; border-bottom:1px solid var(--lp-line); }
+.lp .lp-side-content { min-height:0; padding-top:4px; }
 .lp .lp-nav button { min-height:32px; padding:6px 8px; }
 .lp .lp-nav button[aria-pressed="true"] { background:var(--lp-hover) !important; border:0 !important; border-radius:7px !important; }
 .lp .lp-file { justify-content:flex-start; min-height:34px; gap:9px; border-radius:7px; }
@@ -954,6 +956,13 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp button.lp-file, .lp button.lp-back { justify-content:flex-start; }
 @container (min-width:400px) { .lp-toolbar .lp-compile .lp-label,.lp-toolbar button[aria-label="行文导图"] .lp-label { display:inline; } }
 .lp-picker { scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; }
+.lp-picker { display:flex; flex-direction:column; min-height:0; height:calc(100% - 130px); overflow:hidden; margin:76px auto 32px; }
+.lp-picker > input { flex:none; }
+.lp-project-list { flex:1 1 auto; min-height:0; overflow:auto; scrollbar-width:thin; scrollbar-color:var(--lp-line) transparent; padding-right:4px; }
+.lp-picker .lp-row { flex:none; }
+.lp-file-asset { color:var(--lp-text); opacity:1; }
+.lp-file-asset .lp-icon { color:var(--lp-muted); }
+.lp-file-asset:hover { background:var(--lp-hover); }
 @media(max-height:800px) {
   .lp-settings-panel:not(.lp-project-settings) { padding:20px 24px; }
   .lp-settings-panel:not(.lp-project-settings) > header { margin-bottom:12px; }
@@ -971,3 +980,47 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp .lp-create-dialog .lp-error { margin: 0; overflow-wrap: anywhere; }
 .lp .lp-picker .lp-create-dialog form { background: transparent; text-align: left; }
 .lp .lp-picker .lp-create-dialog form label { align-items: stretch; margin: 0; gap: 8px; text-align: left; }
+
+/* 行文导图生成以对话形式呈现在论文聊天中。 */
+.lp-analyze { margin: 0 12px 8px; border: 1px solid var(--lp-line); border-radius: 12px; background: var(--lp-side); overflow: hidden; flex: none; flex-shrink: 0; }
+.lp-analyze > header { display: flex; align-items: center; gap: 9px; padding: 9px 8px 8px 10px; }
+.lp-analyze-avatar { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--lp-hover); color: var(--lp-accent); flex: none; }
+.lp-analyze-avatar.running { color: var(--lp-bg); background: var(--lp-accent); animation: lp-analyze-pulse 1.6s ease-in-out infinite; }
+.lp-analyze-avatar.failed { color: #d65d62; }
+@keyframes lp-analyze-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.lp-analyze-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.lp-analyze-title b { font-size: 12.5px; font-weight: 600; }
+.lp-analyze-title small { color: var(--lp-muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-analyze-actions { display: flex; align-items: center; gap: 2px; flex: none; }
+.lp-analyze-actions button { min-height: 26px; padding: 4px 8px !important; font-size: 11px !important; }
+.lp-analyze-log { max-height: 200px; overflow: auto; margin: 0; padding: 2px 12px 10px; display: flex; flex-direction: column; gap: 3px; border-top: 1px solid var(--lp-line); scrollbar-width: thin; scrollbar-color: var(--lp-line) transparent; }
+.lp-analyze-log p { display: flex; gap: 8px; margin: 0; font-size: 11.5px; line-height: 1.65; }
+.lp-analyze-log time { flex: none; color: var(--lp-muted); font: 10.5px/1.8 ui-monospace, monospace; }
+.lp-analyze-log span { color: var(--lp-text); overflow-wrap: anywhere; }
+
+/* 文件树支持 Overleaf 式目录折叠。 */
+.lp-tree-dir { font-weight: 550; }
+.lp-tree-dir > .lp-icon { color: var(--lp-muted); }
+.lp-tree-caret { display: inline-flex; flex: none; transform: rotate(-90deg); transition: transform 130ms ease; color: var(--lp-muted); }
+.lp-tree-caret.open { transform: none; }
+@media(prefers-reduced-motion:reduce) { .lp-tree-caret, .lp-analyze-avatar.running { transition: none; animation: none; } }
+
+/* 论文对话界面：留白、层级与输入区细节。 */
+.lp-conversation:has([data-phase="hero"])::before { content:"论文对话"; margin: clamp(24px, 7vh, 64px) 16px 14px; font-size: 19px; font-weight: 600; color: var(--lp-text); }
+.lp-conversation:has([data-phase="hero"]) [data-composer-seat]::before { content:none; }
+.lp-conversation [data-conversation-scroll] { scrollbar-width: thin; scrollbar-color: var(--lp-line) transparent; }
+.lp-conversation [data-conversation-scroll] > div:first-child { max-width: 880px; margin: 0 auto; width: 100%; }
+.lp-conversation [class*="p_FcLG_card"] { border: 1px solid var(--lp-line); border-radius:8px; box-shadow: 0 5px 16px #0000000b; }
+.lp-conversation [data-composer-seat], .lp-conversation [data-conversation-scroll] { max-width: none; }
+.lp-conversation [data-composer-seat] { padding-bottom:20px; }
+.lp-asset-preview { display:flex; flex:1; min-height:0; flex-direction:column; align-items:center; overflow:auto; background:var(--lp-editor); }
+.lp-asset-preview header { width:100%; display:flex; align-items:center; gap:8px; min-height:45px; padding:8px 14px; border-bottom:1px solid var(--lp-line); }
+.lp-asset-preview header strong { font-weight:550; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lp-asset-preview header small { margin-left:auto; white-space:nowrap; color:var(--lp-muted); }
+.lp-asset-preview img { display:block; max-width:calc(100% - 32px); max-height:calc(100% - 70px); width:auto; height:auto; object-fit:contain; margin:auto; }
+.lp-asset-preview .lp-pdf-scroll { width:100%; flex:1; min-height:0; }
+.lp-asset-preview p { margin:auto; color:var(--lp-muted); text-align:center; padding:24px; }
+body:has(.lp-theme-light) .dshDesktopMacCaptionRow,
+body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopMacCaptionRow { background:#fff; }
+body:has(.lp-theme-light) .dshDesktopFrame,
+body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopFrame { background:#f3f3f3; }

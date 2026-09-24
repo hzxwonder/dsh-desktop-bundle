@@ -425,6 +425,98 @@ export function MindMap({ data, onLocate }) {
     </div>
   );
 }
+const analyzeStateText = { running: "正在生成…", failed: "生成失败", completed: "生成完成" };
+function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
+  const listRef = useRef(null);
+  const lines = run.log || [];
+  useEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [lines.length, run.status]);
+  if (run.status === "completed" && !lines.length) return null;
+  return (
+    <section className="lp-analyze" aria-label="行文导图生成进度">
+      <header>
+        <span className={"lp-analyze-avatar" + (run.status === "running" ? " running" : "") + (run.status === "failed" ? " failed" : "")}>
+          <Icon name="map"/>
+        </span>
+        <span className="lp-analyze-title">
+          <b>行文导图</b>
+          <small>{analyzeStateText[run.status] || ""}{run.status === "failed" && run.error ? " · " + run.error : ""}</small>
+        </span>
+        <span className="lp-analyze-actions">
+          {run.status === "running" && <button onClick={onCancel}>取消</button>}
+          {run.status === "failed" && <button onClick={onRetry}>重试</button>}
+          {run.status === "completed" && <button onClick={onView}>查看导图</button>}
+          <button aria-label="收起进度对话" title="收起进度对话" onClick={onClose}><Icon name="close"/></button>
+        </span>
+      </header>
+      {lines.length > 0 && (
+        <div className="lp-analyze-log" ref={listRef}>
+          {lines.map((line, i) => (
+            <p key={line.time + ":" + i}>
+              <time>{new Date(line.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</time>
+              <span>{line.message}</span>
+            </p>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+function FileTree({ items, active, openDirs, onToggle, onOpen, badgeOf }) {
+  const root = { dirs: new Map(), files: [] };
+  for (const item of items) {
+    const parts = item.name.split("/");
+    let node = root;
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!node.dirs.has(parts[i])) node.dirs.set(parts[i], { dirs: new Map(), files: [] });
+      node = node.dirs.get(parts[i]);
+    }
+    node.files.push(item);
+  }
+  const byName = (a, b) => a.localeCompare(b);
+  const render = (node, prefix, depth) => {
+    const rows = [];
+    for (const [name, child] of [...node.dirs.entries()].sort((a, b) => byName(a[0], b[0]))) {
+      const path = prefix ? prefix + "/" + name : name;
+      const open = openDirs.has(path);
+      rows.push(
+        <button
+          key={path + "/"}
+          className="lp-file lp-tree-dir"
+          style={{ paddingLeft: 6 + depth * 14 }}
+          aria-expanded={open}
+          title={path}
+          onClick={() => onToggle(path)}
+        >
+          <span className={"lp-tree-caret" + (open ? " open" : "")}><Icon name="chevron" size={13}/></span>
+          <Icon name="folder"/><span>{name}</span>
+        </button>,
+      );
+      if (open) rows.push(...render(child, path, depth + 1));
+    }
+    for (const item of node.files.sort((a, b) => byName(a.name, b.name))) {
+      const badge = badgeOf(item.name);
+      rows.push(
+        <button
+          key={item.name}
+          className={"lp-file" + (active === item.name ? " active" : "") + (!item.editable ? " lp-file-asset" : "")}
+          style={{ paddingLeft: 6 + depth * 14 }}
+          title={item.name}
+          onClick={() => onOpen(item.name, item)}
+        >
+          <Icon name="file"/><span>{item.name.split("/").at(-1)}</span>
+          {badge && (() => {
+            const kind = badge.kind;
+            return <span className={"lp-file-badge " + kind} title={{added:"新增",modified:"修改",deleted:"删除"}[kind]} aria-label={{added:"新增",modified:"修改",deleted:"删除"}[kind]}>{{added:"A",modified:"M",deleted:"D"}[kind]}</span>;
+          })()}
+        </button>,
+      );
+    }
+    return rows;
+  };
+  return <>{render(root, "", 0)}</>;
+}
 export function apply(ctx) {
   let pendingDraft = null,
     returnSession = null;
@@ -520,6 +612,7 @@ export function apply(ctx) {
       [p, setP] = useState(null),
       [files, setFiles] = useState([]),
       [file, setFile] = useState(null),
+      [asset, setAsset] = useState(null),
       [tabs, setTabs] = useState([]),
       [nav, setNav] = useState("files"),
       [chatOpen, setChatOpen] = useState(false),
@@ -559,6 +652,8 @@ export function apply(ctx) {
       [globalConfig, setGlobalConfig] = useState(null),
       [settingsBusy, setSettingsBusy] = useState(false),
       [settingsMessage, setSettingsMessage] = useState(""),
+      [mapRun, setMapRun] = useState(null),
+      [openDirs, setOpenDirs] = useState(() => new Set()),
       [conflict, setConflict] = useState(null);
     const formTrigger = useRef(null);
     const openForm = kind => {formTrigger.current=document.activeElement;setTitle("");setPath("");setFormError("");setForm(kind);};
@@ -648,11 +743,26 @@ export function apply(ctx) {
       const next = { ...loaded, loadKey: uid() };
       fileRef.current = next;
       setFile(next);
+      setAsset(null);
       setChatOpen(false);
       setView("source");
       setTabs((v) => (v.includes(name) ? v : [...v, name]));
       setSelection(null);
       setStatus(cache?.dirty ? "未保存" : "已保存");
+    }
+    async function loadAsset(name) {
+      await save();
+      const project = pRef.current;
+      const token = ++serial.current;
+      setAsset({ name, loading:true });
+      setChatOpen(false);
+      setView("source");
+      try {
+        const preview = await api({ action:"asset", id:project.id, file:name });
+        if (token === serial.current && pRef.current?.id === project.id) setAsset(preview);
+      } catch (e) {
+        if (token === serial.current) setAsset({ name, error:e.message });
+      }
     }
     async function choose(project) {
       await save();
@@ -662,6 +772,7 @@ export function apply(ctx) {
       pRef.current = project;
       activeId = project.id;
       setFile(null);
+      setAsset(null);
       fileRef.current = null;
       setPdf(null);
       setMap(null);
@@ -677,6 +788,25 @@ export function apply(ctx) {
       setP(data.project);
       pRef.current = data.project;
       setFiles(data.files);
+      setMapRun(null);
+      const savedDirs = (() => {
+        try {
+          const v = JSON.parse(
+            localStorage.getItem("dsh-latex-tree:" + project.id),
+          );
+          return Array.isArray(v) ? new Set(v) : null;
+        } catch {
+          return null;
+        }
+      })();
+      setOpenDirs(
+        savedDirs ||
+          new Set(
+            data.files
+              .filter((f) => f.name.includes("/"))
+              .map((f) => f.name.split("/")[0]),
+          ),
+      );
       await load(
         data.files.find((f) => f.name === data.project.main)?.name ||
           data.files.find((f) => f.editable)?.name,
@@ -781,6 +911,13 @@ export function apply(ctx) {
           });
           if (stopped || j?.unchanged) return;
           setJob(j);
+          if (j?.kind === "analyze")
+            setMapRun({
+              status: j.status,
+              error: j.error,
+              log: j.log || [],
+              stats: j.result?.stats,
+            });
           if (
             j?.status === "completed" &&
             jobHandled.current !== p.id + ":" + j.version
@@ -813,6 +950,7 @@ export function apply(ctx) {
                 setFile(next);
               }
               setStatus("行文导图已更新");
+              setView("map");
             }
           }
           if (j?.status === "failed") {
@@ -897,13 +1035,34 @@ export function apply(ctx) {
     async function start(kind) {
       if(fileRef.current?.dirty){await save(true);if(kind!=="compile")setStatus("已保存 · 编译完成后可更新导图");return;}
       let sessionId;
-      if (kind === "analyze") sessionId = await ensureChat();
-      setChatOpen(false);
-      if (kind === "analyze") setView("map");
+      if (kind === "analyze") {
+        sessionId = await ensureChat();
+        setView("source");
+        setChatOpen(true);
+        setMapRun({
+          status: "running",
+          log: [{ time: Date.now(), message: "已启动行文导图分析" }],
+        });
+      } else {
+        setChatOpen(false);
+      }
       await api({ action: kind, id: pRef.current.id, sessionId });
       setJob({ kind, status: "running" });
       setShowLog(false);
     }
+    const toggleDir = (path) =>
+      setOpenDirs((v) => {
+        const next = new Set(v);
+        if (next.has(path)) next.delete(path);
+        else next.add(path);
+        try {
+          localStorage.setItem(
+            "dsh-latex-tree:" + pRef.current.id,
+            JSON.stringify([...next]),
+          );
+        } catch {}
+        return next;
+      });
     async function addComment() {
       if (!commentText.trim()) return;
       const f = fileRef.current;
@@ -983,11 +1142,11 @@ export function apply(ctx) {
               <Icon name="chat"/><span className="lp-label">论文对话</span>
             </button>
             <button
-              className="lp-source-tab" title={file?.name || "源码"}
+              className="lp-source-tab" title={asset?.name || file?.name || "源码"}
               aria-pressed={view === "source" && !chatOpen}
               onClick={() => { setView("source"); setChatOpen(false); }}
             >
-              <Icon name="file"/><span className="lp-filename">{file?.name || "源码"}</span>
+              <Icon name="file"/><span className="lp-filename">{asset?.name || file?.name || "源码"}</span>
             </button>
             <span className="lp-status" role="status" title={status}>{status}</span>
             {review && <button onClick={safe(async()=>{setNav("files");const first=review.files.find(f=>f.parts.some(h=>h.id&&!h.decision));if(first)await load(first.name);})}>变更 {review.count}</button>}
@@ -1000,8 +1159,14 @@ export function apply(ctx) {
             </button>
             <button title="行文导图" aria-label="行文导图" aria-pressed={view === "map"}
               onClick={safe(async () => {
-                setView(view === "map" ? "source" : "map");
-                if (!map && view !== "map") await start("analyze");
+                if (view === "map") { setView("source"); return; }
+                if (job?.status === "running" && job.kind === "analyze") {
+                  setView("source");
+                  setChatOpen(true);
+                  return;
+                }
+                if (!map) { await start("analyze"); return; }
+                setView("map");
               })}
             >
               <Icon name="map"/><span className="lp-label">行文导图</span>
@@ -1059,7 +1224,11 @@ export function apply(ctx) {
           )}
           {job?.status === "running" && (
             <div className="lp-progress">
-              {job.kind === "compile" ? "正在编译…" : "Agent 正在分析行文结构…"}
+              {job.kind === "compile"
+                ? "正在编译…"
+                : mapRun?.log?.length
+                  ? mapRun.log[mapRun.log.length - 1].message
+                  : "Agent 正在分析行文结构…"}
               <button onClick={safe(() => api({ action: "cancel", id: p.id }))}>
                 取消
               </button>
@@ -1115,20 +1284,22 @@ export function apply(ctx) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            {projects
-              .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
-              .map((x) => (
-                <button
-                  className="lp-project"
-                  key={x.id}
-                  onClick={safe(() => choose(x))}
-                >
-                  <span className="lp-project-icon"><Icon name="file" size={22}/></span>
-                  <span className="lp-project-info"><b>{x.name}</b><small>{x.main}</small></span>
-                  <Icon name="forward"/>
-                </button>
-              ))}
-            {!projects.some(x=>x.name.toLowerCase().includes(query.toLowerCase())) && <div className="lp-picker-empty"><Icon name="file" size={28}/><strong>{query ? "没有找到匹配的论文" : "开始你的第一篇论文"}</strong><p className="lp-help">{query ? "换一个关键词，或打开新的论文项目。" : "新建论文，或从本地目录与 Overleaf 导入。"}</p>{query && <button onClick={()=>setQuery("")}>清空搜索</button>}</div>}
+            <div className="lp-project-list">
+              {projects
+                .filter((x) => x.name.toLowerCase().includes(query.toLowerCase()))
+                .map((x) => (
+                  <button
+                    className="lp-project"
+                    key={x.id}
+                    onClick={safe(() => choose(x))}
+                  >
+                    <span className="lp-project-icon"><Icon name="file" size={22}/></span>
+                    <span className="lp-project-info"><b>{x.name}</b><small>{x.main}</small></span>
+                    <Icon name="forward"/>
+                  </button>
+                ))}
+              {!projects.some(x=>x.name.toLowerCase().includes(query.toLowerCase())) && <div className="lp-picker-empty"><Icon name="file" size={28}/><strong>{query ? "没有找到匹配的论文" : "开始你的第一篇论文"}</strong><p className="lp-help">{query ? "换一个关键词，或打开新的论文项目。" : "新建论文，或从本地目录与 Overleaf 导入。"}</p>{query && <button onClick={()=>setQuery("")}>清空搜索</button>}</div>}
+            </div>
             <div className="lp-row">
               <button className="lp-primary" onClick={() => openForm("create")}><Icon name="plus"/>新建论文</button>
               <button onClick={() => openForm("import")}><Icon name="folder"/>打开本地项目</button>
@@ -1254,20 +1425,21 @@ export function apply(ctx) {
                     )}
                   </form>
                 )}
-                {[...files, ...(review?.files || []).filter(r=>!files.some(f=>f.name===r.name)).map(r=>({name:r.name,editable:true}))].map((f) => (
-                  <button
-                    key={f.name}
-                    className={
-                      "lp-file " + (file?.name === f.name ? "active" : "")
-                    }
-                    disabled={!f.editable}
-                    title={f.name}
-                    onClick={safe(() => load(f.name))}
-                  >
-                    <Icon name="file"/><span>{f.name}</span>
-                    {review?.files.find(r=>r.name===f.name && r.parts.some(h=>h.id&&!h.decision)) && (()=>{const kind=review.files.find(r=>r.name===f.name).kind;return <span className={"lp-file-badge "+kind} title={{added:"新增",modified:"修改",deleted:"删除"}[kind]} aria-label={{added:"新增",modified:"修改",deleted:"删除"}[kind]}>{{added:"A",modified:"M",deleted:"D"}[kind]}</span>;})()}
-                  </button>
-                ))}
+                <FileTree
+                  items={[
+                    ...files,
+                    ...(review?.files || [])
+                      .filter(r=>!files.some(f=>f.name===r.name))
+                      .map(r=>({name:r.name,editable:true})),
+                  ]}
+                  active={asset?.name || file?.name}
+                  openDirs={openDirs}
+                  onToggle={toggleDir}
+                  onOpen={(name, item) => safe(() => item?.editable ? load(name) : loadAsset(name))()}
+                  badgeOf={(name) =>
+                    review?.files.find(r=>r.name===name && r.parts.some(h=>h.id&&!h.decision))
+                  }
+                />
               </>
             )}
             {nav === "chats" && (
@@ -1426,7 +1598,12 @@ export function apply(ctx) {
                 <div className="lp-source-body" hidden={chatOpen}>
                 {review && <div className="lp-review-summary"><span role="status">{review.active ? "Agent 正在修改…" : `待审阅 · ${review.count} 处`}</span><button className="lp-accept" disabled={review.active} onClick={safe(()=>decide("accept"))}>接受全部</button><button disabled={review.active} onClick={safe(()=>decide("reject"))}>拒绝全部</button></div>}
                 <div className="lp-editor-wrap">
-                {file ? (
+                {asset ? (
+                  <div className="lp-asset-preview" aria-label={"素材预览 " + asset.name}>
+                    <header><Icon name="file"/><strong>{asset.name}</strong>{asset.size != null && <small>{(asset.size / 1024).toFixed(1)} KB</small>}</header>
+                    {asset.loading ? <p role="status">正在载入素材…</p> : asset.error ? <p role="alert">{asset.error}</p> : asset.mime?.startsWith("image/") ? <img src={`data:${asset.mime};base64,${asset.data}`} alt={asset.name}/> : asset.mime === "application/pdf" ? <PDF base64={asset.data}/> : <p>此文件可随论文同步，当前格式无法在工作台内显示。</p>}
+                  </div>
+                ) : file ? (
                   <Editor
                     file={file}
                     onChange={changed}
@@ -1440,6 +1617,15 @@ export function apply(ctx) {
                   <div className="lp-empty">选择文件开始编辑</div>
                 )}
                 </div></div>
+                {chatOpen && mapRun && (
+                  <AnalyzeCard
+                    run={mapRun}
+                    onClose={() => setMapRun(null)}
+                    onView={() => setView("map")}
+                    onCancel={() => api({ action: "cancel", id: p.id }).catch(() => {})}
+                    onRetry={() => start("analyze").catch((e) => setError(e.message))}
+                  />
+                )}
                 {p.lastChat ? <div className={"lp-native " + (chatOpen ? "lp-conversation" : "lp-composer")}>
                   <NativeChat sessionId={p.lastChat} />
                 </div> : <button className="lp-start-chat" onClick={safe(() => ensureChat())}>继续讨论论文…</button>}

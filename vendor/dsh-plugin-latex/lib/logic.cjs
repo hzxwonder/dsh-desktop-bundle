@@ -332,7 +332,7 @@
       changes,
       removed,
     };
-    return { annotated, snapshot, nodes: readAnnotations(annotated, snapshot) };
+    return { annotated, snapshot, nodes: readSemanticAnnotations(annotated, snapshot) };
   }
   function readSemanticAnnotations(source, snapshot) {
     const lines = source.split("\n"),

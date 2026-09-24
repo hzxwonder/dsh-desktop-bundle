@@ -1,7 +1,8 @@
 import { join, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { homedir } from "node:os";
-import { readFile, realpath, mkdir, writeFile, rename, unlink } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { readFile, realpath, mkdir, writeFile, rename, unlink, lstat } from "node:fs/promises";
 import { Store, fail, digest, inside, editable } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
@@ -11,6 +12,7 @@ import {Credentials} from "./lib/credentials.js";
 import {Overleaf} from "./lib/overleaf.js";
 import {beginReview,captureReview,decideReview,reviewView,unresolved} from "./lib/revisions.js";
 import {automationServer} from "./lib/automation.js";
+import {verifyMindmap} from "./skills/paper-mindmap-update/verify.mjs";
 export const name = "dsh-plugin-latex";
 export const inject = [
   "connection",
@@ -32,6 +34,7 @@ export async function apply(ctx, config = {}) {
   ctx.skills.register({name:"paper-workbench",description:"论文工作台读写提案、编译与日志接口",content:automationSkill,source:"bundled"});
   const mindmapSkill = await readFile(new URL("./skills/paper-mindmap-update/SKILL.md", import.meta.url), "utf8");
   const skillDigest = digest(mindmapSkill);
+  const paperClient = fileURLToPath(new URL("./scripts/paper.mjs", import.meta.url));
   ctx.skills.register({ name: "paper-mindmap-update", description: "更新 LaTeX 论文的语义注释与四级行文导图", content: mindmapSkill, source: "bundled" });
   let paperInstructions = await loadPaperInstructions(store.directory, store.projects);
   ctx.systemPrompt.variable("latex_paper_guidance", ({ agent }) => {
@@ -39,7 +42,7 @@ export async function apply(ctx, config = {}) {
     const project = store.projects.find(p =>
       p.chats.some(c => c.id === agent.session.id) &&
       p.root === resolve(agent.session.header.cwd));
-    return project ? paperInstructions + "\n\n工作台执行约束：所有 Agent 源码修改需由用户接受或拒绝后再同步；不执行 git commit/push/pull/reset，不读取凭证。工作台负责最终编译和 Overleaf 同步。" : "";
+    return project ? paperInstructions + "\n\n工作台执行约束：所有 Agent 源码修改需由用户接受或拒绝后再同步；不执行 git commit/push/pull/reset，不读取凭证。工作台负责最终编译和 Overleaf 同步。用户要求生成或更新行文导图时，调用 paper-mindmap-update skill：通过 paper-workbench 的 analyze 操作启动当前论文全文分析，轮询 job 至完成并报告结果。不要手动分批改写 main.tex。工作台操作脚本绝对路径：" + paperClient : "";
   });
   ctx.systemPrompt.section({ name: "latex-paper-workbench", order: 85, text: "{{latex_paper_guidance}}" });
   const jobs = new Map(),
@@ -66,12 +69,38 @@ export async function apply(ctx, config = {}) {
       fail("会话工作目录与论文项目不一致");
     return agent;
   }
-  async function analyze(id, sessionId, signal) {
+  // Bound one model request to a size the model can answer exactly: sentence
+  // counts drift when a single call must echo hundreds of sentences.
+  function planBatches(paras, maxParas = 14, maxSentences = 48) {
+    const batches = [];
+    let current = [],
+      sentences = 0;
+    for (const para of paras) {
+      if (
+        current.length &&
+        (current.length >= maxParas || sentences + para.sentences.length > maxSentences)
+      ) {
+        batches.push(current);
+        current = [];
+        sentences = 0;
+      }
+      current.push(para);
+      sentences += para.sentences.length;
+    }
+    if (current.length) batches.push(current);
+    return batches;
+  }
+  async function analyze(id, sessionId, signal, progress = () => {}) {
     const p = store.get(id);
     if (!p.chats.some((c) => c.id === sessionId)) fail("请选择当前论文的聊天");
     const main = p.main,
       sources = await collectSources(store, id, main),
       results = [];
+    progress(
+      sources.length > 1
+        ? `解析完成：主文件 ${main} 及 ${sources.length - 1} 个引用文件`
+        : `解析完成：${main}`,
+    );
     for (const input of sources) {
       const previous =
         (p.snapshot?.skillDigest === skillDigest && p.snapshot?.files?.[input.name]) ||
@@ -91,11 +120,13 @@ export async function apply(ctx, config = {}) {
         input.content;
       const parsed = logic.parse(source),
         old = previous?.sections.flatMap((s) => s.paragraphs) || [],
-        needed = parsed.sections
+        needed = [...new Map(parsed.sections
           .flatMap((s) => s.paragraphs.map(p => ({ ...p, section: s.name })))
-          .filter((para) => !old.some((o) => o.hash === para.hash)),
+          .filter((para) => !old.some((o) => o.hash === para.hash))
+          .map(para => [para.hash, para])).values()],
         semantics = { sections: {} };
       if (needed.length) {
+        progress(`分析 ${input.name}`);
         const parent = await validateChat(id, sessionId);
         const selection = ctx.sessionProjections.stateOf(
           parent.session,
@@ -104,79 +135,103 @@ export async function apply(ctx, config = {}) {
         const route =
           selection?.pending || selection?.lastUsed || parent.options;
         if (!route.provider || !route.model) fail("请在论文聊天中选择模型");
-        const prompt = JSON.stringify({
-          title: parsed.title,
-          file: input.name,
-          sections: parsed.sections.map((s) => s.name),
-          paragraphs: needed.map((p) => ({hash: p.hash, section: p.section, sentences: p.sentences})),
-        });
-        if (prompt.length > 100000) fail("本次分析内容较多，请拆分论文文件");
-        const child = await ctx.agents.withInitiator(parent, () =>
-          ctx.subagents.start("spawn", {
-            label: "论文行文分析",
-            parent,
-            signal,
-            agentOptions: {
-              provider: route.provider,
-              model: route.model,
-              ...(route.reasoningEffort
-                ? { reasoningEffort: route.reasoningEffort }
-                : {}),
-            },
-            toolFilter: { allow: [] },
-            prompt: [{ type: "text", text: mindmapSkill }, { type: "text", text: prompt }],
-          }),
+        const batches = planBatches(needed);
+        progress(
+          `${input.name}：${parsed.sections.length} 个章节，${needed.length} 段待分析，分 ${batches.length} 批调用模型`,
         );
-        try {
-          const result = await child.result;
-          if (result.stopReason !== "completed") fail("论文分析未完成，请重试");
-          const raw = result.output
-            .filter((x) => x.type === "text")
-            .map((x) => x.text)
-            .join("\n");
-          let data;
-          try {
-            try {
-              data = JSON.parse(raw.trim());
-            } catch {
-              // Accept one explicit JSON block when the model adds a preface.
-              const blocks = [...raw.matchAll(/^```(?:json)?[ \t]*\r?\n([\s\S]*?)^```[ \t]*$/gm)];
-              if (blocks.length !== 1) throw new Error("Ambiguous semantic output");
-              data = JSON.parse(blocks[0][1]);
+        let done = 0;
+        for (const [index, batch] of batches.entries()) {
+          const prompt = JSON.stringify({
+            title: parsed.title,
+            file: input.name,
+            sections: [...new Set(batch.map((p) => p.section))],
+            paragraphs: batch.map((p) => ({hash: p.hash, section: p.section, sentences: p.sentences})),
+          });
+          if (prompt.length > 100000) fail("本次分析内容较多，请拆分论文文件");
+          let rows = null,
+            reason = "";
+          for (let attempt = 0; attempt < 3 && !rows; attempt++) {
+            if (attempt) {
+              signal.throwIfAborted();
+              progress(
+                `${input.name}：第 ${index + 1}/${batches.length} 批未通过（${reason}），正在重试`,
+              );
             }
-            if (!data || !Array.isArray(data.paragraphs)) throw new Error("Missing paragraphs");
-          } catch {
-            fail("模型未返回有效结构，请重试");
+            const child = await ctx.agents.withInitiator(parent, () =>
+              ctx.subagents.start("spawn", {
+                label: "论文行文分析",
+                parent,
+                signal,
+                agentOptions: {
+                  provider: route.provider,
+                  model: route.model,
+                  ...(route.reasoningEffort
+                    ? { reasoningEffort: route.reasoningEffort }
+                    : {}),
+                },
+                toolFilter: { allow: [] },
+                prompt: [
+                  { type: "text", text: mindmapSkill },
+                  { type: "text", text: prompt },
+                  ...(attempt
+                    ? [
+                        {
+                          type: "text",
+                          text:
+                            "上一次输出未通过校验：" +
+                            reason +
+                            "。请逐段重新输出，每个段落的 sentences 数组长度必须与输入中该段 sentences 的长度完全一致，不得合并或拆分句子。",
+                        },
+                      ]
+                    : []),
+                ],
+              }),
+            );
+            try {
+              const result = await child.result;
+              if (result.stopReason !== "completed") {
+                reason = "模型输出未正常结束";
+                continue;
+              }
+              const raw = result.output
+                .filter((x) => x.type === "text")
+                .map((x) => x.text)
+                .join("\n");
+              let data;
+              try {
+                try {
+                  data = JSON.parse(raw.trim());
+                } catch {
+                  // Accept one explicit JSON block when the model adds a preface.
+                  const blocks = [...raw.matchAll(/^```(?:json)?[ \t]*\r?\n([\s\S]*?)^```[ \t]*$/gm)];
+                  if (blocks.length !== 1) throw new Error("Ambiguous semantic output");
+                  data = JSON.parse(blocks[0][1]);
+                }
+                if (!data || !Array.isArray(data.paragraphs)) throw new Error("Missing paragraphs");
+              } catch {
+                reason = "输出不是有效的语义 JSON";
+                continue;
+              }
+              try { verifyMindmap([{ paragraphs: batch }], data); }
+              catch (e) { reason = e.message; continue; }
+              const collected = Object.fromEntries(data.paragraphs.map(row => [row.hash, row]));
+              for (const [name, label] of Object.entries(data.sections || {}))
+                if (typeof label === "string" && label.length < 500 && !/[\r\n]/.test(label))
+                  semantics.sections[name] = label;
+              rows = collected;
+            } finally {
+              await child.dispose();
+            }
           }
-          for (const para of needed) {
-            const row = data.paragraphs?.find((x) => x.hash === para.hash);
-            if (
-              !row ||
-              typeof row.label !== "string" ||
-              !Array.isArray(row.sentences) ||
-              row.sentences.length !== para.sentences.length ||
-              [row.label, ...row.sentences].some(
-                (x) =>
-                  typeof x !== "string" ||
-                  !x.trim() ||
-                  x.length > 500 ||
-                  /[\r\n]/.test(x),
-              )
-            )
-              fail("模型分析覆盖不完整，请重试");
-            semantics[para.hash] = row;
-          }
-          for (const section of parsed.sections) {
-            const label = data.sections?.[section.name];
-            if (
-              typeof label === "string" &&
-              label.length < 500 &&
-              !/[\r\n]/.test(label)
-            )
-              semantics.sections[section.name] = label;
-          }
-        } finally {
-          await child.dispose();
+          if (!rows)
+            fail(
+              `模型分析覆盖不完整（${input.name} 第 ${index + 1}/${batches.length} 批）：${reason}，请重试`,
+            );
+          Object.assign(semantics, rows);
+          done += batch.length;
+          progress(
+            `${input.name}：已完成 ${done}/${needed.length} 段`,
+          );
         }
       }
       signal.throwIfAborted();
@@ -194,6 +249,7 @@ export async function apply(ctx, config = {}) {
     signal.throwIfAborted();
     if (p.main !== main) fail("主文件已变化，请重新分析");
     // Check every file before applying any annotation changes.
+    progress("全部段落校验通过，正在写入语义注释");
     for (const result of results)
       if ((await store.read(id, result.file)).hash !== result.input.hash)
         fail("文件已修改，请重新分析", "CONFLICT");
@@ -212,6 +268,9 @@ export async function apply(ctx, config = {}) {
     for (const result of results)
       for (const key of Object.keys(stats))
         stats[key] += result.snapshot.stats[key];
+    progress(
+      `写入完成：本次分析 ${stats.analyzed} 段，复用 ${stats.reused} 段`,
+    );
     await store.serial(async () => {
       p.snapshot = {
         schema: 3,
@@ -315,6 +374,16 @@ export async function apply(ctx, config = {}) {
         };
       case "read":
         return store.read(a.id, a.file);
+      case "asset": {
+        const p = store.get(a.id);
+        const ext = a.file?.split(".").at(-1)?.toLowerCase();
+        const mime = { png:"image/png", jpg:"image/jpeg", jpeg:"image/jpeg", gif:"image/gif", webp:"image/webp", avif:"image/avif", svg:"image/svg+xml", pdf:"application/pdf" }[ext];
+        const path = await inside(p.root, a.file);
+        const stat = await lstat(path);
+        if (!stat.isFile()) fail("素材不是普通文件");
+        if (!mime || stat.size > 16 * 1024 * 1024) return { name:a.file, mime:null, size:stat.size };
+        return { name:a.file, mime, size:stat.size, data:(await readFile(path)).toString("base64") };
+      }
       case "save": {
         idle(a.id);const result=await store.save(a.id,a.file,a.content,a.hash);
         if(config.pipeline!==false)await savedPipeline(a.id,[a.file]);return result;
@@ -360,6 +429,7 @@ export async function apply(ctx, config = {}) {
               status: j.status,
               result: j.result,
               error: j.error,
+              log: j.log?.slice(-80),
             }
           : null;
       }
@@ -371,23 +441,33 @@ export async function apply(ctx, config = {}) {
         store.get(a.id);
         if (jobs.get(a.id)?.status === "running")
           fail("当前论文已有任务运行", "BUSY");
-        if(a.action === "analyze") await beginReview(store,a.id,"mindmap");
+        if(a.action === "analyze") {
+          const owner = store.get(a.id).revisionReview?.owner;
+          if (owner === "chat:" + (a.sessionId || store.get(a.id).lastChat)) await captureReview(store,a.id,true);
+          await beginReview(store,a.id,"mindmap");
+        }
         const controller = new AbortController(),
           job = {
             version: randomUUID(),
             kind: a.action,
+            sessionId: a.sessionId || store.get(a.id).lastChat,
             status: "running",
             controller,
+            log: [],
           };
+        const progress = (message) => {
+          job.log.push({ time: Date.now(), message });
+          if (job.log.length > 200) job.log.splice(0, job.log.length - 200);
+        };
         jobs.set(a.id, job);
         const timer = setTimeout(
           () => controller.abort(),
-          a.action === "compile" ? 125000 : 240000,
+          a.action === "compile" ? 125000 : 600000,
         );
         const promise = (
           a.action === "compile"
             ? compile(store, a.id, controller.signal)
-            : analyze(a.id, a.sessionId, controller.signal)
+            : analyze(a.id, a.sessionId || store.get(a.id).lastChat, controller.signal, progress)
         )
           .then(async (result) => {
             if(a.action === "analyze") await captureReview(store,a.id,true);
@@ -399,12 +479,14 @@ export async function apply(ctx, config = {}) {
             if(a.action === "analyze") await captureReview(store,a.id,true);
             job.status = "failed";
             job.error = e.message;
+            progress("分析失败：" + e.message);
           })
           .finally(async () => {
             clearTimeout(timer);
             pending.delete(promise);
           });
         pending.add(promise);
+        if(a.action === "analyze") progress("已启动行文导图分析");
         return { status: "running" };
       }
       case "doctor": {
@@ -418,8 +500,13 @@ export async function apply(ctx, config = {}) {
   ctx.on("agent/pre-step", async ({ agent, messages }, next) => {
     const project=store.projects.find(p=>p.chats.some(c=>c.id===agent.session.id) && p.root===resolve(agent.session.header.cwd));
     if(project) {
-      if(jobs.get(project.id)?.status === "running")return {kind:"reject"};
-      try {await beginReview(store,project.id,"chat:"+agent.session.id);} catch {return {kind:"reject"};}
+      const job = jobs.get(project.id);
+      const reportingMindmap = job?.kind === "analyze" && job.sessionId === agent.session.id &&
+        (job.status === "running" || project.revisionReview?.owner === "mindmap");
+      if (!reportingMindmap) {
+        if(job?.status === "running")return {kind:"reject"};
+        try {await beginReview(store,project.id,"chat:"+agent.session.id);} catch {return {kind:"reject"};}
+      }
     }
     const decision = await next();
     if (decision.kind !== "enter") return decision;
@@ -459,6 +546,9 @@ export async function apply(ctx, config = {}) {
   });
   const projectFor=agent=>store.projects.find(p=>agent?.session?.header?.cwd && p.root===resolve(agent.session.header.cwd) && p.revisionReview?.active && p.revisionReview.owner.startsWith("chat:"));
   ctx.on("tools/pre-execute",async(exec,next)=>{
+    const mapping = store.projects.find(p => p.chats.some(c => c.id === exec.agent?.session?.id) &&
+      p.revisionReview?.owner === "mindmap");
+    if (mapping) return {kind:"deny",reason:"导图注释正在生成或等待审阅，请报告当前结果，待用户处理后继续修改。"};
     const p=projectFor(exec.agent);
     if(p && /\bgit\b[\s\S]*\b(push|commit|reset|pull)\b/.test(JSON.stringify(exec.arguments?.cmd || exec.arguments?.command || exec.arguments?.code || exec.arguments?.script || "")))return {kind:"deny",reason:"论文 Git 同步由工作台在审阅结束后执行"};
     return next();
@@ -471,7 +561,7 @@ export async function apply(ctx, config = {}) {
   });
   let closeAutomation;
   if(config.automation!==false) closeAutomation=await automationServer(store.directory,async a=>{
-    if(!["list","open","read","propose","compile","job","logs","status","map","pdf"].includes(a.action))fail("外部接口不支持此操作","FORBIDDEN");
+    if(!["list","open","read","propose","compile","analyze","job","logs","status","map","pdf"].includes(a.action))fail("外部接口不支持此操作","FORBIDDEN");
     return operation(a);
   });
   ctx.connection.fetch.register({
