@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { Store, fileName } from "../lib/store.js";
 import { compile, run } from "../lib/compiler.js";
 import logic from "../lib/logic.cjs";
+import { verifySourceConsistency } from "../skills/paper-mindmap-update/verify.mjs";
 async function setup(t) {
   const dir = await mkdtemp(join(tmpdir(), "latex-test-"));
   t.after(() => rm(dir, { recursive: true, force: true }));
@@ -72,6 +73,37 @@ A method is proposed.
   );
   assert.match(first.annotated, /% @p:Paragraph intent/);
   assert.doesNotMatch(first.annotated, /% @dsh-logic/);
+  assert.equal(verifySourceConsistency(src, first.annotated), true);
+});
+test("mindmap comments preserve every source character", () => {
+  const src = "\\section{Method}\r\n  First sentence.  Second sentence.\r\nNext line.\r\n";
+  const para = logic.parse(src).sections[0].paragraphs[0];
+  const generated = logic.generate(src, null, {
+    [para.hash]: { label: "Paragraph", sentences: para.sentences.map(() => "Sentence") },
+  });
+  assert.equal(verifySourceConsistency(src, generated.annotated), true);
+  assert.throws(() => verifySourceConsistency(src, generated.annotated.replace("  First", " First")), /一致性/);
+  assert.throws(() => verifySourceConsistency(src, generated.annotated.replace("Next line.\r\n", "Next line.\n")), /一致性/);
+});
+test("mindmap preserves heading hierarchy and ignores unsupported annotations", () => {
+  const src = String.raw`\chapter{Overview}
+\section{Method}
+\subsection{Design}
+\paragraph{Detail}
+One sentence.`;
+  const parsed = logic.parse(src), semantics = {};
+  for (const para of parsed.sections.flatMap((s) => s.paragraphs))
+    semantics[para.hash] = { label: "Intent", sentences: para.sentences.map(() => "Meaning") };
+  const result = logic.generate(src, null, semantics);
+  const sections = result.nodes.filter((n) => n.type === "section");
+  assert.deepEqual(sections.map((n) => [n.headingType, n.parent]), [
+    ["chapter", "paper-root"],
+    ["section", sections[0].id],
+    ["subsection", sections[1].id],
+    ["paragraph", sections[2].id],
+  ]);
+  const parsedInvalid = logic.readAnnotations(result.annotated + "\n% @x:unsupported\n% @s:orphan");
+  assert.equal(parsedInvalid.some((n) => n.label === "unsupported" || n.label === "orphan"), false);
 });
 test("compiler creates real PDF and retains last successful result after error", async (t) => {
   const { s, p } = await setup(t);

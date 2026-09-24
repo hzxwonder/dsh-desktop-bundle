@@ -12,7 +12,7 @@ import {Credentials} from "./lib/credentials.js";
 import {Overleaf} from "./lib/overleaf.js";
 import {beginReview,captureReview,decideReview,reviewView,unresolved} from "./lib/revisions.js";
 import {automationServer} from "./lib/automation.js";
-import {verifyMindmap} from "./skills/paper-mindmap-update/verify.mjs";
+import {verifyMindmap,verifySourceConsistency} from "./skills/paper-mindmap-update/verify.mjs";
 export const name = "dsh-plugin-latex";
 export const inject = [
   "connection",
@@ -245,6 +245,7 @@ export async function apply(ctx, config = {}) {
         content: lines.slice(prefixLines).join("\n"),
         prefixLines,
       });
+      verifySourceConsistency(input.content, lines.slice(prefixLines).join("\n"), input.name);
     }
     signal.throwIfAborted();
     if (p.main !== main) fail("主文件已变化，请重新分析");
@@ -279,6 +280,7 @@ export async function apply(ctx, config = {}) {
         nodes,
         stats,
       };
+      p.mapNodes = nodes;
       for (const review of p.reviews) {
         const result = results.find((r) => r.file === review.file);
         if (!result) continue;
@@ -338,8 +340,8 @@ export async function apply(ctx, config = {}) {
       }
       case "credential": return a.token ? credentials.set(a.token) : a.remove ? credentials.remove() : credentials.status();
       case "clone": return publicProject(await overleaf.clone(a.name,a.url));
-      case "status": {const p=store.get(a.id);return {review:reviewView(p),sync:p.sync||null,project:publicProject(p)};}
-      case "logs": {const p=store.get(a.id),j=jobs.get(a.id);return {compile:j?.result?.log||j?.error||p.lastLog||"",sync:p.sync||null};}
+      case "status": {const p=store.get(a.id);if(p.revisionReview && !p.revisionReview.files?.length){p.revisionReview=null;await store.persist();}return {review:reviewView(p),sync:p.sync||null,project:publicProject(p)};}
+      case "logs": {const p=store.get(a.id),j=jobs.get(a.id);return {compile:j?.result?.log||p.lastLog||"",analysis:j?.kind==="analyze"?{status:j.status,error:j.error,log:j.log||[]}:p.lastAnalysis||null,sync:p.sync||null};}
       case "sync": idle(a.id);return overleaf.sync(a.id,store.get(a.id).syncPaths||[]);
       case "propose": {
         idle(a.id);const p=store.get(a.id),files=a.files || [{file:a.file,hash:a.hash,content:a.content}];
@@ -398,11 +400,25 @@ export async function apply(ctx, config = {}) {
         return p.snapshot
           ? {
               nodes:
-                p.snapshot.nodes ||
+                p.mapNodes || p.snapshot.nodes ||
                 logic.readAnnotations(p.snapshot.annotatedSource, p.snapshot),
               stats: p.snapshot.stats,
             }
           : null;
+      }
+      case "rerender": {
+        idle(a.id);
+        const p = store.get(a.id), sources = await collectSources(store, a.id, p.main);
+        const title = logic.parse(sources[0].content).title;
+        const results = sources.map((source) => ({
+          file: source.name,
+          prefixLines: 1,
+          nodes: logic.readAnnotations("\\title{" + title + "}\n\\section{" + (p.snapshot?.files?.[source.name]?.sections?.[0]?.name || source.context || "Paper") + "}\n" + source.content, p.snapshot?.files?.[source.name]),
+        }));
+        const nodes = mergeMaps(results, logic.parse(sources[0].content).title);
+        p.mapNodes = nodes;
+        await store.persist();
+        return { nodes, project: publicProject(p) };
       }
       case "pdf": {
         store.get(a.id);
@@ -442,6 +458,12 @@ export async function apply(ctx, config = {}) {
         if (jobs.get(a.id)?.status === "running")
           fail("当前论文已有任务运行", "BUSY");
         if(a.action === "analyze") {
+          const sessionId = a.sessionId || store.get(a.id).lastChat;
+          const chat = store.get(a.id).chats.find(c => c.id === sessionId);
+          if (chat) {
+            await validateChat(a.id, sessionId);
+            await store.update(a.id, { chat: { ...chat, kind:"mindmap" } });
+          }
           const owner = store.get(a.id).revisionReview?.owner;
           if (owner === "chat:" + (a.sessionId || store.get(a.id).lastChat)) await captureReview(store,a.id,true);
           await beginReview(store,a.id,"mindmap");
@@ -470,8 +492,20 @@ export async function apply(ctx, config = {}) {
             : analyze(a.id, a.sessionId || store.get(a.id).lastChat, controller.signal, progress)
         )
           .then(async (result) => {
-            if(a.action === "analyze") await captureReview(store,a.id,true);
+            if(a.action === "analyze") {
+              await captureReview(store,a.id,true);
+              const project = store.get(a.id), review = project.revisionReview;
+              if (review?.owner === "mindmap" && !review.files.length) {
+                project.revisionReview = null;
+                await store.persist();
+              } else if (review?.owner === "mindmap" && review.files.length) {
+                for (const file of review.files) verifySourceConsistency(file.before || "", file.after || "", file.name);
+                const accepted = await decideReview(store, a.id, { batchId:review.id, decision:"accept" });
+                if (accepted.settled && config.pipeline !== false) await savedPipeline(a.id, accepted.paths);
+              }
+            }
             job.result = result;
+            if (a.action === "analyze") { store.get(a.id).lastAnalysis = { status:"completed", log:job.log, time:Date.now() }; await store.persist(); }
             if(result.log){store.get(a.id).lastLog=result.log;void store.persist();}
             job.status = result.ok === false ? "failed" : "completed";
           })
@@ -480,6 +514,7 @@ export async function apply(ctx, config = {}) {
             job.status = "failed";
             job.error = e.message;
             progress("分析失败：" + e.message);
+            if (a.action === "analyze") { store.get(a.id).lastAnalysis = { status:"failed", error:e.message, log:job.log, time:Date.now() }; await store.persist(); }
           })
           .finally(async () => {
             clearTimeout(timer);
@@ -561,7 +596,7 @@ export async function apply(ctx, config = {}) {
   });
   let closeAutomation;
   if(config.automation!==false) closeAutomation=await automationServer(store.directory,async a=>{
-    if(!["list","open","read","propose","compile","analyze","job","logs","status","map","pdf"].includes(a.action))fail("外部接口不支持此操作","FORBIDDEN");
+    if(!["list","open","read","propose","compile","analyze","rerender","job","logs","status","map","pdf"].includes(a.action))fail("外部接口不支持此操作","FORBIDDEN");
     return operation(a);
   });
   ctx.connection.fetch.register({

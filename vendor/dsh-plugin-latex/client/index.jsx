@@ -307,8 +307,13 @@ export function MindMap({ data, onLocate }) {
       setEdges(nodes.flatMap(n => {
         const a = visible.get(n.parent), b = visible.get(n.id);
         if (!a || !b) return [];
-        const x1 = (a.right - base.left) / scale, y1 = (a.top + a.height / 2 - base.top) / scale;
-        const x2 = (b.left - base.left) / scale, y2 = (b.top + b.height / 2 - base.top) / scale;
+        const parentCenter = a.left + a.width / 2;
+        const childCenter = b.left + b.width / 2;
+        const leftward = childCenter < parentCenter;
+        const x1 = ((leftward ? a.left : a.right) - base.left) / scale;
+        const x2 = ((leftward ? b.right : b.left) - base.left) / scale;
+        const y1 = (a.top + a.height / 2 - base.top) / scale;
+        const y2 = (b.top + b.height / 2 - base.top) / scale;
         const mid = (x1 + x2) / 2;
         return [{ id: n.id, d: `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}` }];
       }));
@@ -318,16 +323,18 @@ export function MindMap({ data, onLocate }) {
     observer.observe(plane);
     return () => observer.disconnect();
   }, [data, fold, scale]);
-  const branch = (n, depth = 0) => (
-    <div className={"lp-branch depth-" + depth} key={n.id}>
+  const headingLabels = { chapter: "章", section: "节", subsection: "小节", subsubsection: "四级标题", paragraph: "段标题", subparagraph: "子段标题", abstract: "摘要" };
+  const branch = (n, depth = 0, side = "right", includeChildren = true) => (
+    <div className={"lp-branch depth-" + depth + " side-" + side} key={n.id}>
       <div className="lp-node-wrap">
         <button data-node-id={n.id} className="lp-node" aria-pressed={selected === n.id}
           onClick={() => setSelected(n.id)} onDoubleClick={() => onLocate(n)}
           onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onLocate(n); } }}
           title="双击定位原文">
-          {n.label}
+          <span className="lp-node-label">{n.label}</span>
+          {n.headingType && n.type === "section" && <small className="lp-node-type">{headingLabels[n.headingType] || n.headingType}</small>}
         </button>
-        {children(n.id).length > 0 && (
+        {includeChildren && children(n.id).length > 0 && (
           <button
             className="lp-fold"
             aria-label={(fold.has(n.id) ? "展开 " : "收起 ") + n.label}
@@ -344,13 +351,21 @@ export function MindMap({ data, onLocate }) {
           </button>
         )}
       </div>
-      {!fold.has(n.id) && children(n.id).length > 0 && (
+      {includeChildren && !fold.has(n.id) && children(n.id).length > 0 && (
         <div className="lp-children">
-          {children(n.id).map((c) => branch(c, depth + 1))}
+          {children(n.id).map((c) => branch(c, depth + 1, side))}
         </div>
       )}
     </div>
   );
+  const rootChildren = root && !fold.has(root.id) ? children(root.id) : [];
+  const subtreeWeight = (n) => 1 + (fold.has(n.id) ? 0 : children(n.id).reduce((sum, child) => sum + subtreeWeight(child), 0));
+  const balancedSides = rootChildren.reduce((sides, child) => {
+    const target = sides.leftWeight <= sides.rightWeight ? "left" : "right";
+    sides[target].push(child);
+    sides[target + "Weight"] += subtreeWeight(child);
+    return sides;
+  }, { left: [], right: [], leftWeight: 0, rightWeight: 0 });
   return (
     <div className="lp-map">
       <div
@@ -392,7 +407,17 @@ export function MindMap({ data, onLocate }) {
           style={{ zoom: scale, padding: 40, width: "max-content" }}
         >
           <svg className="lp-map-edges" aria-hidden="true">{edges.map(e => <path key={e.id} d={e.d} />)}</svg>
-          {root ? branch(root) : <p>生成导图，梳理论文的章节、段落与句子。</p>}
+          {root ? (
+            <div className="lp-map-two-sided">
+              <div className="lp-map-side lp-map-side-left">
+                {balancedSides.left.map((child) => branch(child, 1, "left"))}
+              </div>
+              <div className="lp-map-center">{branch(root, 0, "center", false)}</div>
+              <div className="lp-map-side lp-map-side-right">
+                {balancedSides.right.map((child) => branch(child, 1, "right"))}
+              </div>
+            </div>
+          ) : <p>生成导图，梳理文章的章节、段落与句子。</p>}
         </div>
       </div>
       <div className="lp-map-zoom">
@@ -426,6 +451,25 @@ export function MindMap({ data, onLocate }) {
   );
 }
 const analyzeStateText = { running: "正在生成…", failed: "生成失败", completed: "生成完成" };
+function ImagePreview({ asset }) {
+  const [scale, setScale] = useState(1), [offset, setOffset] = useState({ x:0, y:0 });
+  const drag = useRef(null);
+  const zoom = value => setScale(Math.max(0.25, Math.min(5, value)));
+  return <div className="lp-image-viewer">
+    <div className="lp-image-tools" aria-label="图片缩放">
+      <button title="缩小" aria-label="缩小" onClick={() => zoom(scale - 0.2)}><Icon name="minus"/></button>
+      <span>{Math.round(scale * 100)}%</span>
+      <button title="放大" aria-label="放大" onClick={() => zoom(scale + 0.2)}><Icon name="plus"/></button>
+      <button title="适合窗口" onClick={() => { zoom(1); setOffset({x:0,y:0}); }}>适合窗口</button>
+    </div>
+    <div className="lp-image-stage" onWheel={e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); zoom(scale + (e.deltaY < 0 ? 0.1 : -0.1)); } }}
+      onPointerDown={e => { if (scale <= 1) return; drag.current = { x:e.clientX, y:e.clientY, x0:offset.x, y0:offset.y }; e.currentTarget.setPointerCapture(e.pointerId); }}
+      onPointerMove={e => { if (drag.current) setOffset({x:drag.current.x0 + e.clientX - drag.current.x, y:drag.current.y0 + e.clientY - drag.current.y}); }}
+      onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>
+      <img src={`data:${asset.mime};base64,${asset.data}`} alt={asset.name} style={{ transform:`translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} />
+    </div>
+  </div>;
+}
 function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
   const listRef = useRef(null);
   const lines = run.log || [];
@@ -836,10 +880,12 @@ export function apply(ctx) {
         chatPending.current = null;
       }
     }
-    async function connectChat(force = false) {
+    async function connectChat(force = false, mindmap = false) {
       await save();
       const project = pRef.current;
-      let id = force ? null : project.lastChat;
+      let id = force ? null : mindmap
+        ? (project.mindmapChatId || project.chats.find(c => c.kind === "mindmap")?.id)
+        : project.lastChat;
       if (!id) {
         const existing = ctx.workspaces.list
           .getSnapshot()
@@ -860,14 +906,22 @@ export function apply(ctx) {
             ? created
             : created.sessionId || created.id;
         await update({
-          chat: { id, title: "论文对话 " + (project.chats.length + 1) },
+          chat: { id, title: "论文对话 " + (project.chats.length + 1), ...(mindmap ? { kind:"mindmap" } : {}) },
         });
+      } else if (mindmap && !project.chats.find(c => c.id === id)?.kind) {
+        await update({ chat:{ id, title:project.chats.find(c=>c.id===id)?.title || "论文导图会话", kind:"mindmap" } });
       }
       await ctx.sessions.open(id);
       ctx.layout.selectPanel("latex-studio");
       setView("source");
       setChatOpen(true);
       return id;
+    }
+    async function ensureMindmapChat() {
+      if (chatPending.current) return chatPending.current;
+      const work = connectChat(false, true);
+      chatPending.current = work;
+      try { return await work; } finally { chatPending.current = null; }
     }
     async function draft(text) {
       const showChat=chatOpen;
@@ -1036,7 +1090,7 @@ export function apply(ctx) {
       if(fileRef.current?.dirty){await save(true);if(kind!=="compile")setStatus("已保存 · 编译完成后可更新导图");return;}
       let sessionId;
       if (kind === "analyze") {
-        sessionId = await ensureChat();
+        sessionId = await ensureMindmapChat();
         setView("source");
         setChatOpen(true);
         setMapRun({
@@ -1561,6 +1615,10 @@ export function apply(ctx) {
                 >
                   更新导图
                 </button>
+                <button disabled={!map || job?.status === "running"} onClick={safe(async () => {
+                  const rendered = await api({ action:"rerender", id:pRef.current.id });
+                  setMap(rendered);
+                })}>重新渲染</button>
               </div>
               <MindMap data={map} onLocate={safe(locate)} />
             </>
@@ -1601,7 +1659,7 @@ export function apply(ctx) {
                 {asset ? (
                   <div className="lp-asset-preview" aria-label={"素材预览 " + asset.name}>
                     <header><Icon name="file"/><strong>{asset.name}</strong>{asset.size != null && <small>{(asset.size / 1024).toFixed(1)} KB</small>}</header>
-                    {asset.loading ? <p role="status">正在载入素材…</p> : asset.error ? <p role="alert">{asset.error}</p> : asset.mime?.startsWith("image/") ? <img src={`data:${asset.mime};base64,${asset.data}`} alt={asset.name}/> : asset.mime === "application/pdf" ? <PDF base64={asset.data}/> : <p>此文件可随论文同步，当前格式无法在工作台内显示。</p>}
+                    {asset.loading ? <p role="status">正在载入素材…</p> : asset.error ? <p role="alert">{asset.error}</p> : asset.mime?.startsWith("image/") ? <ImagePreview asset={asset}/> : asset.mime === "application/pdf" ? <PDF base64={asset.data}/> : <p>此文件可随论文同步，当前格式无法在工作台内显示。</p>}
                   </div>
                 ) : file ? (
                   <Editor

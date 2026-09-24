@@ -81,7 +81,7 @@ var require_logic = __commonJS({
         const title = clean.match(/\\title\{([^}]+)\}/)?.[1]?.replace(/\s+/g, " ") || "\u8BBA\u6587\u6807\u9898";
         for (let i = 0; i < lines.length; ) {
           const line = lines[i], m = line.match(
-            /^\s*\\(section|subsection|subsubsection)\*?\{([^}]+)\}/
+            /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/
           );
           if (displayEnd) {
             segments.push({ kind: "raw", line });
@@ -108,6 +108,7 @@ var require_logic = __commonJS({
               name: m ? m[2] : "Abstract",
               command: line,
               level: m ? m[1] : "abstract",
+              headingLevel: m ? { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5 }[m[1]] : 0,
               paragraphs: [],
               line: i
             };
@@ -218,8 +219,17 @@ var require_logic = __commonJS({
               sentenceNodes: p.sentenceNodes
             };
           });
-          return { id: s.id, name: s.name, paragraphs };
+          return { id: s.id, name: s.name, level: s.headingLevel, headingType: s.level, paragraphs };
         });
+        const sectionParents = /* @__PURE__ */ new Map();
+        const headingStack = [];
+        for (const section of sections) {
+          const level = Number.isInteger(section.level) ? section.level : 1;
+          while (headingStack.length && headingStack[headingStack.length - 1].level >= level)
+            headingStack.pop();
+          sectionParents.set(section.id, headingStack.at(-1)?.id || "paper-root");
+          headingStack.push({ id: section.id, level });
+        }
         const removed = old.filter((x) => !used.has(x.id)).map((x) => x.id);
         const output = [];
         const meta2 = (o) => prefix + JSON.stringify(o);
@@ -242,8 +252,10 @@ var require_logic = __commonJS({
                 v: 1,
                 type: "section",
                 id: item.section.id,
-                parent: "paper-root",
-                label: item.section.name
+                parent: sectionParents.get(item.section.id) || "paper-root",
+                label: item.section.name,
+                level: item.section.headingLevel,
+                headingType: item.section.level
               }),
               item.line
             );
@@ -267,9 +279,9 @@ var require_logic = __commonJS({
                 id: sentence.id,
                 parent: p.id,
                 label: sentence.label
-              }),
-              sentence.source + " "
+              })
             );
+          output.push(p.source);
         }
         const annotationIndex = readAnnotations(output.join("\n"));
         const compact = output.map((line) => {
@@ -315,7 +327,7 @@ var require_logic = __commonJS({
             source: title
           }
         ], used = /* @__PURE__ */ new Set();
-        let section = null, paragraph = null, pendingSection = null, pendingParagraph = null, serial = 0;
+        let section = null, paragraph = null, pendingSection = null, pendingParagraph = null, pendingSentences = [], serial = 0;
         const add = (type, label, line, parent, body) => {
           const prior = snapshot?.annotationIndex?.find(
             (n2) => n2.type === type && !used.has(n2.id)
@@ -328,41 +340,39 @@ var require_logic = __commonJS({
         };
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i], mark = line.match(/^\s*% @([cps]):(.+)$/), command2 = line.match(
-            /^\s*\\(?:section|subsection|subsubsection)\*?\{([^}]+)\}/
+            /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/
           );
           if (mark) {
             const label = mark[2].trim();
             if (mark[1] === "c") pendingSection = { label, line: i };
-            if (mark[1] === "p") pendingParagraph = { label, line: i };
-            if (mark[1] === "s") {
-              if (pendingParagraph && section) {
-                paragraph = add(
-                  "paragraph",
-                  pendingParagraph.label,
-                  pendingParagraph.line,
-                  section.id,
-                  lines[i + 1] || ""
-                );
-                pendingParagraph = null;
-              }
-              if (!section || !paragraph)
-                throw new Error("\u53E5\u5B50\u6CE8\u91CA\u9700\u8981\u6240\u5C5E\u7AE0\u8282\u548C\u6BB5\u843D");
-              add("sentence", label, i, paragraph.id, lines[i + 1] || "");
+            if (mark[1] === "p") {
+              pendingParagraph = { label, line: i };
+              pendingSentences = [];
             }
+            if (mark[1] === "s") pendingSentences.push({ label, line: i });
             continue;
           }
           if (command2 || /^\s*\\begin\{abstract\}/.test(line)) {
+            const headingLevel = command2 ? { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5 }[command2[1]] : 0;
+            const parent = (() => {
+              let candidate = section;
+              while (candidate && (candidate.level ?? 0) >= headingLevel) candidate = nodes.find((n) => n.id === candidate.parent);
+              return candidate?.id || "paper-root";
+            })();
             section = add(
               "section",
-              command2?.[1] || "Abstract",
+              command2?.[2] || "Abstract",
               pendingSection?.line ?? i,
-              "paper-root",
+              parent,
               line
             );
+            section.level = headingLevel;
+            section.headingType = command2?.[1] || "abstract";
             section.intent = pendingSection?.label || section.label;
             pendingSection = null;
             paragraph = null;
             pendingParagraph = null;
+            pendingSentences = [];
             continue;
           }
           if (/^\s*\\end\{abstract\}/.test(line)) {
@@ -375,14 +385,21 @@ var require_logic = __commonJS({
             continue;
           }
           if (pendingParagraph && section && !/^\s*%/.test(line)) {
+            let end = i;
+            while (end < lines.length && lines[end].trim() && !/^\s*(?:%|\\)/.test(lines[end]) && !/(?<!\\)%/.test(lines[end])) end++;
+            const sourceParagraph = lines.slice(i, end).join("\n");
             paragraph = add(
               "paragraph",
               pendingParagraph.label,
               pendingParagraph.line,
               section.id,
-              line
+              sourceParagraph || line
             );
+            const sentences = splitSentences(sourceParagraph);
+            if (pendingSentences.length === sentences.length)
+              pendingSentences.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
             pendingParagraph = null;
+            pendingSentences = [];
           }
         }
         return nodes;
@@ -429,7 +446,7 @@ var require_logic = __commonJS({
         if (roots.length !== 1 || roots[0].parent)
           throw new Error("\u6807\u6CE8\u5FC5\u987B\u6709\u552F\u4E00\u8BBA\u6587\u6839\u8282\u70B9");
         const parentType = {
-          section: "paper",
+          section: ["paper", "section"],
           paragraph: "section",
           sentence: "paragraph"
         };
@@ -437,7 +454,7 @@ var require_logic = __commonJS({
           if (n.type === "paper") continue;
           const parent = nodes.find((p) => p.id === n.parent);
           if (!parent) throw new Error("\u6807\u6CE8\u7236\u8282\u70B9\u4E0D\u5B58\u5728\uFF1A" + n.parent);
-          if (parent.type !== parentType[n.type])
+          if (!(Array.isArray(parentType[n.type]) ? parentType[n.type] : [parentType[n.type]]).includes(parent.type))
             throw new Error("\u6807\u6CE8\u5C42\u7EA7\u4E0D\u6B63\u786E\uFF1A" + n.id);
         }
         return nodes;
@@ -44667,6 +44684,30 @@ body:not([data-ds-dark-theme]) .lp-theme-system {
 .lp-node[aria-pressed="true"] { outline:2px solid var(--lp-accent); outline-offset:3px; }
 .lp-fold { width:20px; height:20px; right:-10px; font-size:13px !important; box-shadow:0 1px 3px #0001; }
 .lp-map-zoom { box-shadow:0 4px 20px #0000000a; border-radius:12px; }
+.lp-map-two-sided {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  width: max-content;
+  min-height: 100%;
+  padding: 56px 72px;
+}
+.lp-map-side, .lp-map-center { display:flex; flex-direction:column; justify-content:center; gap:24px; }
+.lp-map-side { min-width: 220px; }
+.lp-map-center { min-width: 190px; }
+.lp-map-side-left { align-items:flex-end; }
+.lp-map-side-left .lp-branch { flex-direction:row-reverse; }
+.lp-map-side-left .lp-children { padding-left:0; padding-right:66px; }
+.lp-map-side-left .lp-node-wrap { justify-content:flex-end; }
+.lp-node { display:flex; flex-direction:column; gap:3px; }
+.lp-node-label { overflow-wrap:anywhere; }
+.lp-node-type { color:var(--lp-muted); font-size:10px; font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
+.lp-node:focus-visible, .lp-fold:focus-visible, .lp-map-zoom button:focus-visible { outline:2px solid var(--lp-accent); outline-offset:3px; }
+@media (max-width: 720px) {
+  .lp-map-two-sided { gap:18px; padding:40px 28px; }
+  .lp-map-side { min-width:180px; }
+  .lp-node { min-width:130px; max-width:230px; padding:10px 12px !important; }
+}
 @media(max-width:1000px) { .lp-sidebar { width:190px; } }
 
 .lp-home-entry { position:fixed; top:48px; right:24px; z-index:30; }
@@ -44995,6 +45036,13 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-asset-preview header strong { font-weight:550; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .lp-asset-preview header small { margin-left:auto; white-space:nowrap; color:var(--lp-muted); }
 .lp-asset-preview img { display:block; max-width:calc(100% - 32px); max-height:calc(100% - 70px); width:auto; height:auto; object-fit:contain; margin:auto; }
+.lp-image-viewer { display:flex; flex:1; min-height:0; width:100%; flex-direction:column; }
+.lp-image-tools { display:flex; align-items:center; justify-content:center; gap:6px; min-height:42px; border-bottom:1px solid var(--lp-line); }
+.lp-image-tools button { display:grid; place-items:center; min-width:30px; height:28px; padding:4px 8px; }
+.lp-image-tools span { min-width:48px; text-align:center; color:var(--lp-muted); font:11px ui-monospace,monospace; }
+.lp-image-stage { display:flex; flex:1; min-height:0; width:100%; align-items:center; justify-content:center; overflow:hidden; touch-action:none; cursor:grab; }
+.lp-image-stage:active { cursor:grabbing; }
+.lp-image-stage img { display:block; flex:none; max-width:calc(100% - 32px); max-height:calc(100% - 32px); width:auto; height:auto; object-fit:contain; transform-origin:center; user-select:none; -webkit-user-drag:none; }
 .lp-asset-preview .lp-pdf-scroll { width:100%; flex:1; min-height:0; }
 .lp-asset-preview p { margin:auto; color:var(--lp-muted); text-align:center; padding:24px; }
 body:has(.lp-theme-light) .dshDesktopMacCaptionRow,
@@ -45316,8 +45364,13 @@ function MindMap({ data, onLocate }) {
       setEdges(nodes.flatMap((n) => {
         const a = visible.get(n.parent), b = visible.get(n.id);
         if (!a || !b) return [];
-        const x1 = (a.right - base2.left) / scale, y1 = (a.top + a.height / 2 - base2.top) / scale;
-        const x2 = (b.left - base2.left) / scale, y2 = (b.top + b.height / 2 - base2.top) / scale;
+        const parentCenter = a.left + a.width / 2;
+        const childCenter = b.left + b.width / 2;
+        const leftward = childCenter < parentCenter;
+        const x1 = ((leftward ? a.left : a.right) - base2.left) / scale;
+        const x2 = ((leftward ? b.right : b.left) - base2.left) / scale;
+        const y1 = (a.top + a.height / 2 - base2.top) / scale;
+        const y2 = (b.top + b.height / 2 - base2.top) / scale;
         const mid = (x1 + x2) / 2;
         return [{ id: n.id, d: `M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x2} ${y2}` }];
       }));
@@ -45327,9 +45380,10 @@ function MindMap({ data, onLocate }) {
     observer.observe(plane);
     return () => observer.disconnect();
   }, [data, fold, scale]);
-  const branch = (n, depth = 0) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-branch depth-" + depth, children: [
+  const headingLabels = { chapter: "\u7AE0", section: "\u8282", subsection: "\u5C0F\u8282", subsubsection: "\u56DB\u7EA7\u6807\u9898", paragraph: "\u6BB5\u6807\u9898", subparagraph: "\u5B50\u6BB5\u6807\u9898", abstract: "\u6458\u8981" };
+  const branch = (n, depth = 0, side = "right", includeChildren = true) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-branch depth-" + depth + " side-" + side, children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-node-wrap", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
         "button",
         {
           "data-node-id": n.id,
@@ -45344,10 +45398,13 @@ function MindMap({ data, onLocate }) {
             }
           },
           title: "\u53CC\u51FB\u5B9A\u4F4D\u539F\u6587",
-          children: n.label
+          children: [
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-node-label", children: n.label }),
+            n.headingType && n.type === "section" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("small", { className: "lp-node-type", children: headingLabels[n.headingType] || n.headingType })
+          ]
         }
       ),
-      children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      includeChildren && children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "button",
         {
           className: "lp-fold",
@@ -45362,8 +45419,16 @@ function MindMap({ data, onLocate }) {
         }
       )
     ] }),
-    !fold.has(n.id) && children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-children", children: children(n.id).map((c) => branch(c, depth + 1)) })
+    includeChildren && !fold.has(n.id) && children(n.id).length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-children", children: children(n.id).map((c) => branch(c, depth + 1, side)) })
   ] }, n.id);
+  const rootChildren = root && !fold.has(root.id) ? children(root.id) : [];
+  const subtreeWeight = (n) => 1 + (fold.has(n.id) ? 0 : children(n.id).reduce((sum, child) => sum + subtreeWeight(child), 0));
+  const balancedSides = rootChildren.reduce((sides, child) => {
+    const target = sides.leftWeight <= sides.rightWeight ? "left" : "right";
+    sides[target].push(child);
+    sides[target + "Weight"] += subtreeWeight(child);
+    return sides;
+  }, { left: [], right: [], leftWeight: 0, rightWeight: 0 });
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map", children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
       "div",
@@ -45405,7 +45470,11 @@ function MindMap({ data, onLocate }) {
             style: { zoom: scale, padding: 40, width: "max-content" },
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className: "lp-map-edges", "aria-hidden": "true", children: edges.map((e) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: e.d }, e.id)) }),
-              root ? branch(root) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u8BBA\u6587\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
+              root ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map-two-sided", children: [
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-map-side lp-map-side-left", children: balancedSides.left.map((child) => branch(child, 1, "left")) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-map-center", children: branch(root, 0, "center", false) }),
+                /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-map-side lp-map-side-right", children: balancedSides.right.map((child) => branch(child, 1, "right")) })
+              ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u751F\u6210\u5BFC\u56FE\uFF0C\u68B3\u7406\u6587\u7AE0\u7684\u7AE0\u8282\u3001\u6BB5\u843D\u4E0E\u53E5\u5B50\u3002" })
             ]
           }
         )
@@ -45444,6 +45513,52 @@ function MindMap({ data, onLocate }) {
   ] });
 }
 var analyzeStateText = { running: "\u6B63\u5728\u751F\u6210\u2026", failed: "\u751F\u6210\u5931\u8D25", completed: "\u751F\u6210\u5B8C\u6210" };
+function ImagePreview({ asset }) {
+  const [scale, setScale] = (0, import_react2.useState)(1), [offset, setOffset] = (0, import_react2.useState)({ x: 0, y: 0 });
+  const drag = (0, import_react2.useRef)(null);
+  const zoom = (value) => setScale(Math.max(0.25, Math.min(5, value)));
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-image-viewer", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-image-tools", "aria-label": "\u56FE\u7247\u7F29\u653E", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { title: "\u7F29\u5C0F", "aria-label": "\u7F29\u5C0F", onClick: () => zoom(scale - 0.2), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "minus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { children: [
+        Math.round(scale * 100),
+        "%"
+      ] }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { title: "\u653E\u5927", "aria-label": "\u653E\u5927", onClick: () => zoom(scale + 0.2), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { title: "\u9002\u5408\u7A97\u53E3", onClick: () => {
+        zoom(1);
+        setOffset({ x: 0, y: 0 });
+      }, children: "\u9002\u5408\u7A97\u53E3" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      "div",
+      {
+        className: "lp-image-stage",
+        onWheel: (e) => {
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            zoom(scale + (e.deltaY < 0 ? 0.1 : -0.1));
+          }
+        },
+        onPointerDown: (e) => {
+          if (scale <= 1) return;
+          drag.current = { x: e.clientX, y: e.clientY, x0: offset.x, y0: offset.y };
+          e.currentTarget.setPointerCapture(e.pointerId);
+        },
+        onPointerMove: (e) => {
+          if (drag.current) setOffset({ x: drag.current.x0 + e.clientX - drag.current.x, y: drag.current.y0 + e.clientY - drag.current.y });
+        },
+        onPointerUp: () => {
+          drag.current = null;
+        },
+        onPointerCancel: () => {
+          drag.current = null;
+        },
+        children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("img", { src: `data:${asset.mime};base64,${asset.data}`, alt: asset.name, style: { transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` } })
+      }
+    )
+  ] });
+}
 function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
   const listRef = (0, import_react2.useRef)(null);
   const lines = run.log || [];
@@ -45801,10 +45916,10 @@ function apply(ctx) {
         chatPending.current = null;
       }
     }
-    async function connectChat(force = false) {
+    async function connectChat(force = false, mindmap = false) {
       await save();
       const project = pRef.current;
-      let id = force ? null : project.lastChat;
+      let id = force ? null : mindmap ? project.mindmapChatId || project.chats.find((c) => c.kind === "mindmap")?.id : project.lastChat;
       if (!id) {
         const existing = ctx.workspaces.list.getSnapshot().items.find((w) => w.path === project.root);
         const workspace = existing || await ctx.uiWorkspace.workspaces.create({ path: project.root });
@@ -45818,14 +45933,26 @@ function apply(ctx) {
         });
         id = typeof created === "string" ? created : created.sessionId || created.id;
         await update({
-          chat: { id, title: "\u8BBA\u6587\u5BF9\u8BDD " + (project.chats.length + 1) }
+          chat: { id, title: "\u8BBA\u6587\u5BF9\u8BDD " + (project.chats.length + 1), ...mindmap ? { kind: "mindmap" } : {} }
         });
+      } else if (mindmap && !project.chats.find((c) => c.id === id)?.kind) {
+        await update({ chat: { id, title: project.chats.find((c) => c.id === id)?.title || "\u8BBA\u6587\u5BFC\u56FE\u4F1A\u8BDD", kind: "mindmap" } });
       }
       await ctx.sessions.open(id);
       ctx.layout.selectPanel("latex-studio");
       setView("source");
       setChatOpen(true);
       return id;
+    }
+    async function ensureMindmapChat() {
+      if (chatPending.current) return chatPending.current;
+      const work = connectChat(false, true);
+      chatPending.current = work;
+      try {
+        return await work;
+      } finally {
+        chatPending.current = null;
+      }
     }
     async function draft(text) {
       const showChat = chatOpen;
@@ -46010,7 +46137,7 @@ function apply(ctx) {
       }
       let sessionId;
       if (kind === "analyze") {
-        sessionId = await ensureChat();
+        sessionId = await ensureMindmapChat();
         setView("source");
         setChatOpen(true);
         setMapRun({
@@ -46682,7 +46809,11 @@ function apply(ctx) {
                 onClick: safe(() => start("analyze")),
                 children: "\u66F4\u65B0\u5BFC\u56FE"
               }
-            )
+            ),
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !map || job?.status === "running", onClick: safe(async () => {
+              const rendered = await api({ action: "rerender", id: pRef.current.id });
+              setMap(rendered);
+            }), children: "\u91CD\u65B0\u6E32\u67D3" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(MindMap, { data: map, onLocate: safe(locate) })
         ] }),
@@ -46731,7 +46862,7 @@ function apply(ctx) {
                     " KB"
                   ] })
                 ] }),
-                asset.loading ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "status", children: "\u6B63\u5728\u8F7D\u5165\u7D20\u6750\u2026" }) : asset.error ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "alert", children: asset.error }) : asset.mime?.startsWith("image/") ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("img", { src: `data:${asset.mime};base64,${asset.data}`, alt: asset.name }) : asset.mime === "application/pdf" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PDF, { base64: asset.data }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u6B64\u6587\u4EF6\u53EF\u968F\u8BBA\u6587\u540C\u6B65\uFF0C\u5F53\u524D\u683C\u5F0F\u65E0\u6CD5\u5728\u5DE5\u4F5C\u53F0\u5185\u663E\u793A\u3002" })
+                asset.loading ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "status", children: "\u6B63\u5728\u8F7D\u5165\u7D20\u6750\u2026" }) : asset.error ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { role: "alert", children: asset.error }) : asset.mime?.startsWith("image/") ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(ImagePreview, { asset }) : asset.mime === "application/pdf" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PDF, { base64: asset.data }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: "\u6B64\u6587\u4EF6\u53EF\u968F\u8BBA\u6587\u540C\u6B65\uFF0C\u5F53\u524D\u683C\u5F0F\u65E0\u6CD5\u5728\u5DE5\u4F5C\u53F0\u5185\u663E\u793A\u3002" })
               ] }) : file ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
                 Editor,
                 {

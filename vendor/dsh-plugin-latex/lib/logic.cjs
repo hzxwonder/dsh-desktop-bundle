@@ -70,7 +70,7 @@
     for (let i = 0; i < lines.length; ) {
       const line = lines[i],
         m = line.match(
-          /^\s*\\(section|subsection|subsubsection)\*?\{([^}]+)\}/,
+          /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/,
         );
       if (displayEnd) {
         segments.push({ kind: "raw", line });
@@ -99,6 +99,7 @@
           name: m ? m[2] : "Abstract",
           command: line,
           level: m ? m[1] : "abstract",
+          headingLevel: m ? {chapter:0,section:1,subsection:2,subsubsection:3,paragraph:4,subparagraph:5}[m[1]] : 0,
           paragraphs: [],
           line: i,
         };
@@ -236,8 +237,17 @@
           sentenceNodes: p.sentenceNodes,
         };
       });
-      return { id: s.id, name: s.name, paragraphs };
+      return { id: s.id, name: s.name, level: s.headingLevel, headingType: s.level, paragraphs };
     });
+    const sectionParents = new Map();
+    const headingStack = [];
+    for (const section of sections) {
+      const level = Number.isInteger(section.level) ? section.level : 1;
+      while (headingStack.length && headingStack[headingStack.length - 1].level >= level)
+        headingStack.pop();
+      sectionParents.set(section.id, headingStack.at(-1)?.id || "paper-root");
+      headingStack.push({ id: section.id, level });
+    }
     const removed = old.filter((x) => !used.has(x.id)).map((x) => x.id);
     const output = [];
     const meta = (o) => prefix + JSON.stringify(o);
@@ -260,8 +270,10 @@
             v: 1,
             type: "section",
             id: item.section.id,
-            parent: "paper-root",
+            parent: sectionParents.get(item.section.id) || "paper-root",
             label: item.section.name,
+            level: item.section.headingLevel,
+            headingType: item.section.level,
           }),
           item.line,
         );
@@ -286,8 +298,8 @@
             parent: p.id,
             label: sentence.label,
           }),
-          sentence.source + " ",
         );
+      output.push(p.source);
     }
     const annotationIndex = readAnnotations(output.join("\n"));
     const compact = output
@@ -352,6 +364,7 @@
       paragraph = null,
       pendingSection = null,
       pendingParagraph = null,
+      pendingSentences = [],
       serial = 0;
     const add = (type, label, line, parent, body) => {
       const prior = snapshot?.annotationIndex?.find(
@@ -367,41 +380,36 @@
       const line = lines[i],
         mark = line.match(/^\s*% @([cps]):(.+)$/),
         command = line.match(
-          /^\s*\\(?:section|subsection|subsubsection)\*?\{([^}]+)\}/,
+          /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/,
         );
       if (mark) {
         const label = mark[2].trim();
         if (mark[1] === "c") pendingSection = { label, line: i };
-        if (mark[1] === "p") pendingParagraph = { label, line: i };
-        if (mark[1] === "s") {
-          if (pendingParagraph && section) {
-            paragraph = add(
-              "paragraph",
-              pendingParagraph.label,
-              pendingParagraph.line,
-              section.id,
-              lines[i + 1] || "",
-            );
-            pendingParagraph = null;
-          }
-          if (!section || !paragraph)
-            throw new Error("句子注释需要所属章节和段落");
-          add("sentence", label, i, paragraph.id, lines[i + 1] || "");
-        }
+        if (mark[1] === "p") { pendingParagraph = { label, line: i }; pendingSentences = []; }
+        if (mark[1] === "s") pendingSentences.push({ label, line: i });
         continue;
       }
       if (command || /^\s*\\begin\{abstract\}/.test(line)) {
+        const headingLevel = command ? {chapter:0,section:1,subsection:2,subsubsection:3,paragraph:4,subparagraph:5}[command[1]] : 0;
+        const parent = (() => {
+          let candidate = section;
+          while (candidate && (candidate.level ?? 0) >= headingLevel) candidate = nodes.find(n => n.id === candidate.parent);
+          return candidate?.id || "paper-root";
+        })();
         section = add(
           "section",
-          command?.[1] || "Abstract",
+          command?.[2] || "Abstract",
           pendingSection?.line ?? i,
-          "paper-root",
+          parent,
           line,
         );
+        section.level = headingLevel;
+        section.headingType = command?.[1] || "abstract";
         section.intent = pendingSection?.label || section.label;
         pendingSection = null;
         paragraph = null;
         pendingParagraph = null;
+        pendingSentences = [];
         continue;
       }
       if (/^\s*\\end\{abstract\}/.test(line)) {
@@ -414,14 +422,21 @@
         continue;
       }
       if (pendingParagraph && section && !/^\s*%/.test(line)) {
+        let end = i;
+        while (end < lines.length && lines[end].trim() && !/^\s*(?:%|\\)/.test(lines[end]) && !/(?<!\\)%/.test(lines[end])) end++;
+        const sourceParagraph = lines.slice(i, end).join("\n");
         paragraph = add(
           "paragraph",
           pendingParagraph.label,
           pendingParagraph.line,
           section.id,
-          line,
+          sourceParagraph || line,
         );
+        const sentences = splitSentences(sourceParagraph);
+        if (pendingSentences.length === sentences.length)
+          pendingSentences.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
         pendingParagraph = null;
+        pendingSentences = [];
       }
     }
     return nodes;
@@ -478,7 +493,7 @@
     if (roots.length !== 1 || roots[0].parent)
       throw new Error("标注必须有唯一论文根节点");
     const parentType = {
-      section: "paper",
+      section: ["paper", "section"],
       paragraph: "section",
       sentence: "paragraph",
     };
@@ -486,7 +501,7 @@
       if (n.type === "paper") continue;
       const parent = nodes.find((p) => p.id === n.parent);
       if (!parent) throw new Error("标注父节点不存在：" + n.parent);
-      if (parent.type !== parentType[n.type])
+      if (!(Array.isArray(parentType[n.type]) ? parentType[n.type] : [parentType[n.type]]).includes(parent.type))
         throw new Error("标注层级不正确：" + n.id);
     }
     return nodes;

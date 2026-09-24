@@ -24,10 +24,30 @@ export function verifyMindmap(batches, result) {
   return true;
 }
 
+// Only annotation lines may differ; whitespace in the TeX source is significant.
+export function verifySourceConsistency(before, after, file = "source") {
+  const strip = (text) => text
+    .replace(/^% @[cps]:[^\r\n]*(?:\r?\n)/gm, "")
+    .replace(/^% @[cps]:[^\r\n]*$/gm, "");
+  const expected = strip(before), actual = strip(after);
+  if (expected === actual) return true;
+  let at = 0;
+  while (at < expected.length && expected[at] === actual[at]) at++;
+  throw new Error(`原文一致性校验失败：${file}，首个差异位于正文字符 ${at + 1}；仅允许增加 % @c/% @p/% @s 注释`);
+}
+
 const fail = (message) => { console.error(`FAIL: ${message}`); process.exitCode = 1; };
 const main = async () => {
   const path = process.argv[2];
-  if (!path) return fail("用法：node verify.mjs input.json");
+  if (!path) return fail("用法：node verify.mjs input.json | --source before.tex after.tex [file]");
+  if (path === "--source") {
+    if (!process.argv[3] || !process.argv[4]) return fail("用法：node verify.mjs --source before.tex after.tex [file]");
+    try {
+      verifySourceConsistency(await readFile(process.argv[3], "utf8"), await readFile(process.argv[4], "utf8"), process.argv[5]);
+      console.log("OK");
+    } catch (e) { return fail(e.message); }
+    return;
+  }
   let data;
   try { data = JSON.parse(await readFile(path, "utf8")); } catch (e) { return fail(`输入 JSON 无法解析：${e.message}`); }
   try { verifyMindmap(data.batches, data.result); } catch (e) { return fail(e.message); }

@@ -273,9 +273,11 @@ State the scope and limitations.
           typeof patch.chat.title !== "string"
         )
           fail("会话格式不正确");
-        if (!p.chats.some((c) => c.id === patch.chat.id))
-          p.chats.push(patch.chat);
+        const existing = p.chats.findIndex((c) => c.id === patch.chat.id);
+        if (existing < 0) p.chats.push(patch.chat);
+        else p.chats[existing] = { ...p.chats[existing], ...patch.chat };
         p.lastChat = patch.chat.id;
+        if (patch.chat.kind === "mindmap") p.mindmapChatId = patch.chat.id;
       }
       if (patch.lastChat) {
         if (!p.chats.some((c) => c.id === patch.lastChat))

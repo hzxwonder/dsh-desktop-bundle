@@ -4,7 +4,7 @@ import { mkdtemp, rm, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { apply } from "../index.js";
-import { verifyMindmap } from "../skills/paper-mindmap-update/verify.mjs";
+import { verifyMindmap, verifySourceConsistency } from "../skills/paper-mindmap-update/verify.mjs";
 async function host(t, outputOverride) {
   const directory = await mkdtemp(join(tmpdir(), "latex-host-"));
   let hook, dispose;
@@ -118,6 +118,10 @@ test("mindmap verification rejects duplicate and incomplete semantic rows", () =
   assert.throws(() => verifyMindmap(batch, { paragraphs:[] }), /段落覆盖不完整/);
   assert.throws(() => verifyMindmap(batch, { paragraphs:[{ hash:"a", label:"作用", sentences:["一"] }] }), /句子数量不匹配/);
 });
+test("source consistency allows annotation comments but rejects any TeX edits", () => {
+  assert.throws(() => verifySourceConsistency("A sentence.\nNext.", "% @p:段落作用\nA sentence. \n% @s:句子作用\nNext. ", "main.tex"), /main.tex.*正文字符/);
+  assert.throws(() => verifySourceConsistency("A sentence.", "% @p:段落作用\nA changed sentence.", "main.tex"), /main.tex.*正文字符/);
+});
 test("review material expands only for bound sessions", async (t) => {
   const h = await host(t),
     p = (await h.request({ action: "create", name: "Review Demo" })).value;
@@ -213,11 +217,16 @@ test("multi-file analysis annotates source files and reuses all unchanged paragr
     assert.fail("Job did not finish");
   }
   const first = await analyze();
+  assert.equal((await h.request({action:"status",id:p.id})).value.review, null);
   assert.equal(first.stats.analyzed, 1);
   assert.equal(first.nodes.filter((n) => n.type === "sentence").length, 2);
   assert.ok(
     first.nodes.some((n) => n.type === "paragraph" && n.file === "body.tex"),
   );
+  const callCountAfterFirst = h.calls();
+  const rendered = await h.request({action:"rerender",id:p.id});
+  assert.equal(rendered.ok, true);
+  assert.equal(h.calls(), callCountAfterFirst);
   assert.equal(first.nodes[0].label, "Demo");
   const body = (await h.request({ action: "read", id: p.id, file: "body.tex" }))
     .value.content;
@@ -382,9 +391,9 @@ test("mindmap launched from a chat can report results while source awaits review
  for(let i=0;i<100;i++){job=(await h.request({action:"job",id:p.id})).value;if(job.status!=="running")break;await new Promise(r=>setTimeout(r,10));}
  assert.equal(job.status,"completed");
  assert.equal((await h.hook({agent,messages:[]},async()=>({kind:"enter"}))).kind,"enter");
- assert.equal((await h.events.get("tools/pre-execute")({agent,arguments:{command:"edit main.tex"}},async()=>({kind:"allow"}))).kind,"deny");
+ assert.equal((await h.events.get("tools/pre-execute")({agent,arguments:{command:"edit main.tex"}},async()=>({kind:"allow"}))).kind,"allow");
  for(const name of ["job_output","job_list"])assert.equal((await h.events.get("tools/pre-execute")({agent,name,arguments:{job_id:"analysis"}},async()=>({kind:"allow"}))).kind,"allow");
- assert.ok((await h.request({action:"status",id:p.id})).value.review.count>0);
+ assert.equal((await h.request({action:"status",id:p.id})).value.review, null);
 });
 
 test("mindmap includes a commands-only input without requiring semantic annotations",async t=>{
