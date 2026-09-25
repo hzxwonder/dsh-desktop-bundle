@@ -26,6 +26,7 @@ import { tags } from "@lezer/highlight";
 import { stex } from "@codemirror/legacy-modes/mode/stex";
 import * as pdfjs from "pdfjs-dist";
 import css from "./style.css";
+import { zoomAt, fitMap } from "./map-viewport.js";
 import { Icon } from "./icons.jsx";
 import logic from "../lib/logic.cjs";
 export const name = "dsh-plugin-latex";
@@ -49,6 +50,27 @@ const api = async (args) => {
     });
   return data.value;
 };
+
+function CompileProgress({ job, onCancel }) {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  const elapsed = Math.max(0, Math.floor((now - (job.startedAt || now)) / 1000));
+  const stage = job.log?.at(-1)?.message || "正在准备 LaTeX 编译环境";
+  const time = elapsed < 60 ? `${elapsed} 秒` : `${Math.floor(elapsed / 60)} 分 ${elapsed % 60} 秒`;
+  return <div className="lp-progress" role="status" aria-live="polite">
+    <span className="lp-progress-indicator" aria-hidden="true"><i /></span>
+    <span className="lp-progress-copy">
+      <strong>正在编译论文</strong>
+      <span className="lp-progress-stage">{stage}</span>
+    </span>
+    <span className="lp-progress-time">已运行 {time}</span>
+    <button onClick={onCancel}><Icon name="close"/><span>取消</span></button>
+    <span className="lp-progress-track" aria-hidden="true"><i /></span>
+  </div>;
+}
 const uid = () => crypto.randomUUID();
 class RevisionWidget extends WidgetType {
   constructor(hunk, active, decide) { super(); this.hunk=hunk; this.active=active; this.decide=decide; }
@@ -293,9 +315,32 @@ export function MindMap({ data, onLocate }) {
     canvas = useRef(),
     drag = useRef();
   const [fold, setFold] = useState(new Set()),
-    [scale, setScale] = useState(0.8),
+    [view, setView] = useState({ x: 32, y: 32, scale: 0.8 }),
+    [dragging, setDragging] = useState(false),
     [selected, setSelected] = useState(null),
     [edges, setEdges] = useState([]);
+  const { scale } = view;
+  const zoom = (nextScale, point) => {
+    const area = scroll.current;
+    setView(old => zoomAt(old, nextScale, point || { x: area.clientWidth / 2, y: area.clientHeight / 2 }));
+  };
+  const fit = () => {
+    const area = scroll.current, plane = canvas.current;
+    setView(fitMap(plane.offsetWidth, plane.offsetHeight, area.clientWidth, area.clientHeight));
+  };
+  useEffect(() => {
+    const area = scroll.current;
+    const wheel = (event) => {
+      event.preventDefault();
+      if (!event.deltaY || drag.current?.active) return;
+      const rect = area.getBoundingClientRect();
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? area.clientHeight : 1);
+      const factor = Math.exp(-Math.max(-150, Math.min(150, delta)) * 0.002);
+      setView(old => zoomAt(old, old.scale * factor, { x: event.clientX - rect.left, y: event.clientY - rect.top }));
+    };
+    area.addEventListener("wheel", wheel, { passive: false });
+    return () => area.removeEventListener("wheel", wheel);
+  }, []);
   const nodes = data?.nodes || [],
     root = nodes.find((n) => n.type === "paper"),
     children = (id) => nodes.filter((n) => n.parent === id);
@@ -370,41 +415,58 @@ export function MindMap({ data, onLocate }) {
     <div className="lp-map">
       <div
         ref={scroll}
-        className="lp-map-scroll"
+        className={"lp-map-scroll" + (dragging ? " is-dragging" : "")}
+        tabIndex={0}
+        role="region"
+        aria-label="行文导图画布：拖拽移动，滚轮缩放，方向键移动，加减键缩放，0 适合画布"
         onPointerDown={(e) => {
-          if (e.target.closest("button")) return;
+          if (e.button !== 0 || e.target.closest(".lp-fold")) return;
           drag.current = {
-            x: e.clientX,
-            y: e.clientY,
-            left: e.currentTarget.scrollLeft,
-            top: e.currentTarget.scrollTop,
+            x: e.clientX, y: e.clientY, origin: view, pointerId: e.pointerId, active: true, moved: false,
           };
-          e.currentTarget.setPointerCapture(e.pointerId);
+          if (!e.target.closest("button")) e.currentTarget.focus({ preventScroll: true });
         }}
         onPointerMove={(e) => {
-          if (!drag.current) return;
-          e.currentTarget.scrollLeft =
-            drag.current.left - e.clientX + drag.current.x;
-          e.currentTarget.scrollTop =
-            drag.current.top - e.clientY + drag.current.y;
+          const start = drag.current;
+          if (!start?.active || start.pointerId !== e.pointerId) return;
+          const dx = e.clientX - start.x, dy = e.clientY - start.y;
+          if (!start.moved && Math.hypot(dx, dy) < 4) return;
+          start.moved = true;
+          e.preventDefault();
+          e.currentTarget.setPointerCapture(e.pointerId);
+          setDragging(true);
+          setView({ ...start.origin, x: start.origin.x + dx, y: start.origin.y + dy });
         }}
-        onPointerUp={() => {
-          drag.current = null;
+        onPointerUp={(e) => {
+          if (drag.current) drag.current.active = false;
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+          setDragging(false);
         }}
         onPointerCancel={() => {
           drag.current = null;
+          setDragging(false);
         }}
-        onWheel={(e) => {
-          if (e.ctrlKey || e.metaKey)
-            setScale((v) =>
-              Math.max(0.3, Math.min(1.6, v + (e.deltaY > 0 ? -0.05 : 0.05))),
-            );
+        onLostPointerCapture={() => { if (drag.current) drag.current.active = false; setDragging(false); }}
+        onClickCapture={(e) => {
+          if (drag.current?.moved) { e.preventDefault(); e.stopPropagation(); drag.current = null; }
+        }}
+        onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return;
+          const moves = { ArrowLeft: [60, 0], ArrowRight: [-60, 0], ArrowUp: [0, 60], ArrowDown: [0, -60] };
+          if (moves[e.key]) {
+            e.preventDefault();
+            const [x, y] = moves[e.key];
+            setView(old => ({ ...old, x: old.x + x, y: old.y + y }));
+          } else if (["+", "=", "-", "0"].includes(e.key)) {
+            e.preventDefault();
+            if (e.key === "0") fit(); else zoom(scale * (e.key === "-" ? 1 / 1.2 : 1.2));
+          }
         }}
       >
         <div
           ref={canvas}
           className="lp-map-plane"
-          style={{ zoom: scale, padding: 40, width: "max-content" }}
+          style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${scale})`, width: "max-content" }}
         >
           <svg className="lp-map-edges" aria-hidden="true">{edges.map(e => <path key={e.id} d={e.d} />)}</svg>
           {root ? (
@@ -420,29 +482,13 @@ export function MindMap({ data, onLocate }) {
           ) : <p>生成导图，梳理文章的章节、段落与句子。</p>}
         </div>
       </div>
+      <div className="lp-map-hint">拖拽移动 · 滚轮缩放</div>
       <div className="lp-map-zoom">
-        <button onClick={() => setScale(Math.max(0.3, scale - 0.1))}><Icon name="minus"/></button>
+        <button aria-label="缩小导图" onClick={() => zoom(scale / 1.2)}><Icon name="minus"/></button>
         <span>{Math.round(scale * 100)}%</span>
-        <button onClick={() => setScale(Math.min(1.6, scale + 0.1))}><Icon name="plus"/></button>
+        <button aria-label="放大导图" onClick={() => zoom(scale * 1.2)}><Icon name="plus"/></button>
         <button
-          onClick={() => {
-            const area = scroll.current,
-              rect = canvas.current.getBoundingClientRect();
-            setScale(
-              Math.max(
-                0.3,
-                Math.min(
-                  1.2,
-                  scale *
-                    Math.min(
-                      area.clientWidth / rect.width,
-                      area.clientHeight / rect.height,
-                    ),
-                ),
-              ),
-            );
-            area.scrollTo(0, 0);
-          }}
+          onClick={fit}
         >
           适合画布
         </button>
@@ -450,7 +496,6 @@ export function MindMap({ data, onLocate }) {
     </div>
   );
 }
-const analyzeStateText = { running: "正在生成…", failed: "生成失败", completed: "生成完成" };
 function ImagePreview({ asset }) {
   const [scale, setScale] = useState(1), [offset, setOffset] = useState({ x:0, y:0 });
   const drag = useRef(null);
@@ -469,43 +514,6 @@ function ImagePreview({ asset }) {
       <img src={`data:${asset.mime};base64,${asset.data}`} alt={asset.name} style={{ transform:`translate(${offset.x}px, ${offset.y}px) scale(${scale})` }} />
     </div>
   </div>;
-}
-function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
-  const listRef = useRef(null);
-  const lines = run.log || [];
-  useEffect(() => {
-    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [lines.length, run.status]);
-  if (run.status === "completed" && !lines.length) return null;
-  return (
-    <section className="lp-analyze" aria-label="行文导图生成进度">
-      <header>
-        <span className={"lp-analyze-avatar" + (run.status === "running" ? " running" : "") + (run.status === "failed" ? " failed" : "")}>
-          <Icon name="map"/>
-        </span>
-        <span className="lp-analyze-title">
-          <b>行文导图</b>
-          <small>{analyzeStateText[run.status] || ""}{run.status === "failed" && run.error ? " · " + run.error : ""}</small>
-        </span>
-        <span className="lp-analyze-actions">
-          {run.status === "running" && <button onClick={onCancel}>取消</button>}
-          {run.status === "failed" && <button onClick={onRetry}>重试</button>}
-          {run.status === "completed" && <button onClick={onView}>查看导图</button>}
-          <button aria-label="收起进度对话" title="收起进度对话" onClick={onClose}><Icon name="close"/></button>
-        </span>
-      </header>
-      {lines.length > 0 && (
-        <div className="lp-analyze-log" ref={listRef}>
-          {lines.map((line, i) => (
-            <p key={line.time + ":" + i}>
-              <time>{new Date(line.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</time>
-              <span>{line.message}</span>
-            </p>
-          ))}
-        </div>
-      )}
-    </section>
-  );
 }
 function FileTree({ items, active, openDirs, onToggle, onOpen, badgeOf }) {
   const root = { dirs: new Map(), files: [] };
@@ -768,7 +776,7 @@ export function apply(ctx) {
           else setFile((f) => ({ ...f, hash: saved.hash, dirty: true }));
         }
         setStatus("已保存 · 正在编译");
-        setJob({kind:"compile",status:"running"});
+        setJob({kind:"compile",status:"running",startedAt:Date.now(),log:[]});
         return saved;
       } catch (e) {
         if (e.code === "CONFLICT") setConflict(current);
@@ -906,7 +914,7 @@ export function apply(ctx) {
             ? created
             : created.sessionId || created.id;
         await update({
-          chat: { id, title: "论文对话 " + (project.chats.length + 1), ...(mindmap ? { kind:"mindmap" } : {}) },
+          chat: { id, title: mindmap ? "行文导图" : "论文对话 " + (project.chats.length + 1), ...(mindmap ? { kind:"mindmap" } : {}) },
         });
       } else if (mindmap && !project.chats.find(c => c.id === id)?.kind) {
         await update({ chat:{ id, title:project.chats.find(c=>c.id===id)?.title || "论文导图会话", kind:"mindmap" } });
@@ -969,7 +977,7 @@ export function apply(ctx) {
             setMapRun({
               status: j.status,
               error: j.error,
-              log: j.log || [],
+              log: (j.log || []).filter(line => !line.message.includes("批")),
               stats: j.result?.stats,
             });
           if (
@@ -1004,7 +1012,6 @@ export function apply(ctx) {
                 setFile(next);
               }
               setStatus("行文导图已更新");
-              setView("map");
             }
           }
           if (j?.status === "failed") {
@@ -1074,7 +1081,7 @@ export function apply(ctx) {
       setFiles(liveFiles);
       setTabs(v=>v.filter(name=>liveFiles.some(f=>f.name===name)||result.review?.files.some(f=>f.name===name&&f.parts.some(h=>h.id&&!h.decision))));
       if(fileRef.current){try{const f=await api({action:"read",id:pRef.current.id,file:fileRef.current.name});fileRef.current={...f,loadKey:uid()};setFile(fileRef.current);}catch{setFile(null);fileRef.current=null;}}
-      if(result.settled){setMap(null);setStatus("修改已整合 · 正在编译");setJob({kind:"compile",status:"running"});}
+      if(result.settled){setMap(null);setStatus("修改已整合 · 正在编译");setJob({kind:"compile",status:"running",startedAt:Date.now(),log:[]});}
     }
     const changed = (text) => {
       const f = fileRef.current;
@@ -1095,13 +1102,25 @@ export function apply(ctx) {
         setChatOpen(true);
         setMapRun({
           status: "running",
-          log: [{ time: Date.now(), message: "已启动行文导图分析" }],
+          log: [{ time: Date.now(), message: "正在向行文导图会话发送全文任务" }],
         });
+        const session = ctx.sessions.binding(sessionId)?.session;
+        if (!session) throw new Error("行文导图会话尚未就绪，请重试");
+        try {
+          await session.prompt(
+            "请根据 paper-mindmap-update skill，对当前论文全文（主文件及所有引用文本文件）生成或更新行文导图。请调用 paper-workbench 的 list 找到当前论文，再调用 analyze 启动全文分析并轮询 job 直到完成；不得手动拆分或编辑 TeX 文件。严格遵守 skill 中只写入导图注释、原文字符完全一致、运行规范验证并报告结果的要求。",
+            "queue",
+          );
+        } catch (error) {
+          setMapRun({ status: "failed", error: error.message, log: [] });
+          throw error;
+        }
+        return;
       } else {
         setChatOpen(false);
       }
       await api({ action: kind, id: pRef.current.id, sessionId });
-      setJob({ kind, status: "running" });
+      setJob({ kind, status: "running", startedAt: Date.now(), log: [] });
       setShowLog(false);
     }
     const toggleDir = (path) =>
@@ -1276,17 +1295,8 @@ export function apply(ctx) {
               </button>
             </div>
           )}
-          {job?.status === "running" && (
-            <div className="lp-progress">
-              {job.kind === "compile"
-                ? "正在编译…"
-                : mapRun?.log?.length
-                  ? mapRun.log[mapRun.log.length - 1].message
-                  : "Agent 正在分析行文结构…"}
-              <button onClick={safe(() => api({ action: "cancel", id: p.id }))}>
-                取消
-              </button>
-            </div>
+          {job?.status === "running" && job.kind === "compile" && (
+            <CompileProgress job={job} onCancel={safe(() => api({ action: "cancel", id: p.id }))} />
           )}
     </>;
     const settingsPanel = settings && <div className="lp-settings-overlay">
@@ -1610,12 +1620,12 @@ export function apply(ctx) {
               <div className="lp-map-toolbar">
                 <button onClick={() => setView("source")}>← 源码</button>
                 <button
-                  disabled={job?.status === "running"}
+                  disabled={job?.status === "running" || mapRun?.status === "running"}
                   onClick={safe(() => start("analyze"))}
                 >
                   更新导图
                 </button>
-                <button disabled={!map || job?.status === "running"} onClick={safe(async () => {
+                <button disabled={!map || job?.status === "running" || mapRun?.status === "running"} onClick={safe(async () => {
                   const rendered = await api({ action:"rerender", id:pRef.current.id });
                   setMap(rendered);
                 })}>重新渲染</button>
@@ -1675,15 +1685,6 @@ export function apply(ctx) {
                   <div className="lp-empty">选择文件开始编辑</div>
                 )}
                 </div></div>
-                {chatOpen && mapRun && (
-                  <AnalyzeCard
-                    run={mapRun}
-                    onClose={() => setMapRun(null)}
-                    onView={() => setView("map")}
-                    onCancel={() => api({ action: "cancel", id: p.id }).catch(() => {})}
-                    onRetry={() => start("analyze").catch((e) => setError(e.message))}
-                  />
-                )}
                 {p.lastChat ? <div className={"lp-native " + (chatOpen ? "lp-conversation" : "lp-composer")}>
                   <NativeChat sessionId={p.lastChat} />
                 </div> : <button className="lp-start-chat" onClick={safe(() => ensureChat())}>继续讨论论文…</button>}

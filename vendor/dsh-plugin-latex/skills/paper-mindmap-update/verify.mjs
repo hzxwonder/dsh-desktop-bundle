@@ -27,6 +27,9 @@ export function verifyMindmap(batches, result) {
 // Only annotation lines may differ; whitespace in the TeX source is significant.
 export function verifySourceConsistency(before, after, file = "source") {
   const strip = (text) => text
+    // Sentence markers may be inserted in the middle of a source line. The
+    // preceding whitespace belongs to the source and must remain untouched.
+    .replace(/(?<=[ \t])\r?\n% @s:[^\r\n]*(?:\r?\n|$)/g, "")
     .replace(/^% @[cps]:[^\r\n]*(?:\r?\n)/gm, "")
     .replace(/^% @[cps]:[^\r\n]*$/gm, "");
   const expected = strip(before), actual = strip(after);

@@ -2,6 +2,18 @@
 (function (root) {
   "use strict";
   const prefix = "% @dsh-logic ";
+  const headingLevels = { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5, abstract: 0 };
+  function heading(line) {
+    const match = line.match(/^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*(?:\[[^\]]*\]\s*)?\{/);
+    if (!match) return null;
+    let depth = 1, end = match[0].length;
+    for (; end < line.length; end++) {
+      if (line[end] === "\\") { end++; continue; }
+      if (line[end] === "{") depth++;
+      if (line[end] === "}" && --depth === 0) break;
+    }
+    return depth === 0 ? [match[0], match[1], line.slice(match[0].length, end)] : null;
+  }
   function hash(text) {
     let h = 2166136261;
     for (const c of text) {
@@ -69,9 +81,7 @@
       "论文标题";
     for (let i = 0; i < lines.length; ) {
       const line = lines[i],
-        m = line.match(
-          /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/,
-        );
+        m = heading(line);
       if (displayEnd) {
         segments.push({ kind: "raw", line });
         if (line.includes(displayEnd)) displayEnd = null;
@@ -99,7 +109,7 @@
           name: m ? m[2] : "Abstract",
           command: line,
           level: m ? m[1] : "abstract",
-          headingLevel: m ? {chapter:0,section:1,subsection:2,subsubsection:3,paragraph:4,subparagraph:5}[m[1]] : 0,
+          headingLevel: headingLevels[m ? m[1] : "abstract"],
           paragraphs: [],
           line: i,
         };
@@ -250,6 +260,7 @@
     }
     const removed = old.filter((x) => !used.has(x.id)).map((x) => x.id);
     const output = [];
+    const rendered = [];
     const meta = (o) => prefix + JSON.stringify(o);
     output.push(
       meta({
@@ -262,10 +273,11 @@
     for (const item of parsed.segments) {
       if (item.kind === "raw") {
         output.push(item.line);
+        rendered.push(item.line);
         continue;
       }
       if (item.kind === "section") {
-        output.push(
+        const metadata =
           meta({
             v: 1,
             type: "section",
@@ -274,21 +286,21 @@
             label: item.section.name,
             level: item.section.headingLevel,
             headingType: item.section.level,
-          }),
-          item.line,
-        );
+          });
+        output.push(metadata, item.line);
+        rendered.push(metadata, item.line);
         continue;
       }
       const p = item.paragraph;
-      output.push(
+      const paragraphMetadata =
         meta({
           v: 1,
           type: "paragraph",
           id: p.id,
           parent: item.section.id,
           label: p.label,
-        }),
-      );
+        });
+      output.push(paragraphMetadata);
       for (const sentence of p.sentenceNodes)
         output.push(
           meta({
@@ -300,9 +312,10 @@
           }),
         );
       output.push(p.source);
+      rendered.push(paragraphMetadata, annotateSentenceComments(p.source, p.sentenceNodes));
     }
     const annotationIndex = readAnnotations(output.join("\n"));
-    const compact = output
+    const compact = rendered
       .map((line) => {
         if (!line.startsWith(prefix)) return line;
         const n = JSON.parse(line.slice(prefix.length));
@@ -317,6 +330,7 @@
           "% @" +
           { section: "c", paragraph: "p", sentence: "s" }[n.type] +
           ":" +
+          (n.type === "section" ? "[" + n.headingType + "] " : "") +
           label.replace(/[\r\n]+/g, " ")
         );
       })
@@ -346,6 +360,42 @@
     };
     return { annotated, snapshot, nodes: readSemanticAnnotations(annotated, snapshot) };
   }
+  // Keep the source byte-for-byte identical after annotation lines are removed.
+  // A sentence marker is placed on its own line immediately before that sentence.
+  function annotateSentenceComments(source, sentences) {
+    if (!sentences?.length) return source;
+    const normalized = source.replace(/\s+/g, " ").trim();
+    const normalizedToRaw = [];
+    let raw = 0, normalizedIndex = 0;
+    while (raw < source.length && normalizedIndex < normalized.length) {
+      if (/\s/.test(source[raw])) {
+        const start = raw;
+        while (/\s/.test(source[raw] || "")) raw++;
+        if (normalized[normalizedIndex] === " ") normalizedToRaw[normalizedIndex++] = start;
+        continue;
+      }
+      if (normalized[normalizedIndex] === source[raw]) normalizedToRaw[normalizedIndex++] = raw;
+      raw++;
+    }
+    const points = [];
+    let from = 0;
+    for (const sentence of sentences) {
+      const text = typeof sentence === "string" ? sentence : sentence.source;
+      const at = normalized.indexOf(text, from);
+      if (at < 0 || normalizedToRaw[at] == null) continue;
+      const leading = source.match(/^\s*/)?.[0].length || 0;
+      points.push([normalizedToRaw[at] === leading ? 0 : normalizedToRaw[at], text, typeof sentence === "string" ? "" : sentence.label || ""]);
+      from = at + text.length;
+    }
+    let result = source;
+    for (let i = points.length - 1; i >= 0; i--) {
+      const [at, , label] = points[i];
+      const marker = "% @s:" + label.replace(/[\r\n]+/g, " ") + "\n";
+      const prefix = result.slice(0, at);
+      result = prefix + (!at || /[\r\n]$/.test(prefix) ? marker : "\n" + marker) + result.slice(at);
+    }
+    return result;
+  }
   function readSemanticAnnotations(source, snapshot) {
     const lines = source.split("\n"),
       title = parse(source).title,
@@ -362,6 +412,7 @@
       used = new Set();
     let section = null,
       paragraph = null,
+      sectionStack = [],
       pendingSection = null,
       pendingParagraph = null,
       pendingSentences = [],
@@ -376,26 +427,27 @@
       nodes.push(n);
       return n;
     };
-    for (let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; ) {
       const line = lines[i],
         mark = line.match(/^\s*% @([cps]):(.+)$/),
-        command = line.match(
-          /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/,
-        );
+        command = heading(line);
       if (mark) {
         const label = mark[2].trim();
-        if (mark[1] === "c") pendingSection = { label, line: i };
+        if (mark[1] === "c") {
+          const typed = label.match(/^\[([^\]]+)\]\s*(.*)$/);
+          pendingSection = typed
+            ? (Object.hasOwn(headingLevels, typed[1]) && typed[2].trim() ? { label: typed[2].trim(), headingType: typed[1], line: i } : null)
+            : { label, line: i };
+        }
         if (mark[1] === "p") { pendingParagraph = { label, line: i }; pendingSentences = []; }
         if (mark[1] === "s") pendingSentences.push({ label, line: i });
+        i++;
         continue;
       }
       if (command || /^\s*\\begin\{abstract\}/.test(line)) {
-        const headingLevel = command ? {chapter:0,section:1,subsection:2,subsubsection:3,paragraph:4,subparagraph:5}[command[1]] : 0;
-        const parent = (() => {
-          let candidate = section;
-          while (candidate && (candidate.level ?? 0) >= headingLevel) candidate = nodes.find(n => n.id === candidate.parent);
-          return candidate?.id || "paper-root";
-        })();
+        const headingLevel = headingLevels[command ? command[1] : "abstract"];
+        while (sectionStack.length && sectionStack.at(-1).level >= headingLevel) sectionStack.pop();
+        const parent = sectionStack.at(-1)?.id || "paper-root";
         section = add(
           "section",
           command?.[2] || "Abstract",
@@ -405,26 +457,42 @@
         );
         section.level = headingLevel;
         section.headingType = command?.[1] || "abstract";
+        sectionStack.push({ id: section.id, level: headingLevel });
         section.intent = pendingSection?.label || section.label;
         pendingSection = null;
         paragraph = null;
         pendingParagraph = null;
         pendingSentences = [];
+        i++;
         continue;
       }
       if (/^\s*\\end\{abstract\}/.test(line)) {
         section = null;
         paragraph = null;
+        sectionStack = [];
+        i++;
         continue;
       }
       if (!line.trim()) {
         paragraph = null;
+        i++;
         continue;
       }
       if (pendingParagraph && section && !/^\s*%/.test(line)) {
         let end = i;
-        while (end < lines.length && lines[end].trim() && !/^\s*(?:%|\\)/.test(lines[end]) && !/(?<!\\)%/.test(lines[end])) end++;
-        const sourceParagraph = lines.slice(i, end).join("\n");
+        const sourceLines = [], sentenceNotes = pendingSentences.splice(0);
+        while (end < lines.length) {
+          const current = lines[end], sentenceMark = current.match(/^\s*% @s:(.+)$/);
+          if (sentenceMark) {
+            sentenceNotes.push({ label: sentenceMark[1].trim(), line: end });
+            end++;
+            continue;
+          }
+          if (!current.trim() || heading(current) || /^\s*\\(?:begin|end)\{/.test(current) || /^\s*%/.test(current) || /(?<!\\)%/.test(current)) break;
+          sourceLines.push(current);
+          end++;
+        }
+        const sourceParagraph = sourceLines.join("\n");
         paragraph = add(
           "paragraph",
           pendingParagraph.label,
@@ -433,11 +501,14 @@
           sourceParagraph || line,
         );
         const sentences = splitSentences(sourceParagraph);
-        if (pendingSentences.length === sentences.length)
-          pendingSentences.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
+        if (sentenceNotes.length === sentences.length)
+          sentenceNotes.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
         pendingParagraph = null;
         pendingSentences = [];
+        i = end;
+        continue;
       }
+      i++;
     }
     return nodes;
   }

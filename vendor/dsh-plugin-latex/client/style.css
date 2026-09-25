@@ -551,12 +551,38 @@
 }
 .lp-progress,
 .lp-map-toolbar {
-  padding: 7px 14px;
-  background: var(--lp-side);
+  position: relative;
+  min-height: 62px;
+  padding: 9px 14px;
+  background: color-mix(in srgb, var(--lp-accent) 6%, var(--lp-bg));
   border-bottom: 1px solid var(--lp-line);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
+  overflow: hidden;
+}
+.lp-progress-copy { display:flex; flex:1; min-width:0; flex-direction:column; line-height:1.35; }
+.lp-progress-copy strong { font-size:12px; font-weight:650; color:var(--lp-text); }
+.lp-progress-stage { overflow:hidden; color:var(--lp-muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.lp-progress-time { flex:none; color:var(--lp-muted); font-size:11px; font-variant-numeric:tabular-nums; }
+.lp-progress-indicator { width:26px; height:26px; flex:none; display:grid; place-items:center; border-radius:50%; background:color-mix(in srgb, var(--lp-accent) 13%, var(--lp-bg)); }
+.lp-progress-indicator i { width:14px; height:14px; border:2px solid color-mix(in srgb, var(--lp-accent) 25%, transparent); border-top-color:var(--lp-accent); border-radius:50%; animation:lp-spin .8s linear infinite; }
+.lp-progress button { flex:none; display:inline-flex; align-items:center; gap:5px; color:var(--lp-muted); border:1px solid var(--lp-line) !important; background:var(--lp-bg) !important; }
+.lp-progress button:hover { color:var(--lp-text); border-color:var(--lp-accent) !important; }
+.lp-progress-track { position:absolute; height:2px; left:0; right:0; bottom:0; overflow:hidden; background:color-mix(in srgb, var(--lp-accent) 12%, transparent); }
+.lp-progress-track i { display:block; width:34%; height:100%; background:var(--lp-accent); transform:translateX(-110%); animation:lp-progress-sweep 1.7s ease-in-out infinite; }
+.lp-progress-analysis .lp-progress-indicator { background:color-mix(in srgb, #268b72 13%, var(--lp-bg)); }
+.lp-progress-analysis .lp-progress-indicator i { border-top-color:#268b72; }
+.lp-progress-analysis .lp-progress-track i { background:#268b72; }
+@keyframes lp-spin { to { transform:rotate(360deg); } }
+@keyframes lp-progress-sweep { 0% { transform:translateX(-110%); } 100% { transform:translateX(410%); } }
+@media (max-width:600px) {
+  .lp-progress { min-height:58px; padding:8px 10px; gap:8px; }
+  .lp-progress-time { display:none; }
+  .lp-progress button { padding:5px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-progress-indicator i, .lp-progress-track i { animation-duration:3s; }
 }
 .lp-progress button {
   margin-left: auto;
@@ -677,8 +703,11 @@ body:not([data-ds-dark-theme]) .lp-theme-system {
 .lp-conversation { flex:1; }
 .lp-start-chat { margin:12px 16px; text-align:left; padding:16px !important; background:var(--lp-side) !important; border:1px solid var(--lp-line) !important; border-radius:18px !important; color:var(--lp-muted) !important; }
 .lp-entry { background:var(--dsw-alias-bg-base, #fff); color:var(--dsw-alias-label-primary, #272727); }
-.lp-map-scroll { background-image:none; padding:20px; }
-.lp-map-plane { position:relative; min-height:100%; }
+.lp-map-scroll { background-image:none; padding:0; overflow:hidden; position:relative; cursor:grab; touch-action:none; user-select:none; overscroll-behavior:none; }
+.lp-map-scroll.is-dragging, .lp-map-scroll.is-dragging * { cursor:grabbing !important; }
+.lp-map-scroll:focus-visible { outline:2px solid var(--lp-accent); outline-offset:-3px; }
+.lp-map-plane { position:absolute; top:0; left:0; transform-origin:0 0; }
+.lp-map-hint { position:absolute; left:16px; bottom:16px; color:var(--lp-muted); font-size:12px; pointer-events:none; background:var(--lp-bg); padding:6px 10px; border-radius:8px; }
 .lp-map-edges { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
 .lp-map-edges path { fill:none; stroke:var(--lp-accent); stroke-width:1.5; opacity:.55; }
 .lp-node-wrap:after, .lp-children:before, .lp-children > .lp-branch:before { display:none; }
@@ -1055,3 +1084,15 @@ body:has(.lp-theme-light) .dshDesktopMacCaptionRow,
 body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopMacCaptionRow { background:#fff; }
 body:has(.lp-theme-light) .dshDesktopFrame,
 body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopFrame { background:#f3f3f3; }
+/* The macOS caption row sits outside the plugin root. Keep it on the same
+   surface when Desktop is using its dark system theme. */
+body:has(.lp-theme-dark) .dshDesktopMacCaptionRow,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopMacCaptionRow,
+body:has(.lp-theme-dark) .dshDesktopFrame,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopFrame {
+  background: var(--lp-side, #171717) !important;
+}
+body:has(.lp-theme-dark) .dshDesktopFrame,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopFrame {
+  color-scheme: dark;
+}

@@ -17,7 +17,7 @@ const paths = [
   "/usr/local/bin",
   "/usr/bin",
 ];
-export function run(command, args, { cwd, signal, timeout = 120000 } = {}) {
+export function run(command, args, { cwd, signal, timeout = 120000, onOutput } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd,
@@ -45,8 +45,10 @@ export function run(command, args, { cwd, signal, timeout = 120000 } = {}) {
     signal?.addEventListener("abort", cancel, { once: true });
     if (signal?.aborted) cancel();
     const collect = (data) => {
-      output += data.toString();
+      const text = data.toString();
+      output += text;
       if (output.length > 200000) output = output.slice(-200000);
+      onOutput?.(text);
     };
     child.stdout.on("data", collect);
     child.stderr.on("data", collect);
@@ -70,7 +72,7 @@ export function run(command, args, { cwd, signal, timeout = 120000 } = {}) {
     });
   });
 }
-export async function compile(store, id, signal) {
+export async function compile(store, id, signal, onProgress = () => {}) {
   const p = store.get(id),
     files = await store.listFiles(id);
   if (!files.some((f) => f.name === p.main)) fail("请选择存在的主文件");
@@ -78,6 +80,7 @@ export async function compile(store, id, signal) {
   let total = 0;
   const versions = {};
   try {
+    onProgress("正在准备项目文件");
     for (const f of files) {
       const src = await inside(p.root, f.name);
       const info = await stat(src);
@@ -102,6 +105,8 @@ export async function compile(store, id, signal) {
       xelatex: "-xelatex",
       lualatex: "-lualatex",
     }[engine];
+    onProgress(`正在运行 ${engine}，等待 LaTeX 检查依赖`);
+    let pendingOutput = "";
     const result = await run(
       "latexmk",
       [
@@ -112,7 +117,23 @@ export async function compile(store, id, signal) {
         "-no-shell-escape",
         main,
       ],
-      { cwd: dir, signal },
+      {
+        cwd: dir,
+        signal,
+        onOutput(chunk) {
+          pendingOutput += chunk.replace(/\r/g, "\n");
+          const lines = pendingOutput.split("\n");
+          pendingOutput = lines.pop() || "";
+          for (const raw of lines) {
+            const line = raw.replace(/\u001b\[[0-9;]*m/g, "").trim();
+            if (!line) continue;
+            const stage = line.match(/(?:applying rule|Rule)\s+['\"]?([^'\"]+)|Run number\s+(\d+)|Output written on\s+(.+)|LaTeX Warning:\s*(.+)/i);
+            if (stage) {
+              onProgress(stage[3] ? `正在生成 PDF：${stage[3]}` : stage[4] ? `正在检查引用：${stage[4]}` : stage[2] ? `LaTeX 第 ${stage[2]} 轮排版` : `正在执行：${stage[1]}`);
+            }
+          }
+        },
+      },
     );
     const log = result.output
       .replaceAll(dir, "<build>")

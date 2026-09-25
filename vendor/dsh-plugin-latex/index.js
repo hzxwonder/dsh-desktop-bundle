@@ -6,7 +6,7 @@ import { readFile, realpath, mkdir, writeFile, rename, unlink, lstat } from "nod
 import { Store, fail, digest, inside, editable } from "./lib/store.js";
 import { compile, run } from "./lib/compiler.js";
 import logic from "./lib/logic.cjs";
-import { collectSources, mergeMaps } from "./lib/project-sources.js";
+import { collectSources, mergeMaps, sourceContext, renderSources } from "./lib/project-sources.js";
 import { loadPaperInstructions } from "./lib/paper-prompt.js";
 import {Credentials} from "./lib/credentials.js";
 import {Overleaf} from "./lib/overleaf.js";
@@ -35,7 +35,7 @@ export async function apply(ctx, config = {}) {
   const mindmapSkill = await readFile(new URL("./skills/paper-mindmap-update/SKILL.md", import.meta.url), "utf8");
   const skillDigest = digest(mindmapSkill);
   const paperClient = fileURLToPath(new URL("./scripts/paper.mjs", import.meta.url));
-  ctx.skills.register({ name: "paper-mindmap-update", description: "更新 LaTeX 论文的语义注释与四级行文导图", content: mindmapSkill, source: "bundled" });
+  ctx.skills.register({ name: "paper-mindmap-update", description: "更新 LaTeX 论文的语义注释与多级行文导图", content: mindmapSkill, source: "bundled" });
   let paperInstructions = await loadPaperInstructions(store.directory, store.projects);
   ctx.systemPrompt.variable("latex_paper_guidance", ({ agent }) => {
     if (!agent?.session?.header?.cwd) return "";
@@ -105,10 +105,7 @@ export async function apply(ctx, config = {}) {
       const previous =
         (p.snapshot?.skillDigest === skillDigest && p.snapshot?.files?.[input.name]) ||
         (p.snapshot?.skillDigest === skillDigest && input.name === main && p.snapshot?.sections ? p.snapshot : null);
-      const context =
-        input.context && !logic.parse(input.content).sections.length
-          ? "\\section{" + input.context + "}\n"
-          : "";
+      const context = sourceContext(input);
       const marker = "% DSH_SOURCE_BODY";
       const source =
         "\\title{" +
@@ -281,6 +278,7 @@ export async function apply(ctx, config = {}) {
         stats,
       };
       p.mapNodes = nodes;
+      p.mapSchema = 2;
       for (const review of p.reviews) {
         const result = results.find((r) => r.file === review.file);
         if (!result) continue;
@@ -303,9 +301,10 @@ export async function apply(ctx, config = {}) {
   function idle(id) {if(store.get(id).revisionReview)fail("请先处理 Agent 修改","REVIEW_PENDING");if(jobs.get(id)?.status==="running")fail("当前论文任务正在运行","BUSY");}
   async function savedPipeline(id,paths) {
     const controller=new AbortController();
-    const job={version:randomUUID(),kind:"compile",status:"running",controller};jobs.set(id,job);
+    const job={version:randomUUID(),kind:"compile",status:"running",startedAt:Date.now(),log:[],controller};jobs.set(id,job);
+    const progress=(message)=>{job.log.push({time:Date.now(),message});if(job.log.length>80)job.log.shift();};
     const work=(async()=>{try{
-      job.result=await compile(store,id,controller.signal);
+      job.result=await compile(store,id,controller.signal,progress);
       job.result.sync=await overleaf.sync(id,paths);
       store.get(id).lastLog=job.result.log;await store.persist();
       job.status=job.result.ok===false?"failed":"completed";
@@ -397,6 +396,11 @@ export async function apply(ctx, config = {}) {
         return publicProject(await store.update(a.id, a.patch || {}));
       case "map": {
         const p = store.get(a.id);
+        if (p.snapshot && p.mapSchema !== 2) {
+          p.mapNodes = renderSources(await collectSources(store, a.id, p.main), p.snapshot.files);
+          p.mapSchema = 2;
+          await store.persist();
+        }
         return p.snapshot
           ? {
               nodes:
@@ -409,14 +413,9 @@ export async function apply(ctx, config = {}) {
       case "rerender": {
         idle(a.id);
         const p = store.get(a.id), sources = await collectSources(store, a.id, p.main);
-        const title = logic.parse(sources[0].content).title;
-        const results = sources.map((source) => ({
-          file: source.name,
-          prefixLines: 1,
-          nodes: logic.readAnnotations("\\title{" + title + "}\n\\section{" + (p.snapshot?.files?.[source.name]?.sections?.[0]?.name || source.context || "Paper") + "}\n" + source.content, p.snapshot?.files?.[source.name]),
-        }));
-        const nodes = mergeMaps(results, logic.parse(sources[0].content).title);
+        const nodes = renderSources(sources, p.snapshot?.files);
         p.mapNodes = nodes;
+        p.mapSchema = 2;
         await store.persist();
         return { nodes, project: publicProject(p) };
       }
@@ -443,6 +442,7 @@ export async function apply(ctx, config = {}) {
               version: j.version,
               kind: j.kind,
               status: j.status,
+              startedAt: j.startedAt,
               result: j.result,
               error: j.error,
               log: j.log?.slice(-80),
@@ -474,6 +474,7 @@ export async function apply(ctx, config = {}) {
             kind: a.action,
             sessionId: a.sessionId || store.get(a.id).lastChat,
             status: "running",
+            startedAt: Date.now(),
             controller,
             log: [],
           };
@@ -488,7 +489,7 @@ export async function apply(ctx, config = {}) {
         );
         const promise = (
           a.action === "compile"
-            ? compile(store, a.id, controller.signal)
+            ? compile(store, a.id, controller.signal, progress)
             : analyze(a.id, a.sessionId || store.get(a.id).lastChat, controller.signal, progress)
         )
           .then(async (result) => {

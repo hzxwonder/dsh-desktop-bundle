@@ -1,0 +1,35 @@
+
+> dsh-plugin-latex@0.1.6 test
+> node --test test/*.test.js
+
+✔ projects persist and duplicate imports reuse identity (13.12725ms)
+✔ file writes preserve external edits using compare-and-swap (5.98925ms)
+✔ inline creation rejects duplicate, traversal and symlink escape (4.914125ms)
+✔ review metadata and chat membership persist (4.239375ms)
+✔ semantic annotations reuse unchanged paragraphs and locate sections (2.877917ms)
+✔ compiler creates real PDF and retains last successful result after error (1633.461458ms)
+✔ subprocess cancellation, timeout and missing executable (60.679ms)
+✔ semantic splitting preserves abbreviations, inline math and comments (0.605625ms)
+✔ analysis requires complete model data and does not invent semantics (0.163959ms)
+✔ nested main file compiles with root-relative input (560.347042ms)
+✔ multi-file traversal inherits section context and rejects cycles (8.129334ms)
+✔ merged maps retain file locations and group common sections (0.2495ms)
+✔ annotation preserves compiled prose and paragraph boundaries (2272.561917ms)
+✔ Host routes report errors and fence conversation roots (40.659083ms)
+✔ review material expands only for bound sessions (6.771084ms)
+✔ public project responses keep semantic snapshots internal (5.532209ms)
+✔ multi-file analysis annotates source files and reuses all unchanged paragraphs (70.877708ms)
+✔ paper system guidance is restricted to bound project sessions (4.723709ms)
+✔ paper instructions stay outside project files (4.811542ms)
+✔ invalid semantic output leaves paper source and map unchanged (69.831792ms)
+✔ semantic JSON block accepts a model preface (15.34925ms)
+✔ global instructions persist and apply to subsequent paper prompts (7.144541ms)
+✔ internal instructions persist and archive only matching project templates (23.35275ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4680.266792

@@ -36,6 +36,21 @@ var require_logic = __commonJS({
     (function(root) {
       "use strict";
       const prefix = "% @dsh-logic ";
+      const headingLevels = { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5, abstract: 0 };
+      function heading2(line) {
+        const match = line.match(/^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*(?:\[[^\]]*\]\s*)?\{/);
+        if (!match) return null;
+        let depth = 1, end = match[0].length;
+        for (; end < line.length; end++) {
+          if (line[end] === "\\") {
+            end++;
+            continue;
+          }
+          if (line[end] === "{") depth++;
+          if (line[end] === "}" && --depth === 0) break;
+        }
+        return depth === 0 ? [match[0], match[1], line.slice(match[0].length, end)] : null;
+      }
       function hash(text) {
         let h = 2166136261;
         for (const c of text) {
@@ -80,9 +95,7 @@ var require_logic = __commonJS({
         let sec = null, protectedDepth = 0, displayEnd = null;
         const title = clean.match(/\\title\{([^}]+)\}/)?.[1]?.replace(/\s+/g, " ") || "\u8BBA\u6587\u6807\u9898";
         for (let i = 0; i < lines.length; ) {
-          const line = lines[i], m = line.match(
-            /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/
-          );
+          const line = lines[i], m = heading2(line);
           if (displayEnd) {
             segments.push({ kind: "raw", line });
             if (line.includes(displayEnd)) displayEnd = null;
@@ -108,7 +121,7 @@ var require_logic = __commonJS({
               name: m ? m[2] : "Abstract",
               command: line,
               level: m ? m[1] : "abstract",
-              headingLevel: m ? { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5 }[m[1]] : 0,
+              headingLevel: headingLevels[m ? m[1] : "abstract"],
               paragraphs: [],
               line: i
             };
@@ -232,6 +245,7 @@ var require_logic = __commonJS({
         }
         const removed = old.filter((x) => !used.has(x.id)).map((x) => x.id);
         const output = [];
+        const rendered = [];
         const meta2 = (o) => prefix + JSON.stringify(o);
         output.push(
           meta2({
@@ -244,33 +258,32 @@ var require_logic = __commonJS({
         for (const item of parsed.segments) {
           if (item.kind === "raw") {
             output.push(item.line);
+            rendered.push(item.line);
             continue;
           }
           if (item.kind === "section") {
-            output.push(
-              meta2({
-                v: 1,
-                type: "section",
-                id: item.section.id,
-                parent: sectionParents.get(item.section.id) || "paper-root",
-                label: item.section.name,
-                level: item.section.headingLevel,
-                headingType: item.section.level
-              }),
-              item.line
-            );
+            const metadata = meta2({
+              v: 1,
+              type: "section",
+              id: item.section.id,
+              parent: sectionParents.get(item.section.id) || "paper-root",
+              label: item.section.name,
+              level: item.section.headingLevel,
+              headingType: item.section.level
+            });
+            output.push(metadata, item.line);
+            rendered.push(metadata, item.line);
             continue;
           }
           const p = item.paragraph;
-          output.push(
-            meta2({
-              v: 1,
-              type: "paragraph",
-              id: p.id,
-              parent: item.section.id,
-              label: p.label
-            })
-          );
+          const paragraphMetadata = meta2({
+            v: 1,
+            type: "paragraph",
+            id: p.id,
+            parent: item.section.id,
+            label: p.label
+          });
+          output.push(paragraphMetadata);
           for (const sentence of p.sentenceNodes)
             output.push(
               meta2({
@@ -282,14 +295,15 @@ var require_logic = __commonJS({
               })
             );
           output.push(p.source);
+          rendered.push(paragraphMetadata, annotateSentenceComments(p.source, p.sentenceNodes));
         }
         const annotationIndex = readAnnotations(output.join("\n"));
-        const compact = output.map((line) => {
+        const compact = rendered.map((line) => {
           if (!line.startsWith(prefix)) return line;
           const n = JSON.parse(line.slice(prefix.length));
           if (n.type === "paper") return null;
           const label = n.type === "section" ? semantics.sections?.[n.label] || previous?.sectionIntents?.[n.label] || n.label : n.label;
-          return "% @" + { section: "c", paragraph: "p", sentence: "s" }[n.type] + ":" + label.replace(/[\r\n]+/g, " ");
+          return "% @" + { section: "c", paragraph: "p", sentence: "s" }[n.type] + ":" + (n.type === "section" ? "[" + n.headingType + "] " : "") + label.replace(/[\r\n]+/g, " ");
         }).filter((x) => x !== null);
         const annotated = compact.join("\n");
         const snapshot = {
@@ -316,6 +330,40 @@ var require_logic = __commonJS({
         };
         return { annotated, snapshot, nodes: readSemanticAnnotations(annotated, snapshot) };
       }
+      function annotateSentenceComments(source, sentences) {
+        if (!sentences?.length) return source;
+        const normalized = source.replace(/\s+/g, " ").trim();
+        const normalizedToRaw = [];
+        let raw = 0, normalizedIndex = 0;
+        while (raw < source.length && normalizedIndex < normalized.length) {
+          if (/\s/.test(source[raw])) {
+            const start = raw;
+            while (/\s/.test(source[raw] || "")) raw++;
+            if (normalized[normalizedIndex] === " ") normalizedToRaw[normalizedIndex++] = start;
+            continue;
+          }
+          if (normalized[normalizedIndex] === source[raw]) normalizedToRaw[normalizedIndex++] = raw;
+          raw++;
+        }
+        const points = [];
+        let from = 0;
+        for (const sentence of sentences) {
+          const text = typeof sentence === "string" ? sentence : sentence.source;
+          const at = normalized.indexOf(text, from);
+          if (at < 0 || normalizedToRaw[at] == null) continue;
+          const leading = source.match(/^\s*/)?.[0].length || 0;
+          points.push([normalizedToRaw[at] === leading ? 0 : normalizedToRaw[at], text, typeof sentence === "string" ? "" : sentence.label || ""]);
+          from = at + text.length;
+        }
+        let result = source;
+        for (let i = points.length - 1; i >= 0; i--) {
+          const [at, , label] = points[i];
+          const marker = "% @s:" + label.replace(/[\r\n]+/g, " ") + "\n";
+          const prefix2 = result.slice(0, at);
+          result = prefix2 + (!at || /[\r\n]$/.test(prefix2) ? marker : "\n" + marker) + result.slice(at);
+        }
+        return result;
+      }
       function readSemanticAnnotations(source, snapshot) {
         const lines = source.split("\n"), title = parse(source).title, nodes = [
           {
@@ -327,7 +375,7 @@ var require_logic = __commonJS({
             source: title
           }
         ], used = /* @__PURE__ */ new Set();
-        let section = null, paragraph = null, pendingSection = null, pendingParagraph = null, pendingSentences = [], serial = 0;
+        let section = null, paragraph = null, sectionStack = [], pendingSection = null, pendingParagraph = null, pendingSentences = [], serial = 0;
         const add = (type, label, line, parent, body) => {
           const prior = snapshot?.annotationIndex?.find(
             (n2) => n2.type === type && !used.has(n2.id)
@@ -338,27 +386,26 @@ var require_logic = __commonJS({
           nodes.push(n);
           return n;
         };
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i], mark = line.match(/^\s*% @([cps]):(.+)$/), command2 = line.match(
-            /^\s*\\(chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\{([^}]+)\}/
-          );
+        for (let i = 0; i < lines.length; ) {
+          const line = lines[i], mark = line.match(/^\s*% @([cps]):(.+)$/), command2 = heading2(line);
           if (mark) {
             const label = mark[2].trim();
-            if (mark[1] === "c") pendingSection = { label, line: i };
+            if (mark[1] === "c") {
+              const typed = label.match(/^\[([^\]]+)\]\s*(.*)$/);
+              pendingSection = typed ? Object.hasOwn(headingLevels, typed[1]) && typed[2].trim() ? { label: typed[2].trim(), headingType: typed[1], line: i } : null : { label, line: i };
+            }
             if (mark[1] === "p") {
               pendingParagraph = { label, line: i };
               pendingSentences = [];
             }
             if (mark[1] === "s") pendingSentences.push({ label, line: i });
+            i++;
             continue;
           }
           if (command2 || /^\s*\\begin\{abstract\}/.test(line)) {
-            const headingLevel = command2 ? { chapter: 0, section: 1, subsection: 2, subsubsection: 3, paragraph: 4, subparagraph: 5 }[command2[1]] : 0;
-            const parent = (() => {
-              let candidate = section;
-              while (candidate && (candidate.level ?? 0) >= headingLevel) candidate = nodes.find((n) => n.id === candidate.parent);
-              return candidate?.id || "paper-root";
-            })();
+            const headingLevel = headingLevels[command2 ? command2[1] : "abstract"];
+            while (sectionStack.length && sectionStack.at(-1).level >= headingLevel) sectionStack.pop();
+            const parent = sectionStack.at(-1)?.id || "paper-root";
             section = add(
               "section",
               command2?.[2] || "Abstract",
@@ -368,26 +415,42 @@ var require_logic = __commonJS({
             );
             section.level = headingLevel;
             section.headingType = command2?.[1] || "abstract";
+            sectionStack.push({ id: section.id, level: headingLevel });
             section.intent = pendingSection?.label || section.label;
             pendingSection = null;
             paragraph = null;
             pendingParagraph = null;
             pendingSentences = [];
+            i++;
             continue;
           }
           if (/^\s*\\end\{abstract\}/.test(line)) {
             section = null;
             paragraph = null;
+            sectionStack = [];
+            i++;
             continue;
           }
           if (!line.trim()) {
             paragraph = null;
+            i++;
             continue;
           }
           if (pendingParagraph && section && !/^\s*%/.test(line)) {
             let end = i;
-            while (end < lines.length && lines[end].trim() && !/^\s*(?:%|\\)/.test(lines[end]) && !/(?<!\\)%/.test(lines[end])) end++;
-            const sourceParagraph = lines.slice(i, end).join("\n");
+            const sourceLines = [], sentenceNotes = pendingSentences.splice(0);
+            while (end < lines.length) {
+              const current = lines[end], sentenceMark = current.match(/^\s*% @s:(.+)$/);
+              if (sentenceMark) {
+                sentenceNotes.push({ label: sentenceMark[1].trim(), line: end });
+                end++;
+                continue;
+              }
+              if (!current.trim() || heading2(current) || /^\s*\\(?:begin|end)\{/.test(current) || /^\s*%/.test(current) || /(?<!\\)%/.test(current)) break;
+              sourceLines.push(current);
+              end++;
+            }
+            const sourceParagraph = sourceLines.join("\n");
             paragraph = add(
               "paragraph",
               pendingParagraph.label,
@@ -396,11 +459,14 @@ var require_logic = __commonJS({
               sourceParagraph || line
             );
             const sentences = splitSentences(sourceParagraph);
-            if (pendingSentences.length === sentences.length)
-              pendingSentences.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
+            if (sentenceNotes.length === sentences.length)
+              sentenceNotes.forEach((note, index) => add("sentence", note.label, note.line, paragraph.id, sentences[index]));
             pendingParagraph = null;
             pendingSentences = [];
+            i = end;
+            continue;
           }
+          i++;
         }
         return nodes;
       }
@@ -44545,12 +44611,38 @@ var style_default = `.lp {
 }
 .lp-progress,
 .lp-map-toolbar {
-  padding: 7px 14px;
-  background: var(--lp-side);
+  position: relative;
+  min-height: 62px;
+  padding: 9px 14px;
+  background: color-mix(in srgb, var(--lp-accent) 6%, var(--lp-bg));
   border-bottom: 1px solid var(--lp-line);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
+  overflow: hidden;
+}
+.lp-progress-copy { display:flex; flex:1; min-width:0; flex-direction:column; line-height:1.35; }
+.lp-progress-copy strong { font-size:12px; font-weight:650; color:var(--lp-text); }
+.lp-progress-stage { overflow:hidden; color:var(--lp-muted); font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.lp-progress-time { flex:none; color:var(--lp-muted); font-size:11px; font-variant-numeric:tabular-nums; }
+.lp-progress-indicator { width:26px; height:26px; flex:none; display:grid; place-items:center; border-radius:50%; background:color-mix(in srgb, var(--lp-accent) 13%, var(--lp-bg)); }
+.lp-progress-indicator i { width:14px; height:14px; border:2px solid color-mix(in srgb, var(--lp-accent) 25%, transparent); border-top-color:var(--lp-accent); border-radius:50%; animation:lp-spin .8s linear infinite; }
+.lp-progress button { flex:none; display:inline-flex; align-items:center; gap:5px; color:var(--lp-muted); border:1px solid var(--lp-line) !important; background:var(--lp-bg) !important; }
+.lp-progress button:hover { color:var(--lp-text); border-color:var(--lp-accent) !important; }
+.lp-progress-track { position:absolute; height:2px; left:0; right:0; bottom:0; overflow:hidden; background:color-mix(in srgb, var(--lp-accent) 12%, transparent); }
+.lp-progress-track i { display:block; width:34%; height:100%; background:var(--lp-accent); transform:translateX(-110%); animation:lp-progress-sweep 1.7s ease-in-out infinite; }
+.lp-progress-analysis .lp-progress-indicator { background:color-mix(in srgb, #268b72 13%, var(--lp-bg)); }
+.lp-progress-analysis .lp-progress-indicator i { border-top-color:#268b72; }
+.lp-progress-analysis .lp-progress-track i { background:#268b72; }
+@keyframes lp-spin { to { transform:rotate(360deg); } }
+@keyframes lp-progress-sweep { 0% { transform:translateX(-110%); } 100% { transform:translateX(410%); } }
+@media (max-width:600px) {
+  .lp-progress { min-height:58px; padding:8px 10px; gap:8px; }
+  .lp-progress-time { display:none; }
+  .lp-progress button { padding:5px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-progress-indicator i, .lp-progress-track i { animation-duration:3s; }
 }
 .lp-progress button {
   margin-left: auto;
@@ -44671,8 +44763,11 @@ body:not([data-ds-dark-theme]) .lp-theme-system {
 .lp-conversation { flex:1; }
 .lp-start-chat { margin:12px 16px; text-align:left; padding:16px !important; background:var(--lp-side) !important; border:1px solid var(--lp-line) !important; border-radius:18px !important; color:var(--lp-muted) !important; }
 .lp-entry { background:var(--dsw-alias-bg-base, #fff); color:var(--dsw-alias-label-primary, #272727); }
-.lp-map-scroll { background-image:none; padding:20px; }
-.lp-map-plane { position:relative; min-height:100%; }
+.lp-map-scroll { background-image:none; padding:0; overflow:hidden; position:relative; cursor:grab; touch-action:none; user-select:none; overscroll-behavior:none; }
+.lp-map-scroll.is-dragging, .lp-map-scroll.is-dragging * { cursor:grabbing !important; }
+.lp-map-scroll:focus-visible { outline:2px solid var(--lp-accent); outline-offset:-3px; }
+.lp-map-plane { position:absolute; top:0; left:0; transform-origin:0 0; }
+.lp-map-hint { position:absolute; left:16px; bottom:16px; color:var(--lp-muted); font-size:12px; pointer-events:none; background:var(--lp-bg); padding:6px 10px; border-radius:8px; }
 .lp-map-edges { position:absolute; inset:0; width:100%; height:100%; overflow:visible; pointer-events:none; }
 .lp-map-edges path { fill:none; stroke:var(--lp-accent); stroke-width:1.5; opacity:.55; }
 .lp-node-wrap:after, .lp-children:before, .lp-children > .lp-branch:before { display:none; }
@@ -45049,7 +45144,31 @@ body:has(.lp-theme-light) .dshDesktopMacCaptionRow,
 body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopMacCaptionRow { background:#fff; }
 body:has(.lp-theme-light) .dshDesktopFrame,
 body:has(.lp-theme-system):not([data-ds-dark-theme]) .dshDesktopFrame { background:#f3f3f3; }
+/* The macOS caption row sits outside the plugin root. Keep it on the same
+   surface when Desktop is using its dark system theme. */
+body:has(.lp-theme-dark) .dshDesktopMacCaptionRow,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopMacCaptionRow,
+body:has(.lp-theme-dark) .dshDesktopFrame,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopFrame {
+  background: var(--lp-side, #171717) !important;
+}
+body:has(.lp-theme-dark) .dshDesktopFrame,
+body[data-ds-dark-theme]:has(.lp-theme-system) .dshDesktopFrame {
+  color-scheme: dark;
+}
 `;
+
+// client/map-viewport.js
+var clampScale = (scale) => Math.max(0.08, Math.min(2.4, scale));
+function zoomAt(view, scale, point) {
+  scale = clampScale(scale);
+  const ratio = scale / view.scale;
+  return { scale, x: point.x - (point.x - view.x) * ratio, y: point.y - (point.y - view.y) * ratio };
+}
+function fitMap(width, height, areaWidth, areaHeight) {
+  const scale = clampScale(Math.min(1.2, Math.max(1, areaWidth - 64) / width, Math.max(1, areaHeight - 96) / height));
+  return { scale, x: (areaWidth - width * scale) / 2, y: (areaHeight - height * scale) / 2 };
+}
 
 // client/icons.jsx
 var import_react = __toESM(require("react"), 1);
@@ -45101,6 +45220,32 @@ var api = async (args) => {
     });
   return data.value;
 };
+function CompileProgress({ job, onCancel }) {
+  const [now, setNow] = (0, import_react2.useState)(Date.now());
+  (0, import_react2.useEffect)(() => {
+    const timer = setInterval(() => setNow(Date.now()), 1e3);
+    return () => clearInterval(timer);
+  }, []);
+  const elapsed = Math.max(0, Math.floor((now - (job.startedAt || now)) / 1e3));
+  const stage = job.log?.at(-1)?.message || "\u6B63\u5728\u51C6\u5907 LaTeX \u7F16\u8BD1\u73AF\u5883";
+  const time = elapsed < 60 ? `${elapsed} \u79D2` : `${Math.floor(elapsed / 60)} \u5206 ${elapsed % 60} \u79D2`;
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-progress", role: "status", "aria-live": "polite", children: [
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-progress-indicator", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("i", {}) }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-progress-copy", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: "\u6B63\u5728\u7F16\u8BD1\u8BBA\u6587" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-progress-stage", children: stage })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-progress-time", children: [
+      "\u5DF2\u8FD0\u884C ",
+      time
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { onClick: onCancel, children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: "\u53D6\u6D88" })
+    ] }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-progress-track", "aria-hidden": "true", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("i", {}) })
+  ] });
+}
 var uid = () => crypto.randomUUID();
 var RevisionWidget = class extends WidgetType {
   constructor(hunk, active, decide) {
@@ -45354,7 +45499,29 @@ function PDF({ base64, zoom = 1 }) {
 }
 function MindMap({ data, onLocate }) {
   const scroll = (0, import_react2.useRef)(), canvas = (0, import_react2.useRef)(), drag = (0, import_react2.useRef)();
-  const [fold, setFold] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [scale, setScale] = (0, import_react2.useState)(0.8), [selected, setSelected] = (0, import_react2.useState)(null), [edges, setEdges] = (0, import_react2.useState)([]);
+  const [fold, setFold] = (0, import_react2.useState)(/* @__PURE__ */ new Set()), [view, setView] = (0, import_react2.useState)({ x: 32, y: 32, scale: 0.8 }), [dragging, setDragging] = (0, import_react2.useState)(false), [selected, setSelected] = (0, import_react2.useState)(null), [edges, setEdges] = (0, import_react2.useState)([]);
+  const { scale } = view;
+  const zoom = (nextScale, point) => {
+    const area = scroll.current;
+    setView((old) => zoomAt(old, nextScale, point || { x: area.clientWidth / 2, y: area.clientHeight / 2 }));
+  };
+  const fit = () => {
+    const area = scroll.current, plane = canvas.current;
+    setView(fitMap(plane.offsetWidth, plane.offsetHeight, area.clientWidth, area.clientHeight));
+  };
+  (0, import_react2.useEffect)(() => {
+    const area = scroll.current;
+    const wheel = (event) => {
+      event.preventDefault();
+      if (!event.deltaY || drag.current?.active) return;
+      const rect = area.getBoundingClientRect();
+      const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? area.clientHeight : 1);
+      const factor = Math.exp(-Math.max(-150, Math.min(150, delta)) * 2e-3);
+      setView((old) => zoomAt(old, old.scale * factor, { x: event.clientX - rect.left, y: event.clientY - rect.top }));
+    };
+    area.addEventListener("wheel", wheel, { passive: false });
+    return () => area.removeEventListener("wheel", wheel);
+  }, []);
   const nodes = data?.nodes || [], root = nodes.find((n) => n.type === "paper"), children = (id) => nodes.filter((n) => n.parent === id);
   (0, import_react2.useLayoutEffect)(() => {
     const plane = canvas.current;
@@ -45434,40 +45601,72 @@ function MindMap({ data, onLocate }) {
       "div",
       {
         ref: scroll,
-        className: "lp-map-scroll",
+        className: "lp-map-scroll" + (dragging ? " is-dragging" : ""),
+        tabIndex: 0,
+        role: "region",
+        "aria-label": "\u884C\u6587\u5BFC\u56FE\u753B\u5E03\uFF1A\u62D6\u62FD\u79FB\u52A8\uFF0C\u6EDA\u8F6E\u7F29\u653E\uFF0C\u65B9\u5411\u952E\u79FB\u52A8\uFF0C\u52A0\u51CF\u952E\u7F29\u653E\uFF0C0 \u9002\u5408\u753B\u5E03",
         onPointerDown: (e) => {
-          if (e.target.closest("button")) return;
+          if (e.button !== 0 || e.target.closest(".lp-fold")) return;
           drag.current = {
             x: e.clientX,
             y: e.clientY,
-            left: e.currentTarget.scrollLeft,
-            top: e.currentTarget.scrollTop
+            origin: view,
+            pointerId: e.pointerId,
+            active: true,
+            moved: false
           };
-          e.currentTarget.setPointerCapture(e.pointerId);
+          if (!e.target.closest("button")) e.currentTarget.focus({ preventScroll: true });
         },
         onPointerMove: (e) => {
-          if (!drag.current) return;
-          e.currentTarget.scrollLeft = drag.current.left - e.clientX + drag.current.x;
-          e.currentTarget.scrollTop = drag.current.top - e.clientY + drag.current.y;
+          const start = drag.current;
+          if (!start?.active || start.pointerId !== e.pointerId) return;
+          const dx = e.clientX - start.x, dy = e.clientY - start.y;
+          if (!start.moved && Math.hypot(dx, dy) < 4) return;
+          start.moved = true;
+          e.preventDefault();
+          e.currentTarget.setPointerCapture(e.pointerId);
+          setDragging(true);
+          setView({ ...start.origin, x: start.origin.x + dx, y: start.origin.y + dy });
         },
-        onPointerUp: () => {
-          drag.current = null;
+        onPointerUp: (e) => {
+          if (drag.current) drag.current.active = false;
+          if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+          setDragging(false);
         },
         onPointerCancel: () => {
           drag.current = null;
+          setDragging(false);
         },
-        onWheel: (e) => {
-          if (e.ctrlKey || e.metaKey)
-            setScale(
-              (v) => Math.max(0.3, Math.min(1.6, v + (e.deltaY > 0 ? -0.05 : 0.05)))
-            );
+        onLostPointerCapture: () => {
+          if (drag.current) drag.current.active = false;
+          setDragging(false);
+        },
+        onClickCapture: (e) => {
+          if (drag.current?.moved) {
+            e.preventDefault();
+            e.stopPropagation();
+            drag.current = null;
+          }
+        },
+        onKeyDown: (e) => {
+          if (e.target !== e.currentTarget) return;
+          const moves = { ArrowLeft: [60, 0], ArrowRight: [-60, 0], ArrowUp: [0, 60], ArrowDown: [0, -60] };
+          if (moves[e.key]) {
+            e.preventDefault();
+            const [x, y] = moves[e.key];
+            setView((old) => ({ ...old, x: old.x + x, y: old.y + y }));
+          } else if (["+", "=", "-", "0"].includes(e.key)) {
+            e.preventDefault();
+            if (e.key === "0") fit();
+            else zoom(scale * (e.key === "-" ? 1 / 1.2 : 1.2));
+          }
         },
         children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
           "div",
           {
             ref: canvas,
             className: "lp-map-plane",
-            style: { zoom: scale, padding: 40, width: "max-content" },
+            style: { transform: `translate(${view.x}px, ${view.y}px) scale(${scale})`, width: "max-content" },
             children: [
               /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("svg", { className: "lp-map-edges", "aria-hidden": "true", children: edges.map((e) => /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: e.d }, e.id)) }),
               root ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map-two-sided", children: [
@@ -45480,39 +45679,24 @@ function MindMap({ data, onLocate }) {
         )
       }
     ),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-map-hint", children: "\u62D6\u62FD\u79FB\u52A8 \xB7 \u6EDA\u8F6E\u7F29\u653E" }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-map-zoom", children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setScale(Math.max(0.3, scale - 0.1)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "minus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u7F29\u5C0F\u5BFC\u56FE", onClick: () => zoom(scale / 1.2), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "minus" }) }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { children: [
         Math.round(scale * 100),
         "%"
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: () => setScale(Math.min(1.6, scale + 0.1)), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }) }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u653E\u5927\u5BFC\u56FE", onClick: () => zoom(scale * 1.2), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "plus" }) }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
         "button",
         {
-          onClick: () => {
-            const area = scroll.current, rect = canvas.current.getBoundingClientRect();
-            setScale(
-              Math.max(
-                0.3,
-                Math.min(
-                  1.2,
-                  scale * Math.min(
-                    area.clientWidth / rect.width,
-                    area.clientHeight / rect.height
-                  )
-                )
-              )
-            );
-            area.scrollTo(0, 0);
-          },
+          onClick: fit,
           children: "\u9002\u5408\u753B\u5E03"
         }
       )
     ] })
   ] });
 }
-var analyzeStateText = { running: "\u6B63\u5728\u751F\u6210\u2026", failed: "\u751F\u6210\u5931\u8D25", completed: "\u751F\u6210\u5B8C\u6210" };
 function ImagePreview({ asset }) {
   const [scale, setScale] = (0, import_react2.useState)(1), [offset, setOffset] = (0, import_react2.useState)({ x: 0, y: 0 });
   const drag = (0, import_react2.useRef)(null);
@@ -45557,36 +45741,6 @@ function ImagePreview({ asset }) {
         children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("img", { src: `data:${asset.mime};base64,${asset.data}`, alt: asset.name, style: { transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})` } })
       }
     )
-  ] });
-}
-function AnalyzeCard({ run, onClose, onView, onCancel, onRetry }) {
-  const listRef = (0, import_react2.useRef)(null);
-  const lines = run.log || [];
-  (0, import_react2.useEffect)(() => {
-    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [lines.length, run.status]);
-  if (run.status === "completed" && !lines.length) return null;
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-analyze", "aria-label": "\u884C\u6587\u5BFC\u56FE\u751F\u6210\u8FDB\u5EA6", children: [
-    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "lp-analyze-avatar" + (run.status === "running" ? " running" : "") + (run.status === "failed" ? " failed" : ""), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "map" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-analyze-title", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("b", { children: "\u884C\u6587\u5BFC\u56FE" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("small", { children: [
-          analyzeStateText[run.status] || "",
-          run.status === "failed" && run.error ? " \xB7 " + run.error : ""
-        ] })
-      ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("span", { className: "lp-analyze-actions", children: [
-        run.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onCancel, children: "\u53D6\u6D88" }),
-        run.status === "failed" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onRetry, children: "\u91CD\u8BD5" }),
-        run.status === "completed" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: onView, children: "\u67E5\u770B\u5BFC\u56FE" }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { "aria-label": "\u6536\u8D77\u8FDB\u5EA6\u5BF9\u8BDD", title: "\u6536\u8D77\u8FDB\u5EA6\u5BF9\u8BDD", onClick: onClose, children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Icon, { name: "close" }) })
-      ] })
-    ] }),
-    lines.length > 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-analyze-log", ref: listRef, children: lines.map((line, i) => /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("p", { children: [
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("time", { children: new Date(line.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" }) }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: line.message })
-    ] }, line.time + ":" + i)) })
   ] });
 }
 function FileTree({ items, active, openDirs, onToggle, onOpen, badgeOf }) {
@@ -45813,7 +45967,7 @@ function apply(ctx) {
           else setFile((f) => ({ ...f, hash: saved.hash, dirty: true }));
         }
         setStatus("\u5DF2\u4FDD\u5B58 \xB7 \u6B63\u5728\u7F16\u8BD1");
-        setJob({ kind: "compile", status: "running" });
+        setJob({ kind: "compile", status: "running", startedAt: Date.now(), log: [] });
         return saved;
       } catch (e) {
         if (e.code === "CONFLICT") setConflict(current);
@@ -45933,7 +46087,7 @@ function apply(ctx) {
         });
         id = typeof created === "string" ? created : created.sessionId || created.id;
         await update({
-          chat: { id, title: "\u8BBA\u6587\u5BF9\u8BDD " + (project.chats.length + 1), ...mindmap ? { kind: "mindmap" } : {} }
+          chat: { id, title: mindmap ? "\u884C\u6587\u5BFC\u56FE" : "\u8BBA\u6587\u5BF9\u8BDD " + (project.chats.length + 1), ...mindmap ? { kind: "mindmap" } : {} }
         });
       } else if (mindmap && !project.chats.find((c) => c.id === id)?.kind) {
         await update({ chat: { id, title: project.chats.find((c) => c.id === id)?.title || "\u8BBA\u6587\u5BFC\u56FE\u4F1A\u8BDD", kind: "mindmap" } });
@@ -45988,7 +46142,7 @@ function apply(ctx) {
             setMapRun({
               status: j.status,
               error: j.error,
-              log: j.log || [],
+              log: (j.log || []).filter((line) => !line.message.includes("\u6279")),
               stats: j.result?.stats
             });
           if (j?.status === "completed" && jobHandled.current !== p.id + ":" + j.version) {
@@ -46019,7 +46173,6 @@ function apply(ctx) {
                 setFile(next);
               }
               setStatus("\u884C\u6587\u5BFC\u56FE\u5DF2\u66F4\u65B0");
-              setView("map");
             }
           }
           if (j?.status === "failed") {
@@ -46116,7 +46269,7 @@ function apply(ctx) {
       if (result.settled) {
         setMap(null);
         setStatus("\u4FEE\u6539\u5DF2\u6574\u5408 \xB7 \u6B63\u5728\u7F16\u8BD1");
-        setJob({ kind: "compile", status: "running" });
+        setJob({ kind: "compile", status: "running", startedAt: Date.now(), log: [] });
       }
     }
     const changed = (text) => {
@@ -46142,13 +46295,25 @@ function apply(ctx) {
         setChatOpen(true);
         setMapRun({
           status: "running",
-          log: [{ time: Date.now(), message: "\u5DF2\u542F\u52A8\u884C\u6587\u5BFC\u56FE\u5206\u6790" }]
+          log: [{ time: Date.now(), message: "\u6B63\u5728\u5411\u884C\u6587\u5BFC\u56FE\u4F1A\u8BDD\u53D1\u9001\u5168\u6587\u4EFB\u52A1" }]
         });
+        const session = ctx.sessions.binding(sessionId)?.session;
+        if (!session) throw new Error("\u884C\u6587\u5BFC\u56FE\u4F1A\u8BDD\u5C1A\u672A\u5C31\u7EEA\uFF0C\u8BF7\u91CD\u8BD5");
+        try {
+          await session.prompt(
+            "\u8BF7\u6839\u636E paper-mindmap-update skill\uFF0C\u5BF9\u5F53\u524D\u8BBA\u6587\u5168\u6587\uFF08\u4E3B\u6587\u4EF6\u53CA\u6240\u6709\u5F15\u7528\u6587\u672C\u6587\u4EF6\uFF09\u751F\u6210\u6216\u66F4\u65B0\u884C\u6587\u5BFC\u56FE\u3002\u8BF7\u8C03\u7528 paper-workbench \u7684 list \u627E\u5230\u5F53\u524D\u8BBA\u6587\uFF0C\u518D\u8C03\u7528 analyze \u542F\u52A8\u5168\u6587\u5206\u6790\u5E76\u8F6E\u8BE2 job \u76F4\u5230\u5B8C\u6210\uFF1B\u4E0D\u5F97\u624B\u52A8\u62C6\u5206\u6216\u7F16\u8F91 TeX \u6587\u4EF6\u3002\u4E25\u683C\u9075\u5B88 skill \u4E2D\u53EA\u5199\u5165\u5BFC\u56FE\u6CE8\u91CA\u3001\u539F\u6587\u5B57\u7B26\u5B8C\u5168\u4E00\u81F4\u3001\u8FD0\u884C\u89C4\u8303\u9A8C\u8BC1\u5E76\u62A5\u544A\u7ED3\u679C\u7684\u8981\u6C42\u3002",
+            "queue"
+          );
+        } catch (error2) {
+          setMapRun({ status: "failed", error: error2.message, log: [] });
+          throw error2;
+        }
+        return;
       } else {
         setChatOpen(false);
       }
       await api({ action: kind, id: pRef.current.id, sessionId });
-      setJob({ kind, status: "running" });
+      setJob({ kind, status: "running", startedAt: Date.now(), log: [] });
       setShowLog(false);
     }
     const toggleDir = (path2) => setOpenDirs((v) => {
@@ -46355,10 +46520,7 @@ function apply(ctx) {
           }
         )
       ] }),
-      job?.status === "running" && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-progress", children: [
-        job.kind === "compile" ? "\u6B63\u5728\u7F16\u8BD1\u2026" : mapRun?.log?.length ? mapRun.log[mapRun.log.length - 1].message : "Agent \u6B63\u5728\u5206\u6790\u884C\u6587\u7ED3\u6784\u2026",
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { onClick: safe(() => api({ action: "cancel", id: p.id })), children: "\u53D6\u6D88" })
-      ] })
+      job?.status === "running" && job.kind === "compile" && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(CompileProgress, { job, onCancel: safe(() => api({ action: "cancel", id: p.id })) })
     ] });
     const settingsPanel = settings && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-settings-overlay", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "lp-settings-panel" + (settings === "project" ? " lp-project-settings" : ""), role: "dialog", "aria-modal": "true", "aria-label": settings === "global" ? "\u5168\u5C40\u8BBE\u7F6E" : "\u8BBA\u6587\u8BBE\u7F6E", onKeyDown: (e) => {
       if (e.key === "Escape" && !settingsBusy) closeSettings();
@@ -46805,12 +46967,12 @@ function apply(ctx) {
             /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
               "button",
               {
-                disabled: job?.status === "running",
+                disabled: job?.status === "running" || mapRun?.status === "running",
                 onClick: safe(() => start("analyze")),
                 children: "\u66F4\u65B0\u5BFC\u56FE"
               }
             ),
-            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !map || job?.status === "running", onClick: safe(async () => {
+            /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { disabled: !map || job?.status === "running" || mapRun?.status === "running", onClick: safe(async () => {
               const rendered = await api({ action: "rerender", id: pRef.current.id });
               setMap(rendered);
             }), children: "\u91CD\u65B0\u6E32\u67D3" })
@@ -46876,17 +47038,6 @@ function apply(ctx) {
                 }
               ) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-empty", children: "\u9009\u62E9\u6587\u4EF6\u5F00\u59CB\u7F16\u8F91" }) })
             ] }),
-            chatOpen && mapRun && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
-              AnalyzeCard,
-              {
-                run: mapRun,
-                onClose: () => setMapRun(null),
-                onView: () => setView("map"),
-                onCancel: () => api({ action: "cancel", id: p.id }).catch(() => {
-                }),
-                onRetry: () => start("analyze").catch((e) => setError(e.message))
-              }
-            ),
             p.lastChat ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("div", { className: "lp-native " + (chatOpen ? "lp-conversation" : "lp-composer"), children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(NativeChat, { sessionId: p.lastChat }) }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "lp-start-chat", onClick: safe(() => ensureChat()), children: "\u7EE7\u7EED\u8BA8\u8BBA\u8BBA\u6587\u2026" })
           ] }),
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(

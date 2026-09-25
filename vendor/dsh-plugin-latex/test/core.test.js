@@ -82,6 +82,14 @@ test("mindmap comments preserve every source character", () => {
     [para.hash]: { label: "Paragraph", sentences: para.sentences.map(() => "Sentence") },
   });
   assert.equal(verifySourceConsistency(src, generated.annotated), true);
+  assert.match(
+    generated.annotated,
+    /% @p:Paragraph\n% @s:Sentence\n\s*First sentence\.  \n% @s:Sentence\nSecond sentence\./,
+  );
+  assert.deepEqual(
+    logic.readAnnotations(generated.annotated).filter((n) => n.type === "sentence").map((n) => n.source),
+    ["First sentence.", "Second sentence.", "Next line."],
+  );
   assert.throws(() => verifySourceConsistency(src, generated.annotated.replace("  First", " First")), /一致性/);
   assert.throws(() => verifySourceConsistency(src, generated.annotated.replace("Next line.\r\n", "Next line.\n")), /一致性/);
 });
@@ -104,6 +112,67 @@ One sentence.`;
   ]);
   const parsedInvalid = logic.readAnnotations(result.annotated + "\n% @x:unsupported\n% @s:orphan");
   assert.equal(parsedInvalid.some((n) => n.label === "unsupported" || n.label === "orphan"), false);
+});
+test("typed and legacy comments retain every heading level and nested titles", () => {
+  const src = String.raw`\chapter{Overview}
+\section[Short]{Method with \textbf{detail}}
+\subsection*{Design}
+\subsubsection{Implementation}
+\paragraph{Detail}
+\subparagraph{Example}
+One sentence.
+\section{Results}`;
+  const semantics = {};
+  for (const p of logic.parse(src).sections.flatMap(s => s.paragraphs))
+    semantics[p.hash] = { label: "Intent", sentences: p.sentences.map(() => "Meaning") };
+  const result = logic.generate(src, null, semantics);
+  assert.equal(verifySourceConsistency(src, result.annotated), true);
+  assert.match(result.annotated, /% @c:\[subsubsection\]/);
+  for (const source of [result.annotated, result.annotated.replace(/@c:\[[^\]]+\] /g, "@c:")]) {
+    const headings = logic.readAnnotations(source).filter(n => n.type === "section");
+    assert.deepEqual(headings.map(n => n.level), [0, 1, 2, 3, 4, 5, 1]);
+    assert.equal(headings[1].label, String.raw`Method with \textbf{detail}`);
+    for (let i = 1; i <= 5; i++) assert.equal(headings[i].parent, headings[i - 1].id);
+    assert.equal(headings[6].parent, headings[0].id);
+  }
+});
+test("source rendering retains cross-file nesting, repeated names and exact locations", async () => {
+  const { renderSources } = await import("../lib/project-sources.js");
+  const nodes = renderSources([
+    { name: "main.tex", content: String.raw`\title{Demo}
+% @c:Overview
+\chapter{Overview}
+% @c:Method
+\section{Method}
+\input{body}
+% @c:Results
+\chapter{Results}
+% @c:Method
+\section{Method}` },
+    { name: "body.tex", context: "Method", contextHeading: {file:"main.tex", name:"Method", headingType:"section", level:1, beforeLine:6}, content: String.raw`% @c:Design
+\subsection{Design}
+% @p:Intent
+% @s:Meaning
+One sentence.` },
+  ]);
+  const chapters = nodes.filter(n => n.headingType === "chapter");
+  const methods = nodes.filter(n => n.label === "Method");
+  assert.equal(methods.length, 2);
+  assert.deepEqual(methods.map(n => n.parent), chapters.map(n => n.id));
+  const design = nodes.find(n => n.label === "Design");
+  assert.equal(design.parent, methods[0].id);
+  assert.equal(design.file, "body.tex");
+  assert.equal(design.line, 1);
+  assert.equal(nodes.some(n => n.id === n.parent), false);
+});
+test("source rendering skips files without supported mindmap annotations", async () => {
+  const { renderSources } = await import("../lib/project-sources.js");
+  const nodes = renderSources([{ name: "main.tex", content: String.raw`\title{Demo}
+\chapter{Overview}
+Ordinary text.
+% @x:unsupported
+\section{Method}` }]);
+  assert.deepEqual(nodes.map(n => [n.type, n.label]), [["paper", "Demo"]]);
 });
 test("compiler creates real PDF and retains last successful result after error", async (t) => {
   const { s, p } = await setup(t);

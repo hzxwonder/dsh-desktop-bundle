@@ -226,6 +226,8 @@ test("multi-file analysis annotates source files and reuses all unchanged paragr
   const callCountAfterFirst = h.calls();
   const rendered = await h.request({action:"rerender",id:p.id});
   assert.equal(rendered.ok, true);
+  assert.deepEqual(rendered.value.nodes.map(n => [n.type, n.label, n.file, n.line]), first.nodes.map(n => [n.type, n.label, n.file, n.line]));
+  assert.equal(rendered.value.nodes.some(n => n.id === n.parent), false);
   assert.equal(h.calls(), callCountAfterFirst);
   assert.equal(first.nodes[0].label, "Demo");
   const body = (await h.request({ action: "read", id: p.id, file: "body.tex" }))
