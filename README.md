@@ -1,4 +1,4 @@
-# DSH Desktop Bundle
+# DSH Omni
 
 DSH Omni 是一套按固定版本装配的 DSH Desktop 环境：仓库里存放 16 个插件源码快照，
 `setup.sh` 把它们组装成一个 Desktop profile，Release 里给出配套的桌面应用安装包。
@@ -31,8 +31,8 @@ DSH Omni 是一套按固定版本装配的 DSH Desktop 环境：仓库里存放 
 ```bash
 # 1. 安装桌面应用（Release 里的 dmg，见下节“应用来源”）
 # 2. 取本仓库
-git clone https://github.com/hzxwonder/dsh-desktop-bundle.git
-cd dsh-desktop-bundle
+git clone https://github.com/hzxwonder/dsh-omni.git
+cd dsh-omni
 
 # 3. 一条命令装配
 ./setup.sh --app ~/Downloads/DSH-Desktop-2.0.14-arm64.dmg
@@ -56,18 +56,30 @@ cd dsh-desktop-bundle
 已经装好应用时直接 `./setup.sh` 即可：脚本会在 `/Applications` 找 `DSH Desktop.app`，
 按它的运行时版本固定 profile 里的 `@deepseek-ai/*` 依赖。
 
-## 应用来源
+## 来源与产品差异
 
-Release 里的 `DSH-Desktop-<版本>-arm64.dmg` 由本仓库的 `build-dmg.sh` 从
-[hzxwonder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop) 的固定 revision 编译，
-相对上游多了浏览器面板的原生承载面（`feat(shell): host a native browser view from the
-desktop main process`）。ad-hoc 签名、未公证，首次打开需要右键“打开”，
-或在“系统设置 → 隐私与安全性”里放行；安装与放行的完整步骤见
-[docs/install.md](docs/install.md)。
+DSH Omni 是面向 macOS 的预装插件集成发行版，源代码与版本组合由本仓库维护。
+桌面壳来自 [hzxwonder/dsh-desktop](https://github.com/hzxwonder/dsh-desktop)，该仓库 fork 自
+[anywhere-labs/dsh-desktop](https://github.com/anywhere-labs/dsh-desktop)。底层 Agent 运行时来自
+[deepseek-ai/deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)。具体提交和运行时版本见 `manifest.json`。
 
-也可以只用官方安装包：官方 dmg 装好后再跑 `./setup.sh` 一样能用上同一套插件，
-区别是壳侧的浏览器面板与原生承载面属于 fork，需要 `build-dmg.sh` 自行编译，见
-[docs/build.md](docs/build.md)。
+| 产品 | 来源与职责 | 插件分发 |
+| --- | --- | --- |
+| DSH Omni | 社区桌面壳的定制集成发行版；包含原生浏览器承载与固定版本插件组合 | 本仓库 `vendor/` 随发行版集成 |
+| 官方 DeepSeek Harness Desktop | DeepSeek 官方仓库的 `apps/desktop`；官方签名、运行时和更新服务 | 独立安装官方 Desktop 适配插件 |
+| 社区 DSH NEXT | anywhere-labs/dsh-desktop 的实验渠道；含 Profiles、恢复和社区市场 | 以该渠道的实际组合与验收为准 |
+
+macOS 的日常安装保留 DSH Omni 与官方 DeepSeek Harness 两个应用。各自使用独立配置和数据目录。
+官方 Desktop 适配插件发布在 [hzxwonder-dsh-plugins](https://github.com/orgs/hzxwonder-dsh-plugins/repositories)。
+插件维护流程为：DSH Omni 开发与实机验收 → 更新本仓库 → 官方 Desktop 适配与实机验收 → 更新公开插件仓库。
+维护范围为这两个桌面产品，Web 插件不再作为维护目标。
+
+当前发行清单的 Stable 桌面基线为 2.0.14 / Harness 0.1.5-rc.2；NEXT 清单为 2.0.15-next / 0.1.7-rc.2。
+Release 产物和安装脚本中的 `DSH Desktop` 文件名属于相应版本的实际安装名称。
+官方 Desktop 0.1.7-rc.2 的公开插件验收与功能比较见 [桌面兼容报告](docs/official-desktop-compatibility.md)。
+
+DSH Omni 的自构建安装包使用 ad-hoc 签名；官方 DeepSeek Harness 安装包由 DeepSeek 签名并公证。
+安装方式见 [安装文档](docs/install.md)，构建方式见 [构建文档](docs/build.md)。
 
 ## 同款与不同款
 
