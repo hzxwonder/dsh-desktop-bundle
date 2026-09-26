@@ -2,7 +2,7 @@
 
 ## 为什么是快照
 
-`vendor/` 存的是 14 个插件在发布版本上的源码副本，不是 submodule，也不是安装时拉取。
+`vendor/` 存的是 16 个插件在发布版本上的源码副本，不是 submodule，也不是安装时拉取。
 这样同一个 commit 里的插件组合是确定的：使用者不会因为某个插件仓库前进、
 tag 被移动或 npm 上的同名包而拿到没测过的组合；离线也能装配。
 
@@ -45,8 +45,8 @@ node scripts/vendor.mjs --from <插件源码根目录> --only dsh-plugin-termina
 插件包嵌在仓库子目录里时（如 `dsh-pet` 上游以 `dsh-pet/` 子目录为包根），
 manifest 条目加 `"subdir": "<目录名>"`，脚本导出该子目录的内容到
 `vendor/<name>/`；`--from` 仍指向仓库根（`.git` 与 stash 保护都在根上）。
-`dsh-pet` 当前 pin 的 commit 是 v0.2.11 发布提交之上的本地修复
-（helper 宿主看门狗、多会话列表与提示音），待上游合并后回移到上游 tag。
+`dsh-pet` 当前 pin 到 v0.2.12 发布提交。本地保留 macOS Electron
+Framework 符号链接修复，以支持 NEXT Desktop 的桌面 helper 启动。
 
 ## 发版流程
 

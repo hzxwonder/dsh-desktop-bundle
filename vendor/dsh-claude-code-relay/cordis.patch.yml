@@ -1,0 +1,10 @@
+# dsh-claude-code-relay bundle patch: one insert registering the plugin. dsh mounts this layer for
+# every profile that lists `dsh-claude-code-relay` in `dsh.profile.bundles`; `dsh plugin add` adds
+# the entry itself because package.json declares `dsh.bundle.patch`.
+# The row id is the address a profile patch targets to configure this plugin. A second relay
+# (another base_url or account) is a second row with the same `name`, a different id, and its own
+# `providerId` in config.
+- insert:
+    - id: claude-code-relay
+      name: 'dsh-claude-code-relay'
+      config: {}

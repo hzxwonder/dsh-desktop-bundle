@@ -1,0 +1,82 @@
+{
+  "name": "dsh-claude-code-relay",
+  "version": "0.1.0",
+  "description": "Claude Code CLI as an LLM provider for dsh (DeepSeek Harness), driven against an Anthropic-compatible relay station with base_url + api_key (ANTHROPIC_BASE_URL + ANTHROPIC_AUTH_TOKEN/ANTHROPIC_API_KEY)",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-api-gateway",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-model-selection",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-ui-tool",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale"
+      ],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-llm": "^0.1.5-rc.1",
+    "@deepseek-ai/schemastery": "^3.18.0"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    },
+    "@deepseek-ai/dsh-llm": {
+      "optional": true
+    },
+    "@deepseek-ai/schemastery": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@deepseek-ai/dsh-llm": "0.1.5-rc.3",
+    "@deepseek-ai/schemastery": "^3.18.4"
+  },
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "claude",
+    "claude-code",
+    "anthropic",
+    "relay",
+    "llm",
+    "llm-provider",
+    "stream-json"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.1.5-rc.2"
+  }
+}

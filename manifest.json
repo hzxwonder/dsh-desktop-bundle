@@ -8,6 +8,14 @@
     "runtimeVersion": "0.1.5-rc.2",
     "dshEngine": ">=24.0.0"
   },
+  "desktopNext": {
+    "repository": "https://github.com/anywhere-labs/dsh-desktop.git",
+    "ref": "master",
+    "commit": "faefc5b8504067164df498298e34ec0e561d6eee",
+    "appVersion": "2.0.15-next",
+    "runtimeVersion": "0.1.7-rc.2",
+    "bundleId": "ai.deepseek.dsh.desktop.next"
+  },
   "profile": {
     "bundles": [
       "@deepseek-ai/dsh-base",
@@ -19,7 +27,9 @@
       "dsh-plugin-sessions",
       "dsh-plugin-latex",
       "dsh-better-reasoning-effort",
-      "dsh-pet"
+      "dsh-pet",
+      "dsh-claude-code-relay",
+      "dsh-codex"
     ],
     "runtimeDependencies": {
       "@deepseek-ai/dsh-tool-terminal": "0.1.5-rc.2"
@@ -71,7 +81,7 @@
     },
     {
       "name": "dsh-plugin-workflow",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "commit": "6931041ae2a4da72105c9f76fa6f1aa437708805",
       "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-plugin-workflow.git"
     },
@@ -107,10 +117,22 @@
     },
     {
       "name": "dsh-pet",
-      "version": "0.2.11",
-      "commit": "d038efa6f25e5948d0bee49c4725e166b330d3fa",
+      "version": "0.2.12",
+      "commit": "631c5310b047931404978152fdc7865413c153ec",
       "repository": "https://github.com/PC2005-cloud/dsh-pet.git",
       "subdir": "dsh-pet"
+    },
+    {
+      "name": "dsh-claude-code-relay",
+      "version": "0.1.0",
+      "commit": "local-web-profile",
+      "repository": "https://github.com/hzxwonder-dsh-plugins/dsh-claude-code-relay.git"
+    },
+    {
+      "name": "dsh-codex",
+      "version": "0.3.0",
+      "commit": "local-web-profile",
+      "repository": "https://github.com/Yan-Zero/dsh-codex.git"
     }
   ]
 }
