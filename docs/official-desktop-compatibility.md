@@ -14,7 +14,7 @@
 | dsh-plugin-browser | 0.5.2 | 安装、启用、面板通过；默认缺少 Chromium，配置本机 Chrome 后成功导航至 Example Domain；Agent 工具与完整交互待验收 |
 | dsh-plugin-workflow | 0.3.0 | 官方安装器拒绝：skill/tools peerDependencies 限定 0.1.5-rc.2 |
 | dsh-plugin-project-memory | 0.2.2 | 官方安装器拒绝：credentials/sandbox-policy/session-projection/tools 限定 0.1.5-rc.2 |
-| dsh-plugin-terminal | 0.5.0 | 安装和启用通过；底部面板与 SSH PTY 核心行为尚未通过验收 |
+| dsh-plugin-terminal | 0.5.0 | 安装和启用通过；会话标题栏按钮出现，打开后底部留白、没有终端控件，核心面板验收未通过 |
 | dsh-plugin-ssh | 0.1.0 | 安装后 Host 显示运行；冷启动失败：客户端等待 settingsScope。测试配置已停用该组件 |
 | dsh-plugin-sessions | 0.1.1 | 安装、启用、“对话”分组与新会话通过；跨会话模型上下文待验收 |
 
@@ -44,6 +44,10 @@
 - [官方工作流](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.7-rc.2/packages/workflow/workflow/README.zh.md)
 - [官方工作流界面](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.7-rc.2/packages/client/ui-workflow-run/README.zh.md)
 - [官方会话引用](https://github.com/deepseek-ai/deepseek-harness/blob/dsh-v0.1.7-rc.2/packages/context/session-reference/README.zh.md)
+
+## 模型验收
+
+官方模型在最小请求中返回 `OFFICIAL_MODEL_OK`。跨会话引用试验中粘贴结果未包含有效引用，不能作为引用功能通过的证据。
 
 ## 官方终端实机核验
 
