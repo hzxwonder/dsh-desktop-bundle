@@ -56,3 +56,13 @@
 ## 维护与发布
 
 DSH Omni 集成版本在 dsh-omni 内维护；公开插件仓库维护官方 Desktop 适配版。每次改动依次完成 Omni 实机验收、Omni 仓库更新、官方适配与实机验收，再发布公开插件。仅放宽版本范围不构成兼容性验证。
+
+## macOS installation status
+
+Applications retains DSH Omni and official DeepSeek Harness. The previous DSH Desktop and community DSH NEXT application bundles were moved to a recoverable local backup. The former Desktop application, data home and Electron user data also have ZIP backups with verified CRC and SHA-256 manifests.
+
+DSH Omni uses io.github.hzxwonder.dsh.omni and ~/.dsh-omni, based on community NEXT 2.0.15-next. Bundle signing and Host readiness were checked. Computer Use still denies access to this application; graphical acceptance is incomplete and no new Omni installer release has been published.
+
+The official default profile was backed up and replaced with the public plugin configuration tested here. SSH and third-party terminal bundles remain installed but disabled. Default application launch succeeded, with existing workspaces and conversations visible.
+
+A later model test without a valid pasted session reference failed during a command with Cannot read properties of undefined (reading prepare). Tool execution and cross-session context remain unverified for the tested combination; this observation does not isolate a single responsible plugin.
