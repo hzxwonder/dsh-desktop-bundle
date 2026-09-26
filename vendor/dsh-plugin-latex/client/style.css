@@ -802,9 +802,11 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-workspaces-host > .wf-workspace-wrapper { display:contents; }
 .lp-workspaces-host .wf-workspace-wrapper > .wf-tree { order:-1; }
 .lp-workspaces-host .wf-workspace-wrapper > :not(.wf-tree) { order:1; }
-.lp-sidebar-entry { display:flex; align-items:center; gap:6px; flex:none; order:0; margin:0 6px 8px; min-height:30px; min-width:0; padding:5px 10px; border-radius:9px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:400 13px/1.5 var(--dsw-font-family, system-ui, sans-serif); letter-spacing:0; text-align:left; }
+.lp-sidebar-entry { display:flex; align-items:center; gap:8px; flex:none; order:0; width:calc(100% - 4px); min-height:36px; min-width:0; margin:0 2px 4px; padding:7px 8px; border-radius:12px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:400 14px/22px var(--dsw-font-family, system-ui, sans-serif); letter-spacing:0; text-align:left; cursor:pointer; }
 .lp-sidebar-entry:hover { background:var(--dsw-alias-interactive-bg-hover); }
-.lp-sidebar-entry.is-rail { justify-content:center; margin-inline:0; }
+.lp-sidebar-entry.is-active { background:var(--dsw-alias-interactive-bg-hover); }
+.lp-sidebar-entry:focus-visible { outline:2px solid var(--dsw-alias-label-primary); outline-offset:-2px; }
+.lp-sidebar-entry.is-rail { width:36px; height:36px; justify-content:center; margin:0 0 4px; padding:0; }
 .dshDesktopFrame:has(.lp) { grid-template-columns:0 minmax(0,1fr) 0 !important; }
 .dshDesktopFrame:has(.lp) > .dshDesktopSidebarSurface,
 .dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface,
@@ -812,9 +814,8 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface { grid-column:2; }
 .qNbT7G_frame:has(.lp) > .qNbT7G_centerCol { grid-column:2; }
 
-.lp-sidebar-entry svg { flex:none; display:block; }
+.lp-sidebar-entry svg { width:16px; height:16px; flex:none; display:block; stroke-width:1.8; }
 .lp-sidebar-entry > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.lp-sidebar-entry.is-rail { padding:6px 0; }
 
 .lp-picker-head { right:20px; }
 .lp-picker-head .lp-global-settings { margin-left:auto; display:flex; align-items:center; gap:8px; }

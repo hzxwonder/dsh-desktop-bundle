@@ -246,36 +246,36 @@
 /* ------------------------------------------------- sidebar workflow entry */
 .wf-tree {
   flex: none;
-  padding: 6px 6px 8px;
+  padding: 0 0 4px;
   background: transparent;
 }
-/* The single sidebar entry: a borderless row that reads as part of the rail and
-   highlights while the workflow panel owns the main area. */
 .wf-nav-button {
   display: flex;
-  width: 100%;
+  width: calc(100% - 4px);
   align-items: center;
   gap: 8px;
   min-width: 0;
-  min-height: 34px;
-  padding: 6px 8px;
+  min-height: 36px;
+  margin: 0 2px;
+  padding: 7px 8px;
   border: 0 !important;
-  border-radius: 9px;
+  border-radius: 12px;
   background: transparent !important;
   box-shadow: none !important;
-  color: var(--wf-text);
-  font-size: 13px;
-  font-weight: 500;
+  color: var(--dsw-alias-label-primary);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
   text-align: left;
 }
-.wf-nav-button:hover { background: var(--wf-hover) !important; }
+.wf-nav-button:hover { background: var(--dsw-alias-interactive-bg-hover) !important; }
 .wf-nav-button.is-active {
-  background: var(--wf-accent-soft) !important;
-  color: var(--wf-accent);
-  font-weight: 600;
+  background: var(--dsw-alias-interactive-bg-hover) !important;
+  color: var(--dsw-alias-label-primary);
 }
-.wf-nav-button.is-rail { justify-content: center; padding: 6px 0; }
-.wf-nav-button svg { flex: none; }
+.wf-nav-button.is-rail { width: 36px; height: 36px; justify-content: center; margin: 0; padding: 0; }
+.wf-nav-button:focus-visible { outline: 2px solid var(--dsw-alias-label-primary); outline-offset: -2px; }
+.wf-nav-button svg { width: 16px; height: 16px; flex: none; stroke-width: 1.8; }
 .wf-nav-button > span:not(.wf-nav-count) {
   min-width: 0;
   overflow: hidden;
@@ -292,7 +292,6 @@
   font-weight: 600;
   line-height: 18px;
 }
-.wf-nav-button.is-active .wf-nav-count { background: transparent; color: var(--wf-accent); }
 .wf-workflow-icon {
   display: inline-flex;
   align-items: center;

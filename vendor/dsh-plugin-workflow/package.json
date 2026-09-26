@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-workflow",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Versioned visual workflows with user interactions and durable schedules for DeepSeek Harness",
   "type": "module",
   "main": "index.js",
@@ -61,7 +61,7 @@
     "react-dom": "19.1.1"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-skill": "0.1.5-rc.2",
-    "@deepseek-ai/dsh-tools": "0.1.5-rc.2"
+    "@deepseek-ai/dsh-skill": "0.1.7-rc.2",
+    "@deepseek-ai/dsh-tools": "0.1.7-rc.2"
   }
 }

@@ -610,15 +610,18 @@ export function apply(ctx) {
     if (!activeId) returnSession = ctx.sessions.list.getSnapshot().current;
     ctx.layout.selectPanel("latex-studio");
   };
-  function Entry({ wide = true }) {
+  function Entry({ wide = true, usePanelInfo }) {
+    const active = usePanelInfo(info => info.activePanelId === "latex-studio");
     return (
       <button
-        className={"lp-entry lp-sidebar-entry" + (wide ? "" : " is-rail")}
+        type="button"
+        className={"lp-entry lp-sidebar-entry" + (active ? " is-active" : "") + (wide ? "" : " is-rail")}
         title="论文工作台"
         aria-label="论文工作台"
+        aria-current={active ? "page" : undefined}
         onClick={open}
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>{wide && <span>论文工作台</span>}
+        <svg className="lp-sidebar-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>{wide && <span>论文工作台</span>}
       </button>
     );
   }
@@ -1806,21 +1809,16 @@ export function apply(ctx) {
       InputBridge,
     ),
   );
-  ctx.slots.inject("sidebar.workspaces", () => {
-    const native = ctx.slots.entriesOfSlot("sidebar.workspaces")[0];
-    if (!native?.component) return;
-    const Native = native.component;
-    let active = true;
-    const listeners = new Set();
-    const Wrapped = props => {
-      const enabled = useSyncExternalStore(fn => { listeners.add(fn); return () => listeners.delete(fn); }, () => active);
-      return enabled ? <div className="lp-workspaces-host"><Native {...props} /><Entry wide={props.wide} /></div> : <Native {...props} />;
-    };
-    native.component = Wrapped;
-    return () => {
-      active = false;
-      if (native.component === Wrapped) native.component = Native;
-      listeners.forEach(fn => fn());
-    };
-  });
+  ctx.slots.inject("sidebar.panellist", () =>
+    ctx.slots.register(
+      { name: "sidebar.panellist", id: "latex-studio", order: 110, label: "论文工作台" },
+      ({ size, active }) => {
+        useEffect(() => {
+          if (active && !activeId && !returnSession)
+            returnSession = ctx.sessions.list.getSnapshot().current;
+        }, [active]);
+        return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h6"/></svg>;
+      },
+    ),
+  );
 }

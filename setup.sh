@@ -128,6 +128,9 @@ if [ "${DRY_RUN}" = 1 ]; then
   log "would run: pnpm install (cwd ${PROFILE_DIR})"
 else
   ( cd "${PROFILE_DIR}" && pnpm install --reporter=append-only )
+  if [ -d "${APP_PATH}/Contents/Resources/app/node_modules/@deepseek-ai" ]; then
+    node "${SELF_DIR}/scripts/align-runtime.mjs" "${PROFILE_DIR}" "${APP_PATH}"
+  fi
 fi
 
 step "6/6 launcher registration"

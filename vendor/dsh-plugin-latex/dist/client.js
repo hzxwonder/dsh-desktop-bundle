@@ -44862,9 +44862,11 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .lp-workspaces-host > .wf-workspace-wrapper { display:contents; }
 .lp-workspaces-host .wf-workspace-wrapper > .wf-tree { order:-1; }
 .lp-workspaces-host .wf-workspace-wrapper > :not(.wf-tree) { order:1; }
-.lp-sidebar-entry { display:flex; align-items:center; gap:6px; flex:none; order:0; margin:0 6px 8px; min-height:30px; min-width:0; padding:5px 10px; border-radius:9px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:400 13px/1.5 var(--dsw-font-family, system-ui, sans-serif); letter-spacing:0; text-align:left; }
+.lp-sidebar-entry { display:flex; align-items:center; gap:8px; flex:none; order:0; width:calc(100% - 4px); min-height:36px; min-width:0; margin:0 2px 4px; padding:7px 8px; border-radius:12px; border:0; background:transparent; color:var(--dsw-alias-label-primary); font:400 14px/22px var(--dsw-font-family, system-ui, sans-serif); letter-spacing:0; text-align:left; cursor:pointer; }
 .lp-sidebar-entry:hover { background:var(--dsw-alias-interactive-bg-hover); }
-.lp-sidebar-entry.is-rail { justify-content:center; margin-inline:0; }
+.lp-sidebar-entry.is-active { background:var(--dsw-alias-interactive-bg-hover); }
+.lp-sidebar-entry:focus-visible { outline:2px solid var(--dsw-alias-label-primary); outline-offset:-2px; }
+.lp-sidebar-entry.is-rail { width:36px; height:36px; justify-content:center; margin:0 0 4px; padding:0; }
 .dshDesktopFrame:has(.lp) { grid-template-columns:0 minmax(0,1fr) 0 !important; }
 .dshDesktopFrame:has(.lp) > .dshDesktopSidebarSurface,
 .dshDesktopFrame:has(.lp) > .dshDesktopRightbarSurface,
@@ -44872,9 +44874,8 @@ body:has(.lp) .lp-home-entry, body:has(.lp-entry:not(.lp-home-entry .lp-entry)) 
 .dshDesktopFrame:has(.lp) > .dshDesktopConversationSurface { grid-column:2; }
 .qNbT7G_frame:has(.lp) > .qNbT7G_centerCol { grid-column:2; }
 
-.lp-sidebar-entry svg { flex:none; display:block; }
+.lp-sidebar-entry svg { width:16px; height:16px; flex:none; display:block; stroke-width:1.8; }
 .lp-sidebar-entry > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.lp-sidebar-entry.is-rail { padding:6px 0; }
 
 .lp-picker-head { right:20px; }
 .lp-picker-head .lp-global-settings { margin-left:auto; display:flex; align-items:center; gap:8px; }
@@ -45847,16 +45848,19 @@ function apply(ctx) {
     if (!activeId) returnSession = ctx.sessions.list.getSnapshot().current;
     ctx.layout.selectPanel("latex-studio");
   };
-  function Entry({ wide = true }) {
+  function Entry({ wide = true, usePanelInfo }) {
+    const active = usePanelInfo((info2) => info2.activePanelId === "latex-studio");
     return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)(
       "button",
       {
-        className: "lp-entry lp-sidebar-entry" + (wide ? "" : " is-rail"),
+        type: "button",
+        className: "lp-entry lp-sidebar-entry" + (active ? " is-active" : "") + (wide ? "" : " is-rail"),
         title: "\u8BBA\u6587\u5DE5\u4F5C\u53F0",
         "aria-label": "\u8BBA\u6587\u5DE5\u4F5C\u53F0",
+        "aria-current": active ? "page" : void 0,
         onClick: open,
         children: [
-          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { className: "lp-sidebar-icon", width: "16", height: "16", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
             /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" }),
             /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2v6h6M8 13h8M8 17h6" })
           ] }),
@@ -47192,29 +47196,22 @@ function apply(ctx) {
       InputBridge
     )
   );
-  ctx.slots.inject("sidebar.workspaces", () => {
-    const native = ctx.slots.entriesOfSlot("sidebar.workspaces")[0];
-    if (!native?.component) return;
-    const Native = native.component;
-    let active = true;
-    const listeners = /* @__PURE__ */ new Set();
-    const Wrapped = (props) => {
-      const enabled = (0, import_react2.useSyncExternalStore)((fn) => {
-        listeners.add(fn);
-        return () => listeners.delete(fn);
-      }, () => active);
-      return enabled ? /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "lp-workspaces-host", children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Native, { ...props }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Entry, { wide: props.wide })
-      ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(Native, { ...props });
-    };
-    native.component = Wrapped;
-    return () => {
-      active = false;
-      if (native.component === Wrapped) native.component = Native;
-      listeners.forEach((fn) => fn());
-    };
-  });
+  ctx.slots.inject(
+    "sidebar.panellist",
+    () => ctx.slots.register(
+      { name: "sidebar.panellist", id: "latex-studio", order: 110, label: "\u8BBA\u6587\u5DE5\u4F5C\u53F0" },
+      ({ size, active }) => {
+        (0, import_react2.useEffect)(() => {
+          if (active && !activeId && !returnSession)
+            returnSession = ctx.sessions.list.getSnapshot().current;
+        }, [active]);
+        return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", children: [
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" }),
+          /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("path", { d: "M14 2v6h6M8 13h8M8 17h6" })
+        ] });
+      }
+    )
+  );
 }
 
 return module.exports;}});

@@ -194,6 +194,7 @@ async function harness({state, visible = true, stage = {left: 100, top: 60, widt
     slots: {
       inject: (name, setup) => { registered.push({name, component: setup()}); return () => {}; },
       register: (spec, component) => component,
+      entriesOfSlot: () => [],
     },
     layout: {selectPanel() {}, selectTab() {}},
     sessions: {list: {subscribe: () => () => {}, getSnapshot: () => ({current: "session-1"})}},

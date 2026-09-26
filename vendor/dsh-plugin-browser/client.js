@@ -1474,7 +1474,8 @@ window.__ModuleLoader__.load({
       installStyles();
       const t = ctx.locale.bind(NS);
       ctx.effect(() => ctx.locale.register(NS, COPY), "dsh-plugin-browser: dictionaries");
-      ctx.effect(() => ctx.sidebarRightTabs.register({
+      const officialBrowser = globalThis.dshDesktop?.protocolVersion === 1 && !!globalThis.dshDesktop.browser;
+      if (!officialBrowser) ctx.effect(() => ctx.sidebarRightTabs.register({
         id: ID,
         kind: KIND,
         title: () => t("browser"),
@@ -1484,7 +1485,7 @@ window.__ModuleLoader__.load({
           description: () => t("guide"),
         }],
       }), "dsh-plugin-browser: right Sidebar type");
-      ctx.effect(() => ctx.slots.inject("sidebar.right.pane.tab", () => ctx.slots.register({
+      if (!officialBrowser) ctx.effect(() => ctx.slots.inject("sidebar.right.pane.tab", () => ctx.slots.register({
         name: "sidebar.right.pane.tab",
         key: ID,
         children: {"desktop.browser.sidebar": {kind:"single",scope:"session-maybe"}},

@@ -463,6 +463,7 @@ export function apply(ctx) {
           type="button"
           className={`wf-nav-button${active ? " is-active" : ""}${wide ? "" : " is-rail"}`}
           aria-expanded={active}
+          aria-current={active ? "page" : undefined}
           aria-label="工作流"
           title="工作流"
           onClick={() => {
@@ -474,7 +475,7 @@ export function apply(ctx) {
             }
           }}
         >
-          <GitBranch size={16} aria-hidden="true" />
+          <GitBranch size={16} strokeWidth={1.8} aria-hidden="true" />
           {wide && <span>工作流</span>}
           {wide && count > 0 && <span className="wf-nav-count">{count}</span>}
         </button>
@@ -2334,41 +2335,20 @@ export function apply(ctx) {
       Picker,
     ),
   );
-  ctx.slots.inject("sidebar.workspaces", () => {
-    const native = ctx.slots.entriesOfSlot("sidebar.workspaces")[0];
-    if (!native?.component)
-      throw new Error(
-        "Workflow sidebar adapter requires Harness 0.1.5-rc.2 workspace slot",
-      );
-    // Pinned adapter preserves the native entry's child ownership and store.
-    const Native = native.component;
-    let enabled = true;
-    const subscribers = new Set();
-    const Wrapped = (props) => {
-      sidebarWide = props.wide;
-      const visible = useSyncExternalStore(
-        (fn) => {
-          subscribers.add(fn);
-          return () => subscribers.delete(fn);
-        },
-        () => enabled,
-      );
-      return visible ? (
-        <div className="wf-workspace-wrapper">
-          <Tree wide={props.wide} usePanelInfo={props.usePanelInfo} />
-          <Native {...props} />
-        </div>
-      ) : (
-        <Native {...props} />
-      );
-    };
-    native.component = Wrapped;
-    return () => {
-      enabled = false;
-      if (native.component === Wrapped) native.component = Native;
-      subscribers.forEach((fn) => fn());
-    };
-  });
+  ctx.slots.inject("sidebar.panellist", () =>
+    ctx.slots.register(
+      { name: "sidebar.panellist", id: "workflow-studio", order: 100, label: "工作流" },
+      ({ size, active }) => {
+        useEffect(() => {
+          if (active) {
+            setPanelOpen(true);
+            void refresh();
+          }
+        }, [active]);
+        return <GitBranch size={size} strokeWidth={1.8} aria-hidden="true" />;
+      },
+    ),
+  );
   ctx.commandUi.register({
     name: "workflow",
     description: () => "创建工作流、修改工作流，或选择工作流开始运行",
